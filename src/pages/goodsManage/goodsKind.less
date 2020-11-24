@@ -1,0 +1,36 @@
+@import '~antd/es/style/themes/default.less';
+
+.row {
+  height: 100%;
+}
+
+.col {
+  // background: @component-background;
+  height: 100%;
+  border-radius: 5px;
+  :global {
+    // .ant-card,
+    .ant-table {
+      background: transparent;
+    }
+  }
+}
+
+.col2 {
+  background: @component-background;
+  height: 100%;
+  padding: 24px 0 0 24px;
+  border-radius: 3px;
+}
+
+.wbg {
+  background: @component-background;
+  padding-bottom: 0.5em;
+  padding-left: 16px;
+  padding-top: 8px;
+  margin-right: 1px;
+  color: @label-color;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.4;
+}

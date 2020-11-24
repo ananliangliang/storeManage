@@ -1,0 +1,24 @@
+@import '~@/vars.less';
+.rightMenu {
+  position: fixed;
+  z-index: 9999;
+  padding: 20px;
+  display: none;
+  .bg {
+    .components-bg;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  :global {
+    .ant-menu {
+      min-width: 100px;
+      text-align: center;
+      background: @component-background;
+      border-right: none;
+      .ant-menu-item-active {
+        background: @hover-color;
+        color: #fff;
+      }
+    }
+  }
+}
