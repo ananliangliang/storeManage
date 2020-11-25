@@ -5,14 +5,18 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { useModel, useRequest } from 'umi';
 import { DataNode } from 'antd/lib/tree';
-import { RespWarehouse } from '@/services/warehouseI';
-import serviceRegion from '@/services/region';
 import WarehouseForm, { TModalType } from './components/warehouseForm';
 import { Store } from 'antd/es/form/interface';
 import { getOrgData } from './tools';
-import serviceWarehouse from '@/services/warehouse';
 import { keyFindObj } from '@/models/warehouse';
 import { subEffect } from '@/utils/tools';
+import {
+  regionBatchRemove,
+  regionList,
+  regionRemove,
+  warehouseBatchRemove,
+  warehouseRemove,
+} from './service';
 
 interface IndexProps {}
 
@@ -36,7 +40,7 @@ const Index: FC<IndexProps> = (props) => {
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [curData, setCurData] = useState({});
 
-  const fetch = useRequest(serviceRegion.list, {
+  const fetch = useRequest(regionList, {
     manual: true,
     onSuccess: (res, params) => {
       setPage({
@@ -442,11 +446,18 @@ const Index: FC<IndexProps> = (props) => {
       async function ff(curData: any) {
         const type = getText(curData);
         console.log(type);
-        const serve = type === 'warehouse' ? serviceWarehouse : serviceRegion;
-        if (typeof id === 'object') {
-          await serve.batchRemove(id.join(','));
+        if (type === 'warehouse') {
+          if (typeof id === 'object') {
+            await warehouseBatchRemove(id.join(','));
+          } else {
+            await warehouseRemove(id);
+          }
         } else {
-          await serve.remove(id);
+          if (typeof id === 'object') {
+            await regionBatchRemove(id.join(','));
+          } else {
+            await regionRemove(id);
+          }
         }
         if (type === 'goods') {
           fetch.run({

@@ -1,12 +1,11 @@
 import { keyFindChild } from '@/models/warehouse';
-import serviceRegion from '@/services/region';
 import { ModalForm, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
-import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import { TypeSelectOptions } from '.';
+import { regionOnAddEdit } from '../../service';
 //import styles from './AddEditPlace.less'
 
 interface AddEditPlaceProps {
@@ -48,7 +47,7 @@ const AddEditFloor: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
   async function handleFinish(data: Store) {
     try {
       data.level = 2;
-      const res = await serviceRegion.onAddEdit({ ...initialValues, ...data });
+      const res = await regionOnAddEdit({ ...initialValues, ...data });
       console.log(res);
       onFinish(data);
     } catch (error) {}

@@ -1,5 +1,5 @@
-import serviceWarehouse from '@/services/warehouse';
-import { RespWarehouse } from '@/services/warehouseI';
+import { RespWarehouse } from '@/pages/Warehouse/data';
+import { warehouseTreeList } from '@/pages/Warehouse/service';
 import { DataNode } from 'antd/lib/tree';
 import { useState, useCallback } from 'react';
 
@@ -19,7 +19,7 @@ export default function useWarehouseModel() {
     if (loading) return;
     setLoading(true);
     console.log('init');
-    const res = await serviceWarehouse.treeList();
+    const res = await warehouseTreeList();
     console.log(res);
     const { node, pos } = formate(res);
     setWarehouse(node);

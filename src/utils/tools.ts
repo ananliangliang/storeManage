@@ -2,7 +2,7 @@ import { post } from './request';
 import { message } from 'antd';
 import { RespList } from '@/data';
 
-export async function proTableReq<T>(url: string, params: any = {}) {
+export async function proTableReq<T>(url: string, params: any = {}, isCommon?: boolean) {
   const { current = 1, pageSize = 10 } = params;
   console.log(params);
   delete params.current;
@@ -14,7 +14,7 @@ export async function proTableReq<T>(url: string, params: any = {}) {
     pageNum: current,
   };
   console.log(data);
-  const res = await post<RespList<T>>(url, data);
+  const res = await post<RespList<T>>(url, data, isCommon);
   return {
     data: res.list,
     total: res.total,

@@ -1,9 +1,9 @@
-import serviceWarehouse from '@/services/warehouse';
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
 import React, { FC, useEffect, useState } from 'react';
 import { useModel } from 'umi';
+import { warehouseOnAddEdit } from '../../service';
 import { getOrgData } from '../../tools';
 //import styles from './AddEdit.less'
 
@@ -45,7 +45,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
   }, [visible]);
   async function handleFinish(data: Store) {
     try {
-      const res = await serviceWarehouse.onAddEdit({ ...initialValues, ...data });
+      const res = await warehouseOnAddEdit({ ...initialValues, ...data });
       console.log(res);
       onFinish(data);
     } catch (error) {}

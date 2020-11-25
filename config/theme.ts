@@ -2,6 +2,7 @@ export default {
   'layout-body-background': 'transparent',
   'component-background':
     'linear-gradient( 0deg, rgba(92,219,211,0.251) 0%, rgba(0,109,117,0.251) 50%, rgba(92,219,211,0.251) 100%);',
+  'tree-bg': 'transparent',
   'border-radius-base': '5px',
   'box-shadow-base': '0px 2px 5.76px 0.24px rgba(5, 64, 62, 0.14)',
   'primary-color': '#08979c',
@@ -26,4 +27,8 @@ export default {
   'item-active-bg': '@hover-color',
   'popover-background': '#0f3037',
   'table-selected-row-bg': '@hover-color',
+  'switch-bg': 'rgb(6, 123, 128)',
+  'switch-color': 'rgb(19, 194, 194);',
+  'disabled-bg': '#4c7e80',
+  'disabled-color':'@text-color-secondary'
 };

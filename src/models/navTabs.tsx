@@ -1,4 +1,4 @@
-import serviceWarehouse from '@/services/warehouse';
+import serviceWarehouse from '@/pages/Warehouse/service';
 import { useState, useCallback, useEffect } from 'react';
 
 import { history } from 'umi';

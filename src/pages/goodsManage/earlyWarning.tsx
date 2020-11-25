@@ -1,9 +1,8 @@
-import serviceGoodsModel from '@/services/goodsModel';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { Button } from 'antd';
-import Modal from 'antd/lib/modal/Modal';
 import React, { FC } from 'react';
+import serviceGoodsModel from '../../services/goodsModel';
 //import styles from './ earlyWarning.less'
 
 interface EarlyWarningProps {}
@@ -12,32 +11,46 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
   const columns: ProColumns<any>[] = [
     {
       title: '序号',
+      dataIndex: 'id',
       hideInForm: true,
       search: false,
     },
     {
       title: '资产编号',
+      dataIndex: 'goodsId',
       hideInForm: true,
     },
     {
       title: '种类信息',
+      dataIndex: 'type',
       hideInForm: true,
     },
     {
       title: '物资名称',
+      dataIndex: 'goods',
+      ellipsis: true,
       hideInForm: true,
+      render(_, record) {
+        return record.goods + record.specs;
+      },
     },
     {
       title: '位置',
       hideInForm: true,
+      ellipsis: true,
+      render(_, record) {
+        return record.kf + record.lc + record.fq + record.hj + record.hl;
+      },
       search: false,
     },
     {
       title: '预警状态',
+      dataIndex: 'rule',
       hideInForm: true,
     },
     {
       title: '预警时间',
+      dataIndex: 'endCheckTime',
       hideInForm: true,
     },
     {
@@ -47,6 +60,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     },
     {
       title: '备注',
+      dataIndex: 'remark',
       hideInForm: true,
       search: false,
     },

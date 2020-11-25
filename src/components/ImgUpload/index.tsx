@@ -23,10 +23,8 @@ function beforeUpload(file: File) {
 }
 
 type IProps = {
-  img?: {
-    src: string;
-    id: string;
-  };
+  imgSrc?: string;
+  onChange?: (url: string) => void;
 };
 
 export class ImgUpload extends React.Component<IProps> {
@@ -34,6 +32,14 @@ export class ImgUpload extends React.Component<IProps> {
     loading: false,
     imageUrl: '',
   };
+  static getDerivedStateFromProps(p: IProps, s: any) {
+    if (p.imgSrc !== s.imgSrc) {
+      return {
+        imageUrl: p.imgSrc,
+      };
+    }
+    return null;
+  }
 
   handleChange = (info: UploadChangeParam<any>) => {
     if (info.file.status === 'uploading') {
@@ -42,6 +48,11 @@ export class ImgUpload extends React.Component<IProps> {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
+      const { onChange } = this.props;
+      const { code, content } = info.file.response;
+      if (code == 200) {
+        onChange && onChange(content);
+      }
       getBase64(info.file.originFileObj, (imageUrl: string) =>
         this.setState({
           imageUrl,
@@ -56,7 +67,7 @@ export class ImgUpload extends React.Component<IProps> {
     const uploadButton = (
       <div>
         {loading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div style={{ marginTop: 8 }}>Upload</div>
+        <div style={{ marginTop: 8 }}>上传</div>
       </div>
     );
     return (

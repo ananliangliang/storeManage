@@ -1,24 +1,17 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Button, Divider, Popconfirm, Spin, Modal, Image, TreeSelect } from 'antd';
+import { Row, Col, Tree, Button, Divider, Popconfirm, Spin, Modal } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import styles from './goodsKind.less';
+import styles from './department.less';
 import { useModel } from 'umi';
 import { Store } from 'antd/es/form/interface';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
 import RightMenu from '@/components/rightMenu';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { FormInstance } from 'antd/lib/form';
-import { ImgUpload } from '@/components/ImgUpload';
 import { subEffect } from '@/utils/tools';
-import serviceGoodsModel from '../../services/goodsModel';
-// import { TreeNode } from 'antd/lib/tree-select';
-const typeEnum = new Map([
-  [1, 'RFID'],
-  [2, '二维码'],
-]);
+import serviceCommon from '@/services/common';
 
-const { TreeNode } = Tree;
 interface IndexProps {}
 
 const TreeBtn = [
@@ -36,7 +29,7 @@ const TreeBtn = [
   },
 ];
 
-const GoodsKind: FC<IndexProps> = (props) => {
+const Department: FC<IndexProps> = (props) => {
   const { goodsKind, init, loading } = useModel('goodsKind', (state) => state);
   const kind = useRef<DataNode[]>([]);
   const formRef = useRef<FormInstance>();
@@ -56,60 +49,27 @@ const GoodsKind: FC<IndexProps> = (props) => {
   });
   const [columns] = useState<ProColumns<any>[]>([
     {
-      title: '序号',
+      title: 'id',
       dataIndex: 'id',
       hideInForm: true,
       search: false,
     },
     {
-      title: '类型',
-      dataIndex: 'parentId',
-      search: false,
-      render(_, record) {
-        return record.lastModel;
-      },
-      renderFormItem(item, config) {
-        return <TreeSelect treeData={kind.current} treeDefaultExpandAll />;
-      },
+      title: '项目标识',
+      dataIndex: 'ident',
     },
     {
       title: '名称',
-      dataIndex: 'goods',
+      dataIndex: 'depName',
     },
     {
-      title: '描述',
-      dataIndex: 'des',
+      title: '简称',
+      dataIndex: 'abbr',
     },
     {
-      title: '规格',
-      dataIndex: 'specs',
+      title: '备注',
+      dataIndex: 'remark',
       search: false,
-    },
-    {
-      title: '识别方式',
-      dataIndex: 'type',
-      valueType: 'select',
-      valueEnum: typeEnum,
-    },
-    {
-      title: '数量',
-      dataIndex: 'count',
-      search: false,
-      hideInForm: true,
-    },
-    {
-      title: '图片',
-      dataIndex: 'imageUrl',
-      search: false,
-      render(_, record) {
-        return <Image width={120} src={record.imageUrl} />;
-      },
-      formItemProps: {
-        // trigger: '',
-      },
-      renderFormItem(url: any, record) {
-        return <ImgUpload />;
-      },
     },
     {
       title: '操作',
@@ -163,9 +123,9 @@ const GoodsKind: FC<IndexProps> = (props) => {
     console.log(id);
 
     if (typeof id === 'object') {
-      await serviceGoodsModel.batchRemove(id.join(','));
+      await serviceCommon.departmentBatchRemove(id.join(','));
     } else {
-      await serviceGoodsModel.remove(id);
+      await serviceCommon.departmentRemove(id);
     }
     actionRef.current?.reload();
   }
@@ -213,7 +173,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
         Modal.confirm({
           content: '确定删除改种类吗?',
           async onOk() {
-            await serviceGoodsModel.remove(menuPos.data['id']);
+            await serviceCommon.departmentRemove(menuPos.data['id']);
             if (curData['id'] === menuPos.data['id']) {
               // 刷新列表
             }
@@ -226,7 +186,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
 
   async function getList(params: any): Promise<RequestData<any>> {
     params.parentId = selectData.current?.['id'];
-    return await serviceGoodsModel.list(params);
+    return await serviceCommon.departmentList(params);
   }
 
   const onClose = () => {
@@ -335,7 +295,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
               data.type = 3;
             }
             await subEffect(async () => {
-              await serviceGoodsModel.onAddEdit(data);
+              await serviceCommon.departmentOnAddEdit(data);
               onClose();
               if (data.type == 3) {
                 init();
@@ -351,4 +311,4 @@ const GoodsKind: FC<IndexProps> = (props) => {
     </div>
   );
 };
-export default GoodsKind;
+export default Department;

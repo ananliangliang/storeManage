@@ -1,22 +1,24 @@
 import { DEFAULT_FORM_LAYOUT } from '@/const';
-import serviceGoodsRule from '@/services/goodsRule';
+import serviceCommon from '@/services/common';
 import { subEffect } from '@/utils/tools';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Divider, Modal, Popconfirm } from 'antd';
+import { Button, Divider, Drawer, Modal, Popconfirm } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
-import React, { FC, useRef, useState } from 'react';
-import StatusSwitch from './components/statusSwitch';
-//import styles from './warningRule.less'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+//import styles from './productConfig.less'
 
-interface WarningRuleProps {}
-const statusEnum = new Map([
-  [1, '开启'],
-  [0, '禁用'],
-]);
+interface ProductConfigProps {
+  visible: boolean;
+  onClose: () => void;
+  product: Store;
+  width?: string | number;
+}
 
-const WarningRule: FC<WarningRuleProps> = (props) => {
+const ProductConfig: FC<ProductConfigProps> = ({ visible, onClose, product = {}, width = 800 }) => {
+  const actionRef = useRef<ActionType>();
+  const formRef = useRef<FormInstance>();
   const [modalProp, setModalProp] = useState<{
     visible: boolean;
     values: Store;
@@ -24,106 +26,99 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     visible: false,
     values: {},
   });
-  const actionRef = useRef<ActionType>();
-  const formRef = useRef<FormInstance>();
 
-  const columns: ProColumns<any>[] = [
-    {
-      title: '序号',
-      dataIndex: 'id',
-      hideInForm: true,
-      search: false,
-    },
-    {
-      title: '规则名称',
-      dataIndex: 'rule',
-    },
-    {
-      title: '周期',
-      dataIndex: 'cycle',
-      search: false,
-    },
-    {
-      title: '规则状态',
-      dataIndex: 'state',
-      valueType: 'select',
-      valueEnum: statusEnum,
-      render(text, record) {
-        return (
-          <StatusSwitch
-            checked={record.state == 1}
-            onChange={(flag) => switchStatus(record, flag)}
-          />
-        );
+  const columns = useMemo(() => {
+    return [
+      {
+        title: '标记',
+        dataIndex: 'ident',
       },
-    },
-    {
-      title: '操作',
-      hideInForm: true,
-      valueType: 'option',
-      render(_, record) {
-        return (
-          <>
-            <a
-              onClick={() => {
-                setModalProp({
-                  visible: true,
-                  values: { ...record },
-                });
-                setTimeout(() => {
-                  formRef.current?.setFieldsValue(record);
-                }, 100);
-              }}
-            >
-              编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
-              title="确认删除?"
-              onConfirm={() => {
-                handleDel(record.id);
-              }}
-            >
-              <a>删除</a>
-            </Popconfirm>
-          </>
-        );
+      {
+        title: 'keyId',
+        dataIndex: 'keyId',
       },
-    },
-  ];
+      {
+        title: 'keysecret',
+        dataIndex: 'keysecret',
+      },
+      {
+        title: '操作',
+        valueType: 'option',
+        render(_, record) {
+          return (
+            <>
+              <a
+                onClick={() => {
+                  setModalProp({
+                    visible: true,
+                    values: { ...record },
+                  });
+                  setTimeout(() => {
+                    formRef.current?.setFieldsValue(record);
+                  }, 100);
+                }}
+              >
+                编辑
+              </a>
+              <Divider type="vertical" />
+              <Popconfirm
+                title="确认删除?"
+                onConfirm={() => {
+                  handleDel(record.id);
+                }}
+              >
+                <a>删除</a>
+              </Popconfirm>
+            </>
+          );
+        },
+      },
+    ] as ProColumns<any>[];
+  }, []);
+
+  useEffect(() => {
+    if (product.ident) {
+      actionRef.current?.reload();
+    }
+  }, [product.ident]);
+
+  function getList(params: any) {
+    if (product.ident) {
+      params.ident = product.ident;
+      return serviceCommon.productConfigList(params);
+    }
+    throw '';
+  }
 
   async function handleDel(id: string | string[]) {
     await subEffect(async () => {
       if (typeof id === 'object') {
-        await serviceGoodsRule.batchRemove(id.join(','));
+        await serviceCommon.productConfigBatchRemove(id.join(','));
       } else {
-        await serviceGoodsRule.remove(id);
+        await serviceCommon.productConfigRemove(id);
       }
       actionRef.current?.reload();
     });
   }
 
-  async function switchStatus(data: any, flag: boolean) {
-    await serviceGoodsRule.onAddEdit({ ...data, state: flag ? 1 : 0 });
-    data.state = flag ? 1 : 0;
-  }
+  const submitLock = useRef(false);
 
-  const onClose = () => {
+  const modalClose = () => {
     setModalProp({ visible: false, values: {} });
     formRef.current?.resetFields();
   };
-
-  const submitLock = useRef(false);
   return (
-    <div>
+    <Drawer title="产品配置" width={width} onClose={onClose} visible={visible}>
       <ProTable<any>
-        tableAlertRender={false}
-        rowSelection={{}}
         actionRef={actionRef}
+        tableAlertRender={false}
+        search={false}
+        headerTitle={product.name}
+        rowSelection={{}}
         pagination={{
           pageSize: 10,
         }}
-        request={serviceGoodsRule.list}
+        request={getList}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
             <Button
@@ -133,7 +128,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
                 setModalProp({ visible: true, values: {} });
               }}
             >
-              <PlusOutlined /> 新增规则
+              <PlusOutlined /> 添加
             </Button>,
             <Button
               key="del"
@@ -161,7 +156,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
         title={modalProp.values?.id ? '修改' : '新增'}
         visible={modalProp.visible}
         footer={null}
-        onCancel={onClose}
+        onCancel={modalClose}
         getContainer={false}
       >
         <ProTable
@@ -179,19 +174,17 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
             if (submitLock.current) return;
             submitLock.current = true;
             const data = { ...modalProp.values, ...value };
-            if (!data.type) {
-              data.type = 3;
-            }
+            data.ident = product.ident;
             await subEffect(async () => {
-              await serviceGoodsRule.onAddEdit(data);
-              onClose();
+              await serviceCommon.productConfigOnAddEdit(data);
+              modalClose();
               actionRef.current?.reload();
             });
             submitLock.current = false;
           }}
         />
       </Modal>
-    </div>
+    </Drawer>
   );
 };
-export default WarningRule;
+export default ProductConfig;

@@ -95,30 +95,36 @@ export default defineConfig({
       component: '../layout/NavLayout',
       routes: [
         {
-          path: '/setting/menu',
-          name: '菜单管理',
-          component: './setting/baseSetting/Menu',
-        },
-        {
-          path: '/setting/role',
-          name: '权限管理',
-          component: './setting/baseSetting/Role',
+          path: '/setting/product',
+          name: '产品管理',
+          component: './setting/product',
         },
         {
           path: '/setting/department',
           name: '部门管理',
-          component: './setting/baseSetting/Department',
+          component: './setting/department',
         },
-        {
-          path: '/setting/user',
-          name: '人员管理',
-          component: './setting/baseSetting/User',
-        },
-        {
-          path: '/setting/dictionary',
-          name: '字典管理',
-          component: './setting/baseSetting/Dictionary',
-        },
+
+        // {
+        //   path: '/setting/role',
+        //   name: '权限管理',
+        //   component: './setting/baseSetting/Role',
+        // },
+        // {
+        //   path: '/setting/department',
+        //   name: '部门管理',
+        //   component: './setting/baseSetting/Department',
+        // },
+        // {
+        //   path: '/setting/user',
+        //   name: '人员管理',
+        //   component: './setting/baseSetting/User',
+        // },
+        // {
+        //   path: '/setting/dictionary',
+        //   name: '字典管理',
+        //   component: './setting/baseSetting/Dictionary',
+        // },
         {
           component: './404',
         },
