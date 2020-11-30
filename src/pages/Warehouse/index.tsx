@@ -346,7 +346,7 @@ const Index: FC<IndexProps> = (props) => {
                   setModalProp({
                     visible: true,
                     initialValues: { ...record },
-                    type: 'partition',
+                    type: 'goods',
                   });
                 }}
               >
@@ -429,6 +429,7 @@ const Index: FC<IndexProps> = (props) => {
     console.log(res);
     const type = getText(curData);
     if (type === 'goods') {
+      actionRef.current?.reload();
     } else {
       init();
     }
@@ -498,7 +499,7 @@ const Index: FC<IndexProps> = (props) => {
                   showLine
                   treeData={treeData}
                   defaultExpandParent
-                  // defaultExpandAll
+                  defaultExpandAll
                   defaultExpandedKeys={['0-0']}
                   autoExpandParent
                   onSelect={onTreeCheck}
@@ -544,6 +545,10 @@ const Index: FC<IndexProps> = (props) => {
                             initialValues['warehouseId'] = curData['id'];
                             break;
                           case 'partition':
+                            initialValues['warehouseId'] = curData['warehouseId'];
+                            initialValues['parentId'] = curData['id'];
+                            break;
+                          case 'goods':
                             initialValues['warehouseId'] = curData['warehouseId'];
                             initialValues['parentId'] = curData['id'];
                             break;

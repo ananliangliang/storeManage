@@ -21,6 +21,14 @@ export async function proTableReq<T>(url: string, params: any = {}, isCommon?: b
   };
 }
 
+export async function waitTime(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });
+}
+
 export async function subEffect(
   func: () => any,
   loadingMsg = '正在提交数据',
@@ -91,18 +99,6 @@ export function deepClone(obj: any): any {
     }
   }
   return objClone;
-}
-
-export function jounalRocrd(record: any) {
-  return record.comment;
-  // switch (record.type) {
-  //   case LOG_MODAL_TYPE.XUN_SHI:
-
-  //     return `${record.depName}厂站 温度: ${record.temp} ℃ ,湿度: ${record.hum}.`
-
-  //   default:
-  //     return record.comment;
-  // }
 }
 
 export function download(address: string) {

@@ -7,7 +7,7 @@ import { Button, Divider, Modal, Popconfirm } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useRef, useState } from 'react';
-import StatusSwitch from './components/statusSwitch';
+import StatusSwitch from '@/components/statusSwitch/statusSwitch';
 //import styles from './warningRule.less'
 
 interface WarningRuleProps {}
@@ -41,6 +41,14 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     {
       title: '周期',
       dataIndex: 'cycle',
+      valueType: 'digit',
+      render(val, record) {
+        return `${(record.cycle / 86400).toFixed(2)}天`;
+      },
+      formItemProps: {
+        formatter: (value: any) => `${value}天`,
+        parser: (value: any) => value.replace('天', ''),
+      } as any,
       search: false,
     },
     {
@@ -71,7 +79,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
                   values: { ...record },
                 });
                 setTimeout(() => {
-                  formRef.current?.setFieldsValue(record);
+                  formRef.current?.setFieldsValue({ ...record, cycle: record.cycle / 86400 });
                 }, 100);
               }}
             >
@@ -112,7 +120,6 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     setModalProp({ visible: false, values: {} });
     formRef.current?.resetFields();
   };
-
   const submitLock = useRef(false);
   return (
     <div>
@@ -178,6 +185,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
             console.log(value);
             if (submitLock.current) return;
             submitLock.current = true;
+            value.cycle = value.cycle * 86400;
             const data = { ...modalProp.values, ...value };
             if (!data.type) {
               data.type = 3;

@@ -5,9 +5,16 @@ import React, { FC, useEffect, useState } from 'react';
 interface StatusSwitchProps {
   checked?: boolean;
   onChange: (checked: boolean) => Promise<void> | void;
+  checkedText?: string;
+  unCheckedText?: string;
 }
 
-const StatusSwitch: FC<StatusSwitchProps> = ({ checked, onChange }) => {
+const StatusSwitch: FC<StatusSwitchProps> = ({
+  checked,
+  onChange,
+  checkedText = '开启',
+  unCheckedText = '关闭',
+}) => {
   const [_checked, setChecked] = useState(checked);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -26,8 +33,8 @@ const StatusSwitch: FC<StatusSwitchProps> = ({ checked, onChange }) => {
   return (
     <Switch
       checked={_checked}
-      checkedChildren="开启"
-      unCheckedChildren="关闭"
+      checkedChildren={checkedText}
+      unCheckedChildren={unCheckedText}
       loading={loading}
       onChange={handleChange}
     />

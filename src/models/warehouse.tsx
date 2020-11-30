@@ -4,11 +4,10 @@ import { DataNode } from 'antd/lib/tree';
 import { useState, useCallback } from 'react';
 
 type posType = {
-  warehouse?: string;
-  floor?: string;
-  partition?: string;
-  goods?: string;
+  [key in posKey]?: string;
 };
+
+type posKey = 'org' | 'warehouse' | 'floor' | 'partition' | 'goods';
 
 export default function useWarehouseModel() {
   const [warehouse, setWarehouse] = useState<DataNode[]>([]);
@@ -21,21 +20,41 @@ export default function useWarehouseModel() {
     console.log('init');
     const res = await warehouseTreeList();
     console.log(res);
-    const { node, pos } = formate(res);
+    const { node, pos } = warehouseTreeFormate(res);
     setWarehouse(node);
     setPos(pos);
     setLoading(false);
   }, []);
 
+  const keyFindParent = useCallback(
+    (key: string, parentName: posKey) => {
+      const keyArr = key.split('_');
+      console.log(pos);
+
+      if (Object.prototype.hasOwnProperty.call(pos, parentName)) {
+        const posKey = pos[parentName] ? pos[parentName] + '_0' : '0';
+        const posArr = posKey.split('_');
+        if (keyArr.length >= posArr.length) {
+          const item = keyFindItem(warehouse, keyArr.slice(0, posArr.length).join('_'));
+          console.log(item);
+          return item;
+        }
+      }
+      throw '错误的父名称';
+    },
+    [warehouse, pos],
+  );
+
   return {
     warehouse,
     loading,
+    keyFindParent,
     init,
     pos,
   };
 }
 
-function formate(list: RespWarehouse[], pid?: string) {
+export function warehouseTreeFormate(list: RespWarehouse[], pid?: string) {
   const pos = {};
   const node = inner(list, pid);
   return {
@@ -46,30 +65,48 @@ function formate(list: RespWarehouse[], pid?: string) {
   function inner(list: RespWarehouse[], pid?: string): DataNode[] {
     return list.map((item, idx) => {
       let newList: any[] = [];
-      const key = pid ? pid + '_' + idx : idx + '';
+      const p = pid ? pid + '_' + idx : idx + '';
 
       if (idx === 0) {
         const type = getType(item);
-        pos[type] = key;
+        pos[type] = p;
       }
       if (item.children.length > 0) {
-        newList = inner(item.children as any, key);
+        newList = inner(item.children as any, p);
       }
       if (newList.length > 0) {
         return {
           ...item,
           title: item.mergerName,
-          key: key,
+          value: item.id,
+          label: item.mergerName,
+          key: p,
+          pos: p,
           children: newList,
         };
       }
       return {
         ...item,
+        pos: p,
+        value: item.id,
+        label: item.mergerName,
         title: item.mergerName,
-        key: key,
+        key: p,
       };
     });
   }
+}
+
+export function keyFindItem(treeData: DataNode[], key: string): DataNode {
+  const arr = key.split('_');
+  return arr.reduce((previousValue, item, idx) => {
+    if (arr.length - 1 > idx) {
+      if (previousValue[item] && previousValue[item].children) {
+        return previousValue[item].children;
+      }
+    }
+    return previousValue[item];
+  }, treeData) as any;
 }
 
 export function keyFindChild(treeData: DataNode[], key: string) {
@@ -80,6 +117,14 @@ export function keyFindChild(treeData: DataNode[], key: string) {
     }
     return previousValue[item] || [];
   }, treeData);
+}
+
+export function dataNode2Select(treeData: DataNode[]) {
+  const map = new Map();
+  treeData.map((item: any) => {
+    map.set(item.value, item.title);
+  });
+  return map;
 }
 
 export function keyFindObj(treeData: DataNode[], key: string) {
@@ -94,14 +139,6 @@ export function keyFindObj(treeData: DataNode[], key: string) {
   }, treeData);
 }
 
-export function getWarehouse(treeData: DataNode[], warehouseId: number) {
-  treeData.map((item) => {
-    getType(item);
-  });
-}
-export function getFloor(treeData: DataNode[], floorId: number) {}
-export function getPart(treeData: DataNode[], partId: number) {}
-
 function getType(data: any) {
   if (data.flg) {
     switch (data.flg) {
@@ -114,6 +151,10 @@ function getType(data: any) {
           return 'partition';
         } else if (data.level == 3) {
           return 'goods';
+        } else if (data.level == 4) {
+          return 'shelf';
+        } else if (data.level == 5) {
+          return 'grid';
         }
       default:
         throw '错误的数据';

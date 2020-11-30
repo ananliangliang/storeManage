@@ -9,7 +9,6 @@ import config from '@/config/config';
 import { getPageQuery } from './utils';
 import { stringify } from 'querystring';
 import localData from '@/localStore';
-import proxy from '../../config/proxy';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',

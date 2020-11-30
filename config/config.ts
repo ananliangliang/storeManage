@@ -28,9 +28,10 @@ export default defineConfig({
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: true,
   },
-  dynamicImport: {
-    loading: '@/components/PageLoading/index',
-  },
+  dynamicimport: false,
+  // dynamicImport: {
+  //   loading: '@/components/PageLoading/index',
+  // },
   targets: {
     ie: 11,
   },
@@ -49,7 +50,7 @@ export default defineConfig({
     },
     {
       path: '/welcome',
-      name: 'welcome',
+      name: '首页',
       icon: 'smile',
       component: './Welcome',
     },
@@ -72,6 +73,11 @@ export default defineConfig({
           component: './goodsManage/goodsKind',
         },
         {
+          path: '/goodsManage/goodsInfo',
+          name: '物资信息',
+          component: './goodsManage/goodsInfo',
+        },
+        {
           path: '/goodsManage/earlyWarning',
           name: '物资预警',
           component: './goodsManage/earlyWarning',
@@ -85,6 +91,29 @@ export default defineConfig({
           path: '/goodsManage/task',
           name: '任务管理',
           component: './goodsManage/task',
+        },
+        {
+          path: '/goodsManage/breakage',
+          name: '报损管理',
+          component: './goodsManage/breakage',
+        },
+      ],
+    },
+    {
+      path: '/outPutManage',
+      name: '出入库管理',
+      icon: 'smile',
+      component: '../layout/NavLayout',
+      routes: [
+        {
+          path: '/outPutManage/putManage',
+          name: '入库管理',
+          component: './outPutManage/putManage',
+        },
+        {
+          path: '/outPutManage/outManage',
+          name: '出库管理',
+          component: './outPutManage/outManage',
         },
       ],
     },
@@ -104,27 +133,27 @@ export default defineConfig({
           name: '部门管理',
           component: './setting/department',
         },
+        {
+          path: '/setting/menu',
+          name: '菜单管理',
+          component: './setting/menu',
+        },
+        {
+          path: '/setting/user',
+          name: '人员管理',
+          component: './setting/user',
+        },
+        {
+          path: '/setting/dictionary',
+          name: '字典管理',
+          component: './setting/dictionary',
+        },
+        {
+          path: '/setting/role',
+          name: '权限管理',
+          component: './setting/role',
+        },
 
-        // {
-        //   path: '/setting/role',
-        //   name: '权限管理',
-        //   component: './setting/baseSetting/Role',
-        // },
-        // {
-        //   path: '/setting/department',
-        //   name: '部门管理',
-        //   component: './setting/baseSetting/Department',
-        // },
-        // {
-        //   path: '/setting/user',
-        //   name: '人员管理',
-        //   component: './setting/baseSetting/User',
-        // },
-        // {
-        //   path: '/setting/dictionary',
-        //   name: '字典管理',
-        //   component: './setting/baseSetting/Dictionary',
-        // },
         {
           component: './404',
         },

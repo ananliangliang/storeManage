@@ -59,7 +59,6 @@ function formate(list: RespGoodsModel[], pid?: string) {
           title: item.goods,
           key: item.id,
           pos: p,
-
           value: item.id,
           children: newList,
         };

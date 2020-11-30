@@ -1,43 +1,22 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Button, Divider, Popconfirm, Spin, Modal } from 'antd';
+import { Button, Divider, Popconfirm, Modal } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import styles from './department.less';
 import { useModel } from 'umi';
 import { Store } from 'antd/es/form/interface';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
-import RightMenu from '@/components/rightMenu';
+import { DataNode } from 'antd/lib/tree';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { FormInstance } from 'antd/lib/form';
 import { subEffect } from '@/utils/tools';
 import serviceCommon from '@/services/common';
+import DepartBtn from './components/departBtn';
 
 interface IndexProps {}
 
-const TreeBtn = [
-  {
-    key: 'add',
-    text: '添加',
-  },
-  {
-    key: 'edit',
-    text: '修改',
-  },
-  {
-    key: 'remove',
-    text: '删除',
-  },
-];
-
 const Department: FC<IndexProps> = (props) => {
-  const { goodsKind, init, loading } = useModel('goodsKind', (state) => state);
+  const { goodsKind, init } = useModel('goodsKind', (state) => state);
   const kind = useRef<DataNode[]>([]);
   const formRef = useRef<FormInstance>();
-  const [menuPos, setMenuPos] = useState({
-    x: -9999,
-    y: -9999,
-    data: {},
-  });
   const [modalProp, setModalProp] = useState<{
     visible: boolean;
     values: Store;
@@ -108,12 +87,17 @@ const Department: FC<IndexProps> = (props) => {
     },
   ]);
   const actionRef = useRef<ActionType>();
-  const [curData, setCurData] = useState({});
+  const [depMenu, setDepMenu] = useState<any>([]);
 
   useEffect(() => {
     if (goodsKind.length == 0) {
       init();
     }
+    async function fetch() {
+      const depMenu = await serviceCommon.departmentGetOrgAll();
+      setDepMenu(depMenu);
+    }
+    fetch();
   }, []);
 
   useEffect(() => {
@@ -132,60 +116,8 @@ const Department: FC<IndexProps> = (props) => {
 
   const selectData = useRef({});
 
-  const onTreeCheck = async (checked: React.ReactText[], info: any) => {
-    console.log(checked, info);
-    const data = info.node;
-
-    if (info.selected) {
-      setCurData(data);
-      selectData.current = { ...data };
-      actionRef.current?.reload();
-    }
-  };
-
-  function handleTreeRight(info: {
-    event: React.MouseEvent<Element, MouseEvent>;
-    node: EventDataNode;
-  }) {
-    const { pageX, pageY } = info.event;
-    console.log(pageX, pageY);
-    setMenuPos({
-      x: pageX,
-      y: pageY,
-      data: info.node,
-    });
-  }
-
-  function handleMenuClick(e: any) {
-    console.log(e);
-    console.log(menuPos);
-    switch (e.key) {
-      case 'add':
-        handleAdd('type');
-        break;
-      case 'edit':
-        setModalProp({ visible: true, values: menuPos.data, columns: columns.slice(1, 3) });
-        setTimeout(() => {
-          formRef.current?.setFieldsValue(menuPos.data);
-        }, 20);
-        break;
-      case 'remove':
-        Modal.confirm({
-          content: '确定删除改种类吗?',
-          async onOk() {
-            await serviceCommon.departmentRemove(menuPos.data['id']);
-            if (curData['id'] === menuPos.data['id']) {
-              // 刷新列表
-            }
-            init();
-          },
-        });
-        break;
-    }
-  }
-
   async function getList(params: any): Promise<RequestData<any>> {
-    params.parentId = selectData.current?.['id'];
+    params.parent_id = selectData.current?.['id'];
     return await serviceCommon.departmentList(params);
   }
 
@@ -204,71 +136,49 @@ const Department: FC<IndexProps> = (props) => {
 
   const submitLock = useRef(false);
 
+  function handleCheck(e: any) {
+    selectData.current = e;
+    actionRef.current?.reload();
+  }
+
   return (
     <div>
-      <Row gutter={20} className={styles.row}>
-        <Col span={6}>
-          <div className={styles.col2}>
-            <Spin spinning={loading}>
-              {goodsKind.length > 0 && (
-                <Tree
-                  showLine
-                  treeData={goodsKind}
-                  defaultExpandParent
-                  defaultExpandedKeys={['0-0']}
-                  selectedKeys={[curData['key']]}
-                  onRightClick={handleTreeRight}
-                  draggable
-                  onDrop={(e) => {
-                    console.log(e);
-                  }}
-                  autoExpandParent
-                  onSelect={onTreeCheck}
-                />
-              )}
-            </Spin>
-          </div>
-          {props.children}
-        </Col>
-        <Col span={18}>
-          <div className={styles.col}>
-            <ProTable<any>
-              actionRef={actionRef}
-              tableAlertRender={false}
-              rowSelection={{}}
-              pagination={{
-                pageSize: 10,
+      <ProTable<any>
+        actionRef={actionRef}
+        tableAlertRender={false}
+        headerTitle={<DepartBtn btnList={depMenu} onClick={handleCheck} />}
+        rowSelection={{}}
+        pagination={{
+          pageSize: 10,
+        }}
+        request={getList}
+        toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
+          return [
+            <Button type="primary" key="add" onClick={() => handleAdd('goods')}>
+              <PlusOutlined /> 添加
+            </Button>,
+            <Button
+              key="del"
+              type="dashed"
+              onClick={() => {
+                if (selectedRowKeys && selectedRowKeys.length > 0) {
+                  Modal.confirm({
+                    content: `是否删除该${selectedRowKeys.length}`,
+                    async onOk() {
+                      await handleDel(selectedRowKeys as string[]);
+                    },
+                  });
+                }
               }}
-              request={getList}
-              toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
-                return [
-                  <Button type="primary" key="add" onClick={() => handleAdd('goods')}>
-                    <PlusOutlined /> 添加
-                  </Button>,
-                  <Button
-                    key="del"
-                    type="dashed"
-                    onClick={() => {
-                      if (selectedRowKeys && selectedRowKeys.length > 0) {
-                        Modal.confirm({
-                          content: `是否删除该${selectedRowKeys.length}`,
-                          async onOk() {
-                            await handleDel(selectedRowKeys as string[]);
-                          },
-                        });
-                      }
-                    }}
-                  >
-                    <DeleteOutlined /> 删除
-                  </Button>,
-                ];
-              }}
-              columns={columns}
-              rowKey="id"
-            ></ProTable>
-          </div>
-        </Col>
-      </Row>
+            >
+              <DeleteOutlined /> 删除
+            </Button>,
+          ];
+        }}
+        columns={columns}
+        rowKey="id"
+      ></ProTable>
+
       <Modal
         title={modalProp.values?.id ? '修改' : '新增'}
         visible={modalProp.visible}
@@ -307,7 +217,6 @@ const Department: FC<IndexProps> = (props) => {
           }}
         />
       </Modal>
-      <RightMenu btns={TreeBtn} pos={menuPos} onClick={handleMenuClick} closeType="click" />
     </div>
   );
 };

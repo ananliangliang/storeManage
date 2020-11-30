@@ -1,34 +1,46 @@
-import serviceGoodsModel from '@/services/goodsModel';
+import serviceGoodsPreliminary from '@/services/goodsPreliminary';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { Divider, Popconfirm, Button } from 'antd';
-import Modal from 'antd/lib/modal/Modal';
-import React, { FC } from 'react';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Divider, Popconfirm, Button, Modal } from 'antd';
+import { Store } from 'antd/es/form/interface';
+import React, { FC, useRef, useState } from 'react';
+import TaskForm from './components/taskForm';
 //import styles from './task.less'
 
 interface TaskProps {}
 
 const Task: FC<TaskProps> = (props) => {
+  const [modalProp, setModalProp] = useState<{
+    visible: boolean;
+    value: Store;
+  }>({
+    visible: false,
+    value: {},
+  });
+
+  const actionRef = useRef<ActionType>();
   const columns: ProColumns<any>[] = [
     {
       title: '序号',
       hideInForm: true,
+      dataIndex: 'id',
       search: false,
     },
     {
       title: '任务名称',
-      hideInForm: true,
+      dataIndex: 'name',
     },
     {
-      title: '任务类型',
-      hideInForm: true,
-    },
-    {
-      title: '应用类型',
-      hideInForm: true,
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'dateRange',
+      render(_, record) {
+        return record.createTime;
+      },
     },
     {
       title: '物资信息',
+      dataIndex: 'modelsName',
       hideInForm: true,
       search: false,
     },
@@ -43,23 +55,7 @@ const Task: FC<TaskProps> = (props) => {
               onClick={() => {
                 setModalProp({
                   visible: true,
-                  initialValues: {
-                    warehouseId: record['warehouseId'],
-                    parentId: record['id'],
-                  },
-                  type: 'goods',
-                });
-              }}
-            >
-              查看
-            </a>
-            <Divider type="vertical" />
-            <a
-              onClick={() => {
-                setModalProp({
-                  visible: true,
-                  initialValues: { ...record },
-                  type: 'partition',
+                  value: { ...record },
                 });
               }}
             >
@@ -79,6 +75,16 @@ const Task: FC<TaskProps> = (props) => {
       },
     },
   ];
+
+  async function handleDel(id: string | string[]) {
+    console.log(id);
+    if (typeof id === 'object') {
+      await serviceGoodsPreliminary.batchRemove(id.join(','));
+    } else {
+      await serviceGoodsPreliminary.remove(id);
+    }
+    actionRef.current?.reload();
+  }
   return (
     <div>
       <ProTable<any>
@@ -87,11 +93,18 @@ const Task: FC<TaskProps> = (props) => {
         pagination={{
           pageSize: 10,
         }}
-        request={serviceGoodsModel.list}
+        actionRef={actionRef}
+        request={serviceGoodsPreliminary.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button type="primary" key="add" onClick={() => {}}>
-              <PlusOutlined /> 新增预警
+            <Button
+              type="primary"
+              key="add"
+              onClick={() => {
+                setModalProp({ visible: true, value: {} });
+              }}
+            >
+              <PlusOutlined /> 新增任务
             </Button>,
             <Button
               key="del"
@@ -113,6 +126,15 @@ const Task: FC<TaskProps> = (props) => {
         }}
         columns={columns}
         rowKey="id"
+      />
+      <TaskForm
+        {...modalProp}
+        onFinish={(val) => {
+          if (val) {
+            actionRef.current?.reload();
+          }
+          setModalProp({ visible: false, value: {} });
+        }}
       />
     </div>
   );

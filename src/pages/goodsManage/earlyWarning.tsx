@@ -1,13 +1,64 @@
-import { PlusOutlined } from '@ant-design/icons';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { Button } from 'antd';
-import React, { FC } from 'react';
-import serviceGoodsModel from '../../services/goodsModel';
+import { warehouseTreeFormate } from '@/models/warehouse';
+import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
+import serviceGoodsRule from '@/services/goodsRule';
+import { subEffect } from '@/utils/tools';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Modal, Tooltip, TreeSelect } from 'antd';
+import { Store } from 'antd/es/form/interface';
+import { DataNode } from 'antd/lib/tree';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { useModel } from 'umi';
+import { warehouseTreeListAll } from '../Warehouse/service';
+import EarlyWarningForm from './components/earlyWarningForm';
 //import styles from './ earlyWarning.less'
 
 interface EarlyWarningProps {}
 
 const EarlyWarning: FC<EarlyWarningProps> = (props) => {
+  const { goodsKind, goodsKindInit } = useModel('goodsKind', (state) => {
+    const { goodsKind, init } = state;
+    return {
+      goodsKind,
+      goodsKindInit: init,
+    };
+  });
+  const [treeData, setTreeData] = useState<any[]>([]);
+  const [modalProp, setModalProp] = useState<{
+    visible: boolean;
+    values: Store;
+  }>({
+    visible: false,
+    values: {},
+  });
+  const actionRef = useRef<ActionType>();
+  const [ruleList, setRuleList] = useState<any[]>([]);
+  const kind = useRef<DataNode[]>([]);
+
+  useEffect(() => {
+    async function fetch() {
+      const res = await warehouseTreeListAll();
+      const { pos, node } = warehouseTreeFormate(res);
+
+      setTreeData(node);
+      console.warn(node);
+    }
+    fetch();
+  }, []);
+  useEffect(() => {
+    async function init() {
+      if (goodsKind.length === 0) {
+        goodsKindInit();
+      }
+      const list = await serviceGoodsRule.list();
+      setRuleList(list.data);
+    }
+    init();
+  }, []);
+  useEffect(() => {
+    kind.current = goodsKind;
+  }, [goodsKind]);
+
   const columns: ProColumns<any>[] = [
     {
       title: '序号',
@@ -23,15 +74,20 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     {
       title: '种类信息',
       dataIndex: 'type',
-      hideInForm: true,
+      render(_, record) {
+        return record.lastModel;
+      },
+      renderFormItem() {
+        return <TreeSelect treeData={kind.current} />;
+      },
     },
     {
       title: '物资名称',
       dataIndex: 'goods',
       ellipsis: true,
-      hideInForm: true,
       render(_, record) {
-        return record.goods + record.specs;
+        const text = textAppend(record.goods, record.specs);
+        return <Tooltip title={text}>{text}</Tooltip>;
       },
     },
     {
@@ -39,7 +95,8 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       hideInForm: true,
       ellipsis: true,
       render(_, record) {
-        return record.kf + record.lc + record.fq + record.hj + record.hl;
+        const text = textAppend(record.kf, record.lc, record.fq, record.hj, record.hl);
+        return <Tooltip title={text}>{text}</Tooltip>;
       },
       search: false,
     },
@@ -55,37 +112,121 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     },
     {
       title: '状态',
+      dataIndex: 'isHandle',
+      render(cur, record) {
+        if (cur === 0) {
+          return (
+            <Button
+              onClick={() => {
+                Modal.confirm({
+                  content: '确定处理吗',
+                  okText: '确定',
+                  cancelText: '取消',
+                  async onOk() {
+                    await serviceGoodsEarlyWarning.handle(record.id);
+                    actionRef.current?.reload();
+                  },
+                });
+              }}
+            >
+              立即处理
+            </Button>
+          );
+        }
+        return '已处理';
+      },
       hideInForm: true,
-      search: false,
     },
     {
       title: '备注',
       dataIndex: 'remark',
-      hideInForm: true,
       search: false,
     },
   ];
+
+  async function handleDel(id: string | string[]) {
+    await subEffect(async () => {
+      if (typeof id === 'object') {
+        await serviceGoodsEarlyWarning.batchRemove(id.join(','));
+      } else {
+        await serviceGoodsEarlyWarning.remove(id);
+      }
+      actionRef.current?.reload();
+    });
+  }
+
+  function handleAdd(data: Store) {
+    console.log(data);
+    setModalProp({ visible: false, values: {} });
+    actionRef.current?.reload();
+  }
 
   return (
     <div>
       <ProTable<any>
         tableAlertRender={false}
-        rowSelection={{}}
+        // rowSelection={{}}
         pagination={{
           pageSize: 10,
         }}
-        request={serviceGoodsModel.list}
+        actionRef={actionRef}
+        request={serviceGoodsEarlyWarning.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button type="primary" key="add" onClick={() => {}}>
+            <Button
+              type="primary"
+              key="add"
+              onClick={() => {
+                setModalProp({ visible: true, values: {} });
+              }}
+            >
               <PlusOutlined /> 新增预警
             </Button>,
+            // <Button
+            //   key="del"
+            //   type="dashed"
+            //   onClick={() => {
+            //     if (selectedRowKeys && selectedRowKeys.length > 0) {
+            //       Modal.confirm({
+            //         content: `是否删除${selectedRowKeys.length}数据`,
+            //         async onOk() {
+            //           await handleDel(selectedRowKeys as string[]);
+            //         },
+            //       });
+            //     }
+            //   }}
+            // >
+            //   <DeleteOutlined /> 删除
+            // </Button>,
           ];
         }}
         columns={columns}
         rowKey="id"
       />
+      <EarlyWarningForm
+        {...modalProp}
+        addressTree={treeData}
+        onFinish={handleAdd}
+        onClose={() => {
+          setModalProp({ visible: false, values: {} });
+        }}
+        ruleList={ruleList}
+      />
     </div>
   );
 };
 export default EarlyWarning;
+
+function textAppend(...args: string[]) {
+  let str = '';
+  args.map((item) => {
+    if (item) {
+      str += item + ' ';
+    }
+  });
+  if (str) {
+    return str;
+  } else {
+    return null;
+  }
+}

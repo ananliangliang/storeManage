@@ -161,7 +161,6 @@ const GoodsKind: FC<IndexProps> = (props) => {
   }, [goodsKind]);
   async function handleDel(id: string | string[]) {
     console.log(id);
-
     if (typeof id === 'object') {
       await serviceGoodsModel.batchRemove(id.join(','));
     } else {

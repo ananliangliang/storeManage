@@ -1,4 +1,5 @@
 import { Settings as LayoutSettings } from '@ant-design/pro-layout';
+// import logo from '../src/assets/image/sideLogo.png';
 
 export default {
   navTheme: 'light',
@@ -11,8 +12,8 @@ export default {
   menu: {
     locale: false,
   },
-  title: 'Ant Design Pro',
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  title: ' ',
+  logo: '../src/assets/image/sideLogo.png',
   fixedHeader: true,
   pwa: false,
   splitMenus: false,

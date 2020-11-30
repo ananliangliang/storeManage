@@ -35,6 +35,9 @@ export function warehouseRemove(id: string) {
 export function warehouseTreeList() {
   return post<RespWarehouse[]>('/warehouse/treeList');
 }
+export function warehouseTreeListAll() {
+  return post<RespWarehouse[]>('/warehouse/treeListAll');
+}
 
 export function regionList(
   data: ReqList<{

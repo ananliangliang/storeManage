@@ -37,7 +37,10 @@ const serviceCommon = {
     return proTableReq<any>('/department/list', params, true);
   },
   departmentGet(id: string) {
-    return getReq('/department/get', { id }, true);
+    return getReq(`/department/get?id={id}`, '', true);
+  },
+  departmentGetOrgAll() {
+    return post('/department/getOrgAll', {}, true);
   },
   departmentBatchRemove(ids: string) {
     return post(`/department/batch/remove?ids=${ids}`, {}, true);
