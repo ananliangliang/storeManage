@@ -8,7 +8,7 @@ const serviceRole = {
     return proTableReq<RespGoodsModel>('/role/list', params, true);
   },
   get(id: string) {
-    return getReq(`/role/get?id=${id}`, { id }, true);
+    return getReq(`/role/get?id=${id}`, undefined, true);
   },
 
   onAddEdit(data: any) {

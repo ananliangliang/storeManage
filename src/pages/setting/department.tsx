@@ -7,7 +7,7 @@ import { Store } from 'antd/es/form/interface';
 import { DataNode } from 'antd/lib/tree';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { FormInstance } from 'antd/lib/form';
-import { subEffect } from '@/utils/tools';
+import { removeEmptyChildren, subEffect } from '@/utils/tools';
 import serviceCommon from '@/services/common';
 import DepartBtn from './components/departBtn';
 
@@ -118,7 +118,9 @@ const Department: FC<IndexProps> = (props) => {
 
   async function getList(params: any): Promise<RequestData<any>> {
     params.parent_id = selectData.current?.['id'];
-    return await serviceCommon.departmentList(params);
+    const res = await serviceCommon.departmentList(params);
+    removeEmptyChildren(res.data);
+    return res;
   }
 
   const onClose = () => {

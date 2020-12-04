@@ -75,8 +75,9 @@ export class ImgUpload extends React.Component<IProps> {
         name="imgFile"
         listType="picture-card"
         className="avatar-uploader"
+        withCredentials
         showUploadList={false}
-        action={config.baseUrl + '/warehouse/image/uploadImage'}
+        action={config.baseUrl + '/warehouse/file/uploadImage'}
         beforeUpload={beforeUpload}
         onChange={this.handleChange}
       >

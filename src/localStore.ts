@@ -86,7 +86,7 @@ export default class localData {
   };
 
   static getToken = () => {
-    return sessionStorage.getItem('token') || 'token_web_16062129604621eecc1c75c';
+    return sessionStorage.getItem('token') || '';
   };
 
   static setDepartment = (value: any) => {

@@ -6,6 +6,10 @@ const serviceAdmin = {
     params['sysType'] = 'web';
     return post('/admin/login', params, true);
   },
+
+  getLoginInfo() {
+    return post('/admin/getLoginInfo', {}, true);
+  },
   updatePassword(params: any = {}) {
     return post('/admin/login', params, true);
   },

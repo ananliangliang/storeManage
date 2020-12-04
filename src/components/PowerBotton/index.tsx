@@ -1,18 +1,24 @@
-import { Button } from 'antd';
+import { Button, Divider } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import React, { FC } from 'react';
-//import styles from './index.less'
+import { useModel } from 'umi';
 
 interface IndexProps extends ButtonProps {
-  allowStr?: string;
+  allowStr: string;
+  showDivider?: boolean;
 }
 
-const Index: FC<IndexProps> = (props) => {
-  if (process.env.NODE_ENV === 'development') {
-    return <Button {...props} />;
-  } else {
-    // 权限判断
-    return <></>;
+const PowerBotton: FC<IndexProps> = (props) => {
+  const { allowStr, showDivider, ...btnProps } = props;
+  const auth = useModel('power', (state) => state.curAuth);
+  if (process.env.NODE_ENV === 'development' || auth[allowStr]) {
+    return (
+      <>
+        <Button {...btnProps} />
+        {showDivider && <Divider type="vertical" />}
+      </>
+    );
   }
+  return null;
 };
-export default Index;
+export default PowerBotton;

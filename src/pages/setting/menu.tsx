@@ -138,15 +138,13 @@ const Menu: FC<MenuProps> = (props) => {
         title: '父级菜单',
         dataIndex: 'parentId',
         hideInTable: true,
-        renderFormItem: (_, { onChange, value }) => {
+        renderFormItem: () => {
           return (
             <TreeSelect
               showSearch
               allowClear
               placeholder="是否需要父级菜单"
               treeDefaultExpandAll
-              onChange={onChange}
-              value={value}
               treeData={treeDataFormate(menu, 'id', 'menuName')}
             ></TreeSelect>
           );
@@ -185,20 +183,8 @@ const Menu: FC<MenuProps> = (props) => {
             </span>
           );
         },
-        renderFormItem: (_, { onChange, value }) => {
-          return (
-            <IconChiose value={value} />
-            // <div
-            //   className={styles.icons}
-            //   onClick={() => {
-            //     setIconVisible(true);
-            //   }}
-            // >
-            //   <span className={`anticon`}>
-            //     <span className={`${value}`}></span>
-            //   </span>
-            // </div>
-          );
+        renderFormItem: (_) => {
+          return <IconChiose />;
         },
         required: false,
       },

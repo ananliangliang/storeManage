@@ -84,9 +84,9 @@ export async function _request<T>(url: string, options: RequestInit) {
       } else if (data.code == 1000) {
         //登录过期
         const { redirect } = getPageQuery();
-        if (window.location.pathname !== '/admin/login' && !redirect) {
+        if (window.location.pathname !== '/user/login' && !redirect) {
           history.replace({
-            pathname: '/admin/login',
+            pathname: '/user/login',
             search: stringify({
               redirect: window.location.href,
             }),
@@ -100,7 +100,7 @@ export async function _request<T>(url: string, options: RequestInit) {
       throw response;
     }
   } catch (error) {
-    typeof error === 'string' ? message.error(error) : message.error('服务端异常 请联系管理员');
+    // typeof error === 'string' ? message.error(error) : message.error('服务端异常 请联系管理员');
 
     throw error;
   }

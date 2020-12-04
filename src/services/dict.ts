@@ -4,19 +4,19 @@ import { proTableReq } from '@/utils/tools';
 
 const serviceDict = {
   list(params: any = {}) {
-    return proTableReq<any>('/model/list', params);
+    return proTableReq<any>('/dictionaries/list', params, true);
   },
   get(id: string) {
-    return getReq('/model/get', { id });
+    return getReq('/dictionaries/get', { id });
   },
   batchRemove(ids: string) {
-    return post(`/model/batch/remove?ids=${ids}`);
+    return post(`/dictionaries/batch/remove?ids=${ids}`, undefined, true);
   },
   onAddEdit(data: any) {
-    return post('/model/onAddEdit', data);
+    return post('/dictionaries/onAddEdit', data, true);
   },
   remove(id: string) {
-    return post(`/model/remove?id=${id}`);
+    return post(`/dictionaries/remove`, { id }, true);
   },
 };
 

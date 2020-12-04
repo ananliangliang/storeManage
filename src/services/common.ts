@@ -51,6 +51,9 @@ const serviceCommon = {
   departmentRemove(id: string) {
     return post(`/department/remove?id=${id}`, {}, true);
   },
+  departmentListAllTree() {
+    return post(`/department/listAllTree`, {}, true);
+  },
 };
 
 export default serviceCommon;

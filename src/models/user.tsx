@@ -1,15 +1,27 @@
+import serviceAdmin from '@/services/admin';
 import { useState, useCallback, useEffect } from 'react';
-import { useRequest } from 'umi';
+import { useModel, useRequest } from 'umi';
 
 export default function useUserModel() {
   const [user, setUser] = useState(null);
+  const forMatePower = useModel('power', (state) => state.forMatePower);
 
-  const fetch = useCallback(() => {}, []);
+  useEffect(() => {
+    fetch();
+  }, []);
 
-  const signin = useCallback((account, password) => {
-    // signin implementation
-    // setUser(user from signin API)
-    useRequest('/');
+  const fetch = useCallback(() => {
+    async function fetch() {
+      const res: any = await serviceAdmin.getLoginInfo();
+      signin(res);
+    }
+    fetch();
+  }, []);
+
+  const signin = useCallback((res: any) => {
+    sessionStorage.setItem('token', res.loginToken);
+    setUser(res);
+    forMatePower(res.menus);
   }, []);
   const signout = useCallback(() => {
     // signout implementation

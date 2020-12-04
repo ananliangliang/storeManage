@@ -9,6 +9,7 @@ import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { useModel } from 'umi';
 import { warehouseTreeListAll } from '../Warehouse/service';
+import OutForm from './components/outForm';
 import PutForm from './components/putForm';
 //import styles from './warningRule.less'
 
@@ -145,7 +146,7 @@ const OutManage: FC = () => {
 
   function getList(params = {}) {
     params['type'] = 2;
-    return serviceAccess.list(params)
+    return serviceAccess.list(params);
   }
   return (
     <div>
@@ -174,7 +175,7 @@ const OutManage: FC = () => {
         columns={columns}
         rowKey="id"
       />
-      <PutForm visible={putFormVisible} onFinish={handleFinish} addressTree={treeData} />
+      <OutForm visible={putFormVisible} onFinish={handleFinish} />
     </div>
   );
 };

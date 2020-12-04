@@ -1,15 +1,18 @@
+import config from '@/config/config';
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button } from 'antd';
+import { Button, message, Upload } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useModel } from 'umi';
 import { warehouseTreeListAll } from '../Warehouse/service';
+import GiveBackForm from './components/giveBackForm';
 import PutForm from './components/putForm';
+import ReplenishmentForm from './components/replenishmentForm';
 //import styles from './warningRule.less'
 
 const typeEnum = new Map([
@@ -17,8 +20,28 @@ const typeEnum = new Map([
   [2, '二维码'],
 ]);
 
+const uploadProp = {
+  name: 'excelFile',
+  action: config.baseUrl + '/warehouse/file/uploadExcel',
+  withCredentials: true,
+  showUploadList: false,
+  onChange(info: any) {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  },
+};
+
 const PutManage: FC = () => {
   const [putFormVisible, setPutFormVisible] = useState(false);
+  const [giveBackVisible, setGiveBackVisible] = useState(false);
+  const [replenishment, setReplenishment] = useState(false);
+
   const actionRef = useRef<ActionType>();
 
   const [treeData, setTreeData] = useState<DataNode[]>([]);
@@ -53,123 +76,139 @@ const PutManage: FC = () => {
     setEntry(dict2select(entryType));
   }, [entryType]);
 
-  const columns: ProColumns<any>[] = [
-    {
-      title: '序号',
-      dataIndex: 'id',
-      search: false,
-    },
-    {
-      title: '操作人',
-      dataIndex: '',
-      render(_, record) {
-        return record.receive.uname;
+  const columns: ProColumns<any>[] = useMemo(() => {
+    return [
+      {
+        title: '序号',
+        dataIndex: 'id',
+        search: false,
       },
-    },
-    {
-      title: '操作时间',
-      dataIndex: 'receive_time',
-      valueType: 'dateRange',
-      render(_, record) {
-        return record.receive.createTime;
+      {
+        title: '操作人',
+        dataIndex: '',
+        render(_, record) {
+          return record.receive.uname;
+        },
       },
-    },
-    {
-      title: '状态',
-      dataIndex: 'type',
-      valueType: 'select',
-      search: false,
-      render(_, reocrd) {
-        return receive ? receive[reocrd.receive.type] : reocrd.receive.type;
+      {
+        title: '操作时间',
+        dataIndex: 'receive_time',
+        valueType: 'dateRange',
+        render(_, record) {
+          return record.receive.createTime;
+        },
       },
-      valueEnum: receive,
-    },
-    {
-      title: '操作类型',
-      dataIndex: 'state',
-      valueType: 'select',
-      render(_, reocrd) {
-        return entry ? entry[reocrd.receive.state] : reocrd.receive.state;
+      {
+        title: '状态',
+        dataIndex: 'type',
+        valueType: 'select',
+        search: false,
+        render(_, reocrd) {
+          return receive ? receive[reocrd.receive.type] : reocrd.receive.type;
+        },
+        valueEnum: receive,
       },
-      valueEnum: entry,
-    },
-    {
-      title: '物品名称',
-      dataIndex: 'goods_goods',
-      render(_, record) {
-        return record.goods.goods;
+      {
+        title: '操作类型',
+        dataIndex: 'state',
+        valueType: 'select',
+        render(_, reocrd) {
+          return entry ? entry[reocrd.receive.state] : reocrd.receive.state;
+        },
+        valueEnum: entry,
       },
-    },
-    {
-      title: '数量',
-      dataIndex: 'count',
-      search: false,
-    },
-    {
-      title: '种类信息',
-      dataIndex: 'goods_lastModel',
-      render(_, record) {
-        return record.goods.lastModel;
+      {
+        title: '物品名称',
+        dataIndex: 'goods_goods',
+        render(_, record) {
+          return record.goods.goods;
+        },
       },
-    },
-    {
-      title: '品牌',
-      render(_, record) {
-        return record.goods.brand;
+      {
+        title: '数量',
+        dataIndex: 'count',
+        search: false,
       },
-      search: false,
-    },
-    {
-      title: '规格型号',
-      search: false,
-      render(_, record) {
-        return record.goods.specs;
+      {
+        title: '种类信息',
+        dataIndex: 'goods_lastModel',
+        render(_, record) {
+          return record.goods.lastModel;
+        },
       },
-    },
-    {
-      title: '识别方式',
-      dataIndex: 'goods_type',
-      valueType: 'select',
-      valueEnum: typeEnum,
-      render(_, record) {
-        return typeEnum[record.goods.type];
+      {
+        title: '品牌',
+        render(_, record) {
+          return record.goods.brand;
+        },
+        search: false,
       },
-    },
-    {
-      title: '库房',
-      dataIndex: 'rule',
-      render(_, record) {
-        return record.goods.kf;
+      {
+        title: '规格型号',
+        search: false,
+        render(_, record) {
+          return record.goods.specs;
+        },
       },
-      search: false,
-    },
-    {
-      title: '分区',
-      dataIndex: 'rule',
-      render(_, record) {
-        return record.goods.fq;
+      {
+        title: '识别方式',
+        dataIndex: 'goods_type',
+        valueType: 'select',
+        valueEnum: typeEnum,
+        render(_, record) {
+          return typeEnum[record.goods.type];
+        },
       },
-      search: false,
-    },
-    {
-      title: '货柜',
-      dataIndex: 'rule',
-      render(_, record) {
-        return record.goods.hj;
+      {
+        title: '库房',
+        dataIndex: 'rule',
+        render(_, record) {
+          return record.goods.kf;
+        },
+        search: false,
       },
-      search: false,
-    },
-    {
-      title: '行列',
-      render(_, record) {
-        return record.goods.hl;
+      {
+        title: '分区',
+        dataIndex: 'rule',
+        render(_, record) {
+          return record.goods.fq;
+        },
+        search: false,
       },
-      search: false,
-    },
-  ];
+      {
+        title: '货柜',
+        dataIndex: 'rule',
+        render(_, record) {
+          return record.goods.hj;
+        },
+        search: false,
+      },
+      {
+        title: '行列',
+        render(_, record) {
+          return record.goods.hl;
+        },
+        search: false,
+      },
+    ];
+  }, [entry, receive]);
 
   function handleFinish(flag: boolean) {
     setPutFormVisible(false);
+    if (flag) {
+      actionRef.current?.reload;
+    }
+  }
+
+  function handleGiveBackFinish(flag: boolean) {
+    setGiveBackVisible(false);
+    if (flag) {
+      actionRef.current?.reload;
+    }
+  }
+
+  function handleReplenishmentFinish(flag: boolean) {
+    setReplenishment(false);
     if (flag) {
       actionRef.current?.reload;
     }
@@ -200,7 +239,7 @@ const PutManage: FC = () => {
               type="primary"
               key="giveBack"
               onClick={() => {
-                // setModalProp({ visible: true, values: {} });
+                setGiveBackVisible(true);
               }}
             >
               <PlusOutlined />
@@ -211,21 +250,27 @@ const PutManage: FC = () => {
               key="replenishment"
               onClick={() => {
                 // setModalProp({ visible: true, values: {} });
+                setReplenishment(true);
               }}
             >
               <PlusOutlined />
               补货
             </Button>,
-            <Button key="toLead" type="dashed" onClick={() => {}}>
-              <PlusOutlined />
-              导入
-            </Button>,
+            <Upload {...uploadProp}>
+              <Button icon={<PlusOutlined />}>导入</Button>
+            </Upload>,
           ];
         }}
         columns={columns}
         rowKey="id"
       />
       <PutForm visible={putFormVisible} onFinish={handleFinish} addressTree={treeData} />
+      <GiveBackForm visible={giveBackVisible} onFinish={handleGiveBackFinish} />
+      <ReplenishmentForm
+        visible={replenishment}
+        addressTree={treeData}
+        onFinish={handleReplenishmentFinish}
+      />
     </div>
   );
 };

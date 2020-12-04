@@ -21,6 +21,16 @@ export async function proTableReq<T>(url: string, params: any = {}, isCommon?: b
   };
 }
 
+export function removeEmptyChildren(list: any[]) {
+  list.map((item) => {
+    if (item.children && item.children.length > 0) {
+      removeEmptyChildren(item.children);
+    } else {
+      delete item.children;
+    }
+  });
+}
+
 export async function waitTime(time: number) {
   return new Promise((resolve) => {
     setTimeout(() => {

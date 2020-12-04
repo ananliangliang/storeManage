@@ -14,6 +14,7 @@ export default {
   'border-color-split': 'rgba(255,255,255, 0.5)',
   'border-color-inverse': 'rgba(255,255,255, 0.5)',
   'input-bg': 'transparent',
+  'item-selected-color': 'rgba(255,255,255,.85)',
   'heading-color': 'rgba(255,255,255,.85)',
   'label-color': 'rgba(255,255,255,.85)',
   'hover-color': 'rgba(19, 194, 194,0.35)',

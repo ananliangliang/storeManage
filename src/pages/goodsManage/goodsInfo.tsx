@@ -1,9 +1,9 @@
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Col, Divider, Modal, Popconfirm, Row } from 'antd';
+import { Button, Col, Divider, Dropdown, Menu, Modal, Popconfirm, Row } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -89,7 +89,23 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         render(_, record) {
           return (
             <>
-              <a
+              <Dropdown
+                overlay={
+                  <Menu onClick={(e) => handleMenuClick(e, record)}>
+                    <Menu.Item key="code">打印二维码</Menu.Item>
+                    {/* <Menu.Item key="rift">打印RFID</Menu.Item> */}
+                    <Menu.Item key="warning">添加预警</Menu.Item>
+                    <Menu.Item key="mod">报损</Menu.Item>
+                    <Menu.Item key="del">删除</Menu.Item>
+                  </Menu>
+                }
+                arrow
+              >
+                <Button>
+                  操作 <DownOutlined />
+                </Button>
+              </Dropdown>
+              {/* <a
                 onClick={() => {
                   // setModalProp({
                   //   visible: true,
@@ -135,7 +151,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                 }}
               >
                 <a>删除</a>
-              </Popconfirm>
+              </Popconfirm> */}
             </>
           );
         },
@@ -149,6 +165,35 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   const [ruleList, setRuleList] = useState<any[]>([]);
 
   const treePos = useRef<any>({});
+
+  function handleMenuClick(event: any, record: any) {
+    switch (event.key) {
+      case 'code':
+        break;
+      case 'rfid':
+        break;
+      case 'warning':
+        setWarningProp({
+          visible: true,
+          value: { ...record },
+        });
+        break;
+      case 'mod':
+        setModalProp({
+          visible: true,
+          value: { goodsList: [{ ...record }] },
+        });
+        break;
+      case 'del':
+        Modal.confirm({
+          content: '确定要删除吗',
+          async onOk() {
+            await handleDel(record.id);
+          },
+        });
+        break;
+    }
+  }
 
   useEffect(() => {
     async function fetch() {

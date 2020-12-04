@@ -10,7 +10,6 @@ import serviceDict from '@/services/dict';
 import { useModel } from 'umi';
 
 interface DictionaryProps {}
-type orgType = { [coId: string]: Icurrent[] };
 
 interface Icurrent {
   // children: Icurrent[];
@@ -43,23 +42,6 @@ const Dictionary: FC<DictionaryProps> = () => {
     return map;
   }, [allType]);
 
-  useEffect(() => {
-    init();
-  }, []);
-
-  const init = async () => {
-    // orgData.current = formate(dict);
-    // console.log(orgData);
-    // orgData.current[0] = dict.map((item: any) => {
-    //   return {
-    //     name: item.name,
-    //     dictionaryId: item.dictionaryId,
-    //     parentId: 0,
-    //   };
-    // });
-    // setDataSource(orgData.current[currentId || 0]);
-  };
-
   const handleAdd = async (record: Icurrent) => {
     return await subEffect(async () => {
       record.id = formRef.current?.getFieldValue('id');
@@ -81,7 +63,6 @@ const Dictionary: FC<DictionaryProps> = () => {
       onOk: async () => {
         const res = await serviceDict.batchRemove(ids.join('id'));
         console.log(res);
-        init();
       },
     });
   };
@@ -138,7 +119,12 @@ const Dictionary: FC<DictionaryProps> = () => {
               onConfirm={async () => {
                 const res = await handleDel(record.id);
                 if (res) {
-                  init();
+                  const tar = allType.find((item) => item.id == (currentId as any));
+                  if (tar) {
+                    getDict(tar.value as any);
+                  } else {
+                    getDict('_allType');
+                  }
                 }
               }}
             >
@@ -215,7 +201,6 @@ const Dictionary: FC<DictionaryProps> = () => {
                       deleteHandler(selectedRowKeys as string[]);
                     }}
                   >
-                    {' '}
                     <DeleteOutlined /> 删除
                   </Button>,
                 ];
@@ -248,7 +233,12 @@ const Dictionary: FC<DictionaryProps> = () => {
             const success = await handleAdd(value);
             if (success) {
               onClose();
-              init();
+              const tar = allType.find((item) => item.id == (currentId as any));
+              if (tar) {
+                getDict(tar.value as any);
+              } else {
+                getDict('_allType');
+              }
             }
           }}
         ></ProTable>

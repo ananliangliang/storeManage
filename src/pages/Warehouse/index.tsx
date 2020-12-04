@@ -17,6 +17,8 @@ import {
   warehouseBatchRemove,
   warehouseRemove,
 } from './service';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 
 interface IndexProps {}
 
@@ -90,19 +92,19 @@ const Index: FC<IndexProps> = (props) => {
         valueType: 'option',
         render: (text, record, index) => {
           return (
-            <>
-              <a
-                onClick={() => {
-                  setModalProp({
-                    visible: true,
-                    initialValues: {},
-                    type: 'warehouse',
-                  });
-                }}
-              >
-                添加库房
-              </a>
-            </>
+            <PowerBotton
+              type="link"
+              allowStr="addWarehouse"
+              onClick={() => {
+                setModalProp({
+                  visible: true,
+                  initialValues: {},
+                  type: 'warehouse',
+                });
+              }}
+            >
+              添加库房
+            </PowerBotton>
           );
         },
       },
@@ -127,7 +129,10 @@ const Index: FC<IndexProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="addFloor"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -139,9 +144,11 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 添加楼层
-              </a>
-              <Divider type="vertical" />
-              <a
+              </PowerBotton>
+              <PowerBotton
+                type="link"
+                allowStr="editWarehouse"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -151,16 +158,17 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
+              </PowerBotton>
+              <PopconfirmPowerBtn
                 title="确认删除?"
+                allowStr="delWarehouse"
+                type="link"
                 onConfirm={() => {
                   handleDel(record.id);
                 }}
               >
-                <a>删除</a>
-              </Popconfirm>
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -190,7 +198,10 @@ const Index: FC<IndexProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="addPartition"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -203,9 +214,11 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 添加分区
-              </a>
-              <Divider type="vertical" />
-              <a
+              </PowerBotton>
+              <PowerBotton
+                type="link"
+                allowStr="editFloor"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -215,9 +228,8 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
+              </PowerBotton>
+              <PopconfirmPowerBtn
                 title="确认删除?"
                 onConfirm={() => {
                   subEffect(
@@ -228,9 +240,11 @@ const Index: FC<IndexProps> = (props) => {
                     '删除成功',
                   );
                 }}
+                allowStr="delFloor"
+                type="link"
               >
-                <a>删除</a>
-              </Popconfirm>
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -263,7 +277,10 @@ const Index: FC<IndexProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="addGoods"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -276,9 +293,11 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 添加货架
-              </a>
-              <Divider type="vertical" />
-              <a
+              </PowerBotton>
+              <PowerBotton
+                type="link"
+                allowStr="eidtPartition"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -288,16 +307,23 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
+              </PowerBotton>
+              <PopconfirmPowerBtn
                 title="确认删除?"
                 onConfirm={() => {
-                  handleDel(record.id);
+                  subEffect(
+                    () => {
+                      handleDel(record.id);
+                    },
+                    '正在请求',
+                    '删除成功',
+                  );
                 }}
+                allowStr="delPartition"
+                type="link"
               >
-                <a>删除</a>
-              </Popconfirm>
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -341,7 +367,10 @@ const Index: FC<IndexProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="eidtGoods"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -351,16 +380,23 @@ const Index: FC<IndexProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
+              </PowerBotton>
+              <PopconfirmPowerBtn
                 title="确认删除?"
                 onConfirm={() => {
-                  handleDel(record.id);
+                  subEffect(
+                    () => {
+                      handleDel(record.id);
+                    },
+                    '正在请求',
+                    '删除成功',
+                  );
                 }}
+                allowStr="delGoods"
+                type="link"
               >
-                <a>删除</a>
-              </Popconfirm>
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -531,9 +567,10 @@ const Index: FC<IndexProps> = (props) => {
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return (
                   curData['flg'] && [
-                    <Button
+                    <PowerBotton
                       type="primary"
                       key="add"
+                      allowStr={'add' + curType.charAt(0).toUpperCase() + curType.slice(1)}
                       onClick={() => {
                         console.log(curData);
                         const initialValues = {};
@@ -561,10 +598,11 @@ const Index: FC<IndexProps> = (props) => {
                       }}
                     >
                       <PlusOutlined /> 添加
-                    </Button>,
-                    <Button
+                    </PowerBotton>,
+                    <PowerBotton
                       key="del"
                       type="dashed"
+                      allowStr={'del' + curType.charAt(0).toUpperCase() + curType.slice(1)}
                       onClick={() => {
                         if (selectedRowKeys && selectedRowKeys.length > 0) {
                           Modal.confirm({
@@ -577,7 +615,7 @@ const Index: FC<IndexProps> = (props) => {
                       }}
                     >
                       <DeleteOutlined /> 删除
-                    </Button>,
+                    </PowerBotton>,
                   ]
                 );
               }}

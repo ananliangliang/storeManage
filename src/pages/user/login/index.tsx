@@ -1,10 +1,9 @@
-import { LockOutlined, LockTwoTone, UserOutlined } from '@ant-design/icons';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, message } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
-import { useIntl, Link, history, FormattedMessage, useModel } from 'umi';
+import { useIntl, history, FormattedMessage, useModel } from 'umi';
 import Footer from '@/components/Footer';
-// import { fakeAccountLogin, getFakeCaptcha, LoginParamsType } from '@/services/login';
 import styles from './index.less';
 import logo from '@/assets/image/LOGO.png';
 import serviceAdmin from '@/services/admin';
@@ -29,6 +28,7 @@ const goto = () => {
   const { redirect } = query as {
     redirect: string;
   };
+  // history.replace(redirect || '/');
   window.location.href = redirect || '/';
 };
 
@@ -47,6 +47,7 @@ const Login: React.FC<{}> = () => {
 
     try {
       const res = await serviceAdmin.login(values);
+      signin(res);
       goto();
     } catch (error) {
       message.error('登录失败，请重试！');

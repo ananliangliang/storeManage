@@ -1,5 +1,6 @@
 import React, { FC, useState, useRef, useEffect } from 'react';
 import { Select } from 'antd';
+import { waitTime } from '@/utils/tools';
 //import styles from './EleRoom.less'
 
 export type tOption = {
@@ -55,6 +56,7 @@ const SearchSelect: FC<SearchSelectProps> = ({
   };
 
   const handleSearch = (str: string) => {
+    console.warn('is handleSearch');
     if (searchV.current === str && str !== '') {
       clearTimeout(time.current);
       return;
@@ -136,6 +138,11 @@ const SearchSelect: FC<SearchSelectProps> = ({
       fetch();
     }
   };
+
+  async function handleBlur() {
+    await waitTime(120);
+    clearTimeout(time.current);
+  }
   return (
     <Select
       mode={mode}
@@ -143,10 +150,12 @@ const SearchSelect: FC<SearchSelectProps> = ({
       placeholder={placeholder}
       showSearch
       allowClear
+      autoClearSearchValue={false}
       loading={loading}
       value={_value as string}
       filterOption={false}
       onFocus={handleFocus}
+      onBlur={handleBlur}
       onSearch={handleSearch}
       onChange={change}
       disabled={disabled}
