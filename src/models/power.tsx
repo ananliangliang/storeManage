@@ -35,7 +35,7 @@ export default function usePowerModel() {
     (location) => {
       const res = auth[location.pathname];
       console.log(auth, res);
-      return res;
+      return res || {};
     },
     [auth],
   );

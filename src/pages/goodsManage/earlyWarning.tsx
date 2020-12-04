@@ -1,10 +1,11 @@
+import PowerBotton from '@/components/PowerBotton';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 import serviceGoodsRule from '@/services/goodsRule';
 import { subEffect } from '@/utils/tools';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Modal, Tooltip, TreeSelect } from 'antd';
+import { Modal, Tooltip, TreeSelect } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -116,7 +117,9 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       render(cur, record) {
         if (cur === 0) {
           return (
-            <Button
+            <PowerBotton
+              key="dispose"
+              allowStr="dispose"
               onClick={() => {
                 Modal.confirm({
                   content: '确定处理吗',
@@ -130,7 +133,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
               }}
             >
               立即处理
-            </Button>
+            </PowerBotton>
           );
         }
         return '已处理';
@@ -144,16 +147,16 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     },
   ];
 
-  async function handleDel(id: string | string[]) {
-    await subEffect(async () => {
-      if (typeof id === 'object') {
-        await serviceGoodsEarlyWarning.batchRemove(id.join(','));
-      } else {
-        await serviceGoodsEarlyWarning.remove(id);
-      }
-      actionRef.current?.reload();
-    });
-  }
+  // async function handleDel(id: string | string[]) {
+  //   await subEffect(async () => {
+  //     if (typeof id === 'object') {
+  //       await serviceGoodsEarlyWarning.batchRemove(id.join(','));
+  //     } else {
+  //       await serviceGoodsEarlyWarning.remove(id);
+  //     }
+  //     actionRef.current?.reload();
+  //   });
+  // }
 
   function handleAdd(data: Store) {
     console.log(data);
@@ -173,7 +176,8 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
         request={serviceGoodsEarlyWarning.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
+              allowStr="add"
               type="primary"
               key="add"
               onClick={() => {
@@ -181,23 +185,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
               }}
             >
               <PlusOutlined /> 新增预警
-            </Button>,
-            // <Button
-            //   key="del"
-            //   type="dashed"
-            //   onClick={() => {
-            //     if (selectedRowKeys && selectedRowKeys.length > 0) {
-            //       Modal.confirm({
-            //         content: `是否删除${selectedRowKeys.length}数据`,
-            //         async onOk() {
-            //           await handleDel(selectedRowKeys as string[]);
-            //         },
-            //       });
-            //     }
-            //   }}
-            // >
-            //   <DeleteOutlined /> 删除
-            // </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

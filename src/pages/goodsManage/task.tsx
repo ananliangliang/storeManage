@@ -1,3 +1,5 @@
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import serviceGoodsPreliminary from '@/services/goodsPreliminary';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
@@ -51,7 +53,10 @@ const Task: FC<TaskProps> = (props) => {
       render(_, record) {
         return (
           <>
-            <a
+            <PowerBotton
+              type="link"
+              showDivider
+              allowStr="edit"
               onClick={() => {
                 setModalProp({
                   visible: true,
@@ -60,16 +65,17 @@ const Task: FC<TaskProps> = (props) => {
               }}
             >
               编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
+            </PowerBotton>
+            <PopconfirmPowerBtn
+              type="link"
+              allowStr="del"
               title="确认删除?"
               onConfirm={() => {
                 handleDel(record.id);
               }}
             >
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </PopconfirmPowerBtn>
           </>
         );
       },
@@ -97,16 +103,18 @@ const Task: FC<TaskProps> = (props) => {
         request={serviceGoodsPreliminary.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
               type="primary"
+              allowStr="add"
               key="add"
               onClick={() => {
                 setModalProp({ visible: true, value: {} });
               }}
             >
               <PlusOutlined /> 新增任务
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
+              allowStr="del"
               key="del"
               type="dashed"
               onClick={() => {
@@ -121,7 +129,7 @@ const Task: FC<TaskProps> = (props) => {
               }}
             >
               <DeleteOutlined /> 删除
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

@@ -7,6 +7,8 @@ import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-de
 import serviceMenu from '@/services/menu';
 import serviceRole from '@/services/role';
 import { FormTree } from '@/components/FormComponents/FormTree';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 //import styles from './Role.less'
 
 interface RoleProps {}
@@ -22,7 +24,7 @@ interface curItem {
 
 const handleAdd = async (values: any, roleId?: string) => {
   return await subEffect(async () => {
-    values['roleId'] = roleId;
+    values['id'] = roleId;
     await serviceRole.onAddEdit(values);
   });
 };
@@ -47,21 +49,26 @@ const Role: FC<RoleProps> = (props) => {
   }, [treeData]);
   useEffect(() => {
     const init = async () => {
-      const [menu, role]: any = await Promise.all([
+      const [menu]: any = await Promise.all([
         serviceMenu.list({
           pageSize: 0,
         }),
-        serviceRole.list({
-          pageSize: 0,
-        }),
+
         // RoleListAllTree(),
       ]);
       setTreeData(menu.data);
-      removeEmptyChildren(role.data);
-      setRole(role.data);
     };
     init();
+    fetchRole();
   }, []);
+
+  async function fetchRole() {
+    const role = await serviceRole.list({
+      pageSize: 0,
+    });
+    removeEmptyChildren(role.data);
+    setRole(role.data);
+  }
 
   const columns: ProColumns<curItem>[] = useMemo(() => {
     return [
@@ -115,25 +122,27 @@ const Role: FC<RoleProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="add"
+                showDivider
                 onClick={() => {
                   handleEdit(record);
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <span>
-                <Popconfirm
-                  title="确认删除?"
-                  onConfirm={() => {
-                    handleDel(record.id);
-                    actionRef.current?.reload();
-                  }}
-                >
-                  <a>删除</a>
-                </Popconfirm>
-              </span>
+              </PowerBotton>
+              <PopconfirmPowerBtn
+                allowStr="del"
+                type="link"
+                title="确认删除?"
+                onConfirm={() => {
+                  handleDel(record.id);
+                  fetchRole();
+                }}
+              >
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -170,7 +179,7 @@ const Role: FC<RoleProps> = (props) => {
       const res: any = await serviceRole.get(record.id);
       handleModalVisible(true);
       setTimeout(() => {
-        res.menus = res.list.map((item: number) => item);
+        res.menus = res.menus.map((item: number) => item);
         res.menus = {
           checked: res.menus,
         };
@@ -198,28 +207,31 @@ const Role: FC<RoleProps> = (props) => {
         actionRef={actionRef}
         dataSource={role}
         defaultExpandAllRows
+        search={false}
         columns={columns}
         tableAlertRender={false}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
               key="add"
+              allowStr="add"
               type="primary"
               onClick={() => {
                 handleModalVisible(true);
               }}
             >
               <PlusOutlined /> 添加
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
               key="del"
+              allowStr="dek"
               type="dashed"
               onClick={() => {
                 handleDels(selectedRowKeys as string[]);
               }}
             >
               <DeleteOutlined /> 删除
-            </Button>,
+            </PowerBotton>,
           ];
         }}
       ></ProTable>
@@ -253,9 +265,7 @@ const Role: FC<RoleProps> = (props) => {
             const success = await handleAdd(value, formRef.current?.getFieldValue('id'));
             if (success) {
               handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
+              fetchRole();
             }
           }}
         />

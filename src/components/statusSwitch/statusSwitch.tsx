@@ -4,6 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 
 interface StatusSwitchProps {
   checked?: boolean;
+  disabled?: boolean;
   onChange: (checked: boolean) => Promise<void> | void;
   checkedText?: string;
   unCheckedText?: string;
@@ -11,6 +12,7 @@ interface StatusSwitchProps {
 
 const StatusSwitch: FC<StatusSwitchProps> = ({
   checked,
+  disabled,
   onChange,
   checkedText = '开启',
   unCheckedText = '关闭',
@@ -33,6 +35,7 @@ const StatusSwitch: FC<StatusSwitchProps> = ({
   return (
     <Switch
       checked={_checked}
+      disabled={disabled}
       checkedChildren={checkedText}
       unCheckedChildren={unCheckedText}
       loading={loading}

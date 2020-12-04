@@ -1,10 +1,12 @@
 import { ImgUpload } from '@/components/ImgUpload';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import serviceCommon from '@/services/common';
 import { deepClone, subEffect } from '@/utils/tools';
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Divider, Image, Modal, Popconfirm } from 'antd';
+import { Button, Image, Modal } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
 
@@ -86,7 +88,10 @@ const Product: FC<ProductProps> = (props) => {
         render(_, record) {
           return (
             <>
-              <a
+              <PowerBotton
+                allowStr="config"
+                showDivider
+                type="link"
                 onClick={() => {
                   setConfigProp({
                     visible: true,
@@ -95,14 +100,16 @@ const Product: FC<ProductProps> = (props) => {
                 }}
               >
                 配置
-              </a>
-              <Divider type="vertical" />
-              <a
+              </PowerBotton>
+              <PowerBotton
+                type="link"
+                allowStr="edit"
+                showDivider
                 onClick={() => {
                   const col = deepClone(baseColumns);
-                  const tar = col.find((item: any) => item.dataIndex === 'ident') as ProColumns<
-                    any
-                  >;
+                  const tar = col.find(
+                    (item: any) => item.dataIndex === 'ident',
+                  ) as ProColumns<any>;
                   tar.fieldProps = {
                     disabled: true,
                   };
@@ -117,16 +124,17 @@ const Product: FC<ProductProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
+              </PowerBotton>
+              <PopconfirmPowerBtn
                 title="确认删除?"
+                allowStr="del"
+                type="link"
                 onConfirm={() => {
                   handleDel(record.id);
                 }}
               >
-                <a>删除</a>
-              </Popconfirm>
+                删除
+              </PopconfirmPowerBtn>
             </>
           );
         },
@@ -171,7 +179,8 @@ const Product: FC<ProductProps> = (props) => {
         request={serviceCommon.productList}
         toolBarRender={() => {
           return [
-            <Button
+            <PowerBotton
+              allowStr="add"
               type="primary"
               key="add"
               onClick={() => {
@@ -179,7 +188,7 @@ const Product: FC<ProductProps> = (props) => {
               }}
             >
               <PlusOutlined /> 添加
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

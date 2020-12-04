@@ -8,6 +8,8 @@ import { FormInstance } from 'antd/lib/form';
 import { subEffect } from '@/utils/tools';
 import serviceDict from '@/services/dict';
 import { useModel } from 'umi';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 
 interface DictionaryProps {}
 
@@ -103,7 +105,10 @@ const Dictionary: FC<DictionaryProps> = () => {
       render: (text, record, index) => {
         return (
           <>
-            <a
+            <PowerBotton
+              allowStr="edit"
+              type="link"
+              showDivider
               onClick={() => {
                 handleModalVisible(true);
                 setTimeout(() => {
@@ -112,10 +117,11 @@ const Dictionary: FC<DictionaryProps> = () => {
               }}
             >
               编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
+            </PowerBotton>
+
+            <PopconfirmPowerBtn
               title="确认删除?"
+              allowStr="del"
               onConfirm={async () => {
                 const res = await handleDel(record.id);
                 if (res) {
@@ -128,8 +134,8 @@ const Dictionary: FC<DictionaryProps> = () => {
                 }
               }}
             >
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </PopconfirmPowerBtn>
           </>
         );
       },
@@ -184,7 +190,8 @@ const Dictionary: FC<DictionaryProps> = () => {
               rowSelection={{}}
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return [
-                  <Button
+                  <PowerBotton
+                    allowStr="add"
                     type="primary"
                     onClick={() => {
                       handleModalVisible(true);
@@ -194,15 +201,16 @@ const Dictionary: FC<DictionaryProps> = () => {
                     }}
                   >
                     <PlusOutlined /> 添加
-                  </Button>,
-                  <Button
+                  </PowerBotton>,
+                  <PowerBotton
+                    allowStr="del"
                     type="dashed"
                     onClick={() => {
                       deleteHandler(selectedRowKeys as string[]);
                     }}
                   >
                     <DeleteOutlined /> 删除
-                  </Button>,
+                  </PowerBotton>,
                 ];
               }}
               postData={(d: any) => {

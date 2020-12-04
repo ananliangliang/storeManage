@@ -1,9 +1,9 @@
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
-import { PlusOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Col, Divider, Dropdown, Menu, Modal, Popconfirm, Row } from 'antd';
+import { Col, Modal, Row } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,12 +13,44 @@ import BreakageForm from './components/breakageForm';
 import EarlyWarningForm from './components/earlyWarningForm';
 import styles from './goodsInfo.less';
 import { listByReginon } from './service/goodsInfo';
+import QRCode from 'qrcode.react';
+import serviceLocal from '@/services/local';
+import PowerDropBtn from '@/components/PowerBotton/dropBtn';
+import PowerBotton from '@/components/PowerBotton';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
   [1, 'RFID'],
   [2, '二维码'],
 ]);
+
+const menus = [
+  {
+    allowStr: 'code',
+    key: 'code',
+    text: '打印二维码',
+  },
+  {
+    allowStr: 'rfid',
+    key: 'rfid',
+    text: '更换RFID',
+  },
+  {
+    allowStr: 'warning',
+    key: 'warning',
+    text: '添加预警',
+  },
+  {
+    allowStr: 'mod',
+    key: 'mod',
+    text: '报损',
+  },
+  {
+    allowStr: 'del',
+    key: 'del',
+    text: '删除',
+  },
+];
 
 const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   const [goodsState, getDict] = useModel('dict', (state) => [state.dict.goodsState, state.getDict]);
@@ -89,69 +121,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         render(_, record) {
           return (
             <>
-              <Dropdown
-                overlay={
-                  <Menu onClick={(e) => handleMenuClick(e, record)}>
-                    <Menu.Item key="code">打印二维码</Menu.Item>
-                    {/* <Menu.Item key="rift">打印RFID</Menu.Item> */}
-                    <Menu.Item key="warning">添加预警</Menu.Item>
-                    <Menu.Item key="mod">报损</Menu.Item>
-                    <Menu.Item key="del">删除</Menu.Item>
-                  </Menu>
-                }
-                arrow
-              >
-                <Button>
-                  操作 <DownOutlined />
-                </Button>
-              </Dropdown>
-              {/* <a
-                onClick={() => {
-                  // setModalProp({
-                  //   visible: true,
-                  //   value: { ...record },
-                  // });
-                  // setTimeout(() => {
-                  //   formRef.current?.setFieldsValue(record);
-                  // }, 100);
-                }}
-              >
-                编辑
-              </a>
-              <Divider type="vertical" />
-              <a
-                onClick={() => {
-                  setWarningProp({
-                    visible: true,
-                    value: { ...record },
-                  });
-                }}
-              >
-                预警
-              </a>
-              <Divider type="vertical" />
-              <a
-                onClick={() => {
-                  setModalProp({
-                    visible: true,
-                    value: { goodsList: [{ ...record }] },
-                  });
-                  // setTimeout(() => {
-                  //   formRef.current?.setFieldsValue(record);
-                  // }, 100);
-                }}
-              >
-                报损
-              </a>
-              <Divider type="vertical" />
-              <Popconfirm
-                title="确认删除?"
-                onConfirm={() => {
-                  handleDel(record.id);
-                }}
-              >
-                <a>删除</a>
-              </Popconfirm> */}
+              <PowerDropBtn text="操作" onClick={(e) => handleMenuClick(e, record)} menus={menus} />
             </>
           );
         },
@@ -169,6 +139,30 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   function handleMenuClick(event: any, record: any) {
     switch (event.key) {
       case 'code':
+        Modal.confirm({
+          title: '二维码',
+          icon: null,
+          content: (
+            <QRCode
+              value={JSON.stringify({
+                code_no: record.codeNo,
+              })} //value参数为生成二维码的链接
+              size={200} //二维码的宽高尺寸
+              fgColor="#000000" //二维码的颜色
+            />
+          ),
+          okText: '打印二维码',
+          async onOk() {
+            await serviceLocal.pointERCode([
+              {
+                Qrcode: JSON.stringify({
+                  code_no: record.codeNo,
+                }),
+                Label: record.goods,
+              },
+            ]);
+          },
+        });
         break;
       case 'rfid':
         break;
@@ -220,19 +214,6 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     }
   };
 
-  // async function handleFinish(res: Store) {
-  //   console.log(res);
-  //   const type = getText(curData);
-  //   if (type === 'goods') {
-  //   } else {
-  //     init();
-  //   }
-  //   setModalProp((e) => ({
-  //     ...e,
-  //     visible: false,
-  //   }));
-  // }
-
   function handleDel(id: string | string[]) {
     console.log(id);
   }
@@ -279,9 +260,26 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
               rowSelection={{}}
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return [
-                  <Button
+                  <PowerBotton
+                    type="primary"
+                    key="code"
+                    allowStr="code"
+                    onClick={async () => {
+                      if (selectedRows && selectedRows.length > 0) {
+                        const list = selectedRows.map((item) => ({
+                          Qrcode: item.codeNo,
+                          Label: item.goods,
+                        }));
+                        await serviceLocal.pointERCode(list);
+                      }
+                    }}
+                  >
+                    批量打印二维码
+                  </PowerBotton>,
+                  <PowerBotton
                     type="primary"
                     key="add"
+                    allowStr="mod"
                     onClick={() => {
                       console.log(action, selectedRows);
                       if (selectedRows && selectedRows.length > 0) {
@@ -290,9 +288,10 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     }}
                   >
                     批量报损
-                  </Button>,
-                  <Button
+                  </PowerBotton>,
+                  <PowerBotton
                     key="del"
+                    allowStr="del"
                     type="dashed"
                     onClick={() => {
                       if (selectedRowKeys && selectedRowKeys.length > 0) {
@@ -306,7 +305,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     }}
                   >
                     <DeleteOutlined /> 删除
-                  </Button>,
+                  </PowerBotton>,
                 ];
               }}
               dateFormatter="string"

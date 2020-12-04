@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Button, Divider, Popconfirm, Spin, Modal, Image, TreeSelect } from 'antd';
+import { Row, Col, Tree, Spin, Modal, Image, TreeSelect } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './goodsKind.less';
@@ -12,26 +12,30 @@ import { FormInstance } from 'antd/lib/form';
 import { ImgUpload } from '@/components/ImgUpload';
 import { subEffect } from '@/utils/tools';
 import serviceGoodsModel from '../../services/goodsModel';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 // import { TreeNode } from 'antd/lib/tree-select';
 const typeEnum = new Map([
   [1, 'RFID'],
   [2, '二维码'],
 ]);
 
-const { TreeNode } = Tree;
 interface IndexProps {}
 
 const TreeBtn = [
   {
     key: 'add',
+    allowStr: 'add',
     text: '添加',
   },
   {
     key: 'edit',
+    allowStr: 'edit',
     text: '修改',
   },
   {
     key: 'remove',
+    allowStr: 'remove',
     text: '删除',
   },
 ];
@@ -117,31 +121,37 @@ const GoodsKind: FC<IndexProps> = (props) => {
       render: (text, record, index) => {
         return (
           <>
-            <Divider type="vertical" />
-            <a
-              onClick={() => {
-                setModalProp({
-                  visible: true,
-                  values: { ...record },
-                  columns: [...columns],
-                });
-                setTimeout(() => {
-                  console.log(record);
-                  formRef.current?.setFieldsValue(record);
-                }, 10);
-              }}
-            >
-              编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
+            {
+              <PowerBotton
+                type="link"
+                showDivider
+                allowStr="editGoods"
+                onClick={() => {
+                  setModalProp({
+                    visible: true,
+                    values: { ...record },
+                    columns: [...columns],
+                  });
+                  setTimeout(() => {
+                    console.log(record);
+                    formRef.current?.setFieldsValue(record);
+                  }, 10);
+                }}
+              >
+                编辑
+              </PowerBotton>
+            }
+
+            <PopconfirmPowerBtn
               title="确认删除?"
+              type="link"
+              allowStr="delGoods"
               onConfirm={() => {
                 handleDel(record.id);
               }}
             >
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </PopconfirmPowerBtn>
           </>
         );
       },
@@ -281,11 +291,17 @@ const GoodsKind: FC<IndexProps> = (props) => {
               request={getList}
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return [
-                  <Button type="primary" key="add" onClick={() => handleAdd('goods')}>
+                  <PowerBotton
+                    allowStr="addGoods"
+                    type="primary"
+                    key="add"
+                    onClick={() => handleAdd('goods')}
+                  >
                     <PlusOutlined /> 添加
-                  </Button>,
-                  <Button
+                  </PowerBotton>,
+                  <PowerBotton
                     key="del"
+                    allowStr="delGoods"
                     type="dashed"
                     onClick={() => {
                       if (selectedRowKeys && selectedRowKeys.length > 0) {
@@ -299,7 +315,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
                     }}
                   >
                     <DeleteOutlined /> 删除
-                  </Button>,
+                  </PowerBotton>,
                 ];
               }}
               columns={columns}

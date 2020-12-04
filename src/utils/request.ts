@@ -3,14 +3,15 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification, message } from 'antd';
-import { history } from 'umi';
-import config from '@/config/config';
 import { getPageQuery } from './utils';
-import { stringify } from 'querystring';
+import { stringify } from 'qs';
+import { notification } from 'antd';
+import config from '@/config/config';
+import { history } from 'umi';
 import localData from '@/localStore';
-
-const codeMessage = {
+const codeMessage: {
+  [code: number]: string;
+} = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
   202: '一个请求已经进入后台排队（异步任务）。',
@@ -28,83 +29,92 @@ const codeMessage = {
   504: '网关超时。',
 };
 
-function checkStatus(response: void | Response) {
-  if (response) {
-    if (response.status >= 200 && response.status < 300) {
-    } else {
-      message.error(codeMessage[response.status]);
-      throw '';
-    }
-  } else {
-    throw '';
-  }
-}
-
 /**
  * 异常处理程序
  */
 const errorHandler = (error: { response: Response }): Response => {
   const { response } = error;
-  if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
-
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
-  } else if (!response) {
-    notification.error({
-      description: '您的网络发生异常，无法连接服务器',
-      message: '网络异常',
-    });
+  if (response) {
+    if (response && response.status) {
+      const errorText = codeMessage[response.status] || response.statusText;
+      const { status, url } = response;
+      console.error(url, status, errorText);
+      notification.error({
+        message: `请求错误 ${status}: ${url}`,
+        description: errorText,
+      });
+    } else if (!response) {
+      notification.error({
+        description: '您的网络发生异常，无法连接服务器',
+        message: '网络异常',
+      });
+    }
+    // throw 出去 防止 dva model 接收到莫名其妙的数据
+    console.warn(error);
+  } else {
+    throw error;
   }
   return response;
 };
 
-export const request = extend({
+/**
+ * 配置request请求时的默认参数
+ */
+const request = extend({
+  prefix: config.baseUrl,
+  timeout: 300000,
+  requestType: 'json',
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
 
-export async function _request<T>(url: string, options: RequestInit) {
-  const _url = config.baseUrl + url;
-  const response = await fetch(_url, options);
-  checkStatus(response);
-  try {
-    const data = await response.json();
-    if (data) {
-      console.log(data);
-      if (data.code >= 200 && data.code < 400) {
-        const ret = data;
-        if (response.headers.get('x-total-count')) {
-          ret.headers['x-total-count'] = response.headers.get('x-total-count');
-        }
-        return ret.content as T;
-      } else if (data.code == 1000) {
-        //登录过期
-        const { redirect } = getPageQuery();
-        if (window.location.pathname !== '/user/login' && !redirect) {
-          history.replace({
-            pathname: '/user/login',
-            search: stringify({
-              redirect: window.location.href,
-            }),
-          });
-        }
-        throw '登录过期';
-      } else {
-        throw data.msg;
-      }
-    } else {
-      throw response;
-    }
-  } catch (error) {
-    // typeof error === 'string' ? message.error(error) : message.error('服务端异常 请联系管理员');
-
-    throw error;
+// request拦截器, 改变url 或 options.
+request.interceptors.request.use((url, options) => {
+  if (options.method === 'get') {
+    options.params = options.params || options.data;
   }
-}
+  return {
+    url,
+    options,
+  };
+});
+
+// response拦截器, 处理response
+request.interceptors.response.use(async (response) => {
+  let data: any = {};
+  try {
+    data = await response.clone().json();
+  } catch (error) {
+    notification.error({
+      description: '返回结果类型出错',
+      message: '服务异常',
+    });
+    throw '返回结果类型出错';
+  }
+
+  if (data.code >= 200 && data.code < 400) {
+    const ret = data;
+    if (response.headers.get('x-total-count')) {
+      ret.headers['x-total-count'] = response.headers.get('x-total-count');
+    }
+    return ret.content as any;
+  } else if (data.code == 1000) {
+    //登录过期
+    const { redirect } = getPageQuery();
+    if (window.location.pathname !== '/user/login' && !redirect) {
+      history.replace({
+        pathname: '/user/login',
+        search: stringify({
+          redirect: window.location.href,
+        }),
+      });
+    }
+    throw '登录过期';
+  }
+  throw '服务器异常';
+});
+
+export default request;
 
 export async function post<T>(url: string, data?: any, isCommon?: boolean) {
   const param: RequestInit = {
@@ -117,7 +127,7 @@ export async function post<T>(url: string, data?: any, isCommon?: boolean) {
   };
   const _url = isCommon ? '/common' + url : config.prefix + url;
   console.log(_url);
-  return await _request<T>(_url, param);
+  return await request<T>(_url, param);
 }
 
 export async function upload(url: string, data?: any, isCommon?: boolean) {
@@ -131,7 +141,7 @@ export async function upload(url: string, data?: any, isCommon?: boolean) {
   };
   const _url = isCommon ? '/common' + url : config.prefix + url;
 
-  return await _request(_url, param);
+  return await request(_url, param);
 }
 
 export async function getReq(url: string, data?: any, isCommon?: boolean) {
@@ -145,5 +155,5 @@ export async function getReq(url: string, data?: any, isCommon?: boolean) {
   };
   const _url = isCommon ? '/common' + url : config.prefix + url;
 
-  return await _request(_url, param);
+  return await request(_url, param);
 }

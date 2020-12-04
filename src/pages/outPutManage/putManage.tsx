@@ -1,3 +1,4 @@
+import PowerBotton from '@/components/PowerBotton';
 import config from '@/config/config';
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
@@ -51,6 +52,7 @@ const PutManage: FC = () => {
     state.getDict,
   ]);
 
+  const auth = useModel('power', (state) => state.curAuth);
   const [receive, setReceive] = useState<any>();
   const [entry, setEntry] = useState<any>();
 
@@ -225,8 +227,9 @@ const PutManage: FC = () => {
         request={serviceAccess.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
               type="primary"
+              allowStr="add"
               key="add"
               onClick={() => {
                 setPutFormVisible(true);
@@ -234,9 +237,10 @@ const PutManage: FC = () => {
             >
               <PlusOutlined />
               新增
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
               type="primary"
+              allowStr="giveBack"
               key="giveBack"
               onClick={() => {
                 setGiveBackVisible(true);
@@ -244,9 +248,10 @@ const PutManage: FC = () => {
             >
               <PlusOutlined />
               归还
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
               type="primary"
+              allowStr="replenishment"
               key="replenishment"
               onClick={() => {
                 // setModalProp({ visible: true, values: {} });
@@ -255,10 +260,12 @@ const PutManage: FC = () => {
             >
               <PlusOutlined />
               补货
-            </Button>,
-            <Upload {...uploadProp}>
-              <Button icon={<PlusOutlined />}>导入</Button>
-            </Upload>,
+            </PowerBotton>,
+            auth['import'] && (
+              <Upload {...uploadProp}>
+                <Button icon={<PlusOutlined />}>导入</Button>
+              </Upload>
+            ),
           ];
         }}
         columns={columns}

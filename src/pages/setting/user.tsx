@@ -14,6 +14,7 @@ import UserAuth from './components/userAuth';
 import serviceCommon from '@/services/common';
 import serviceRole from '@/services/role';
 import UserConfig from './components/userConfig';
+import PowerBotton from '@/components/PowerBotton';
 
 interface IndexProps {}
 
@@ -45,6 +46,7 @@ const User: FC<IndexProps> = (props) => {
     user: {},
   });
 
+  const auth = useModel('power', (state) => state.curAuth);
   const [role, setRole] = useState<any[]>([]);
 
   const actionRef = useRef<ActionType>();
@@ -72,11 +74,18 @@ const User: FC<IndexProps> = (props) => {
       {
         title: '人员姓名',
         dataIndex: 'realName',
+        search: false,
       },
-
+      {
+        title: '搜索',
+        dataIndex: 'search',
+        hideInForm: true,
+        hideInTable: true,
+      },
       {
         title: '电话',
         dataIndex: 'phone',
+        search: false,
       },
       {
         title: '所属组织',
@@ -136,7 +145,11 @@ const User: FC<IndexProps> = (props) => {
         valueEnum: usedEmun,
         render(text, record) {
           return (
-            <StatusSwitch checked={record.used} onChange={(flag) => switchStatus(record, flag)} />
+            <StatusSwitch
+              disabled={!auth['changeUsed']}
+              checked={record.used}
+              onChange={(flag) => switchStatus(record, flag)}
+            />
           );
         },
       },
@@ -146,7 +159,10 @@ const User: FC<IndexProps> = (props) => {
         render: (text, record, index) => {
           return (
             <>
-              <a
+              <PowerBotton
+                type="link"
+                allowStr="edit"
+                showDivider
                 onClick={() => {
                   setModalProp({
                     visible: true,
@@ -160,22 +176,19 @@ const User: FC<IndexProps> = (props) => {
                 }}
               >
                 编辑
-              </a>
-              <Divider type="vertical" />
-              <a
+              </PowerBotton>
+              <PowerBotton
+                type="link"
+                allowStr="config"
                 onClick={() => {
                   setUserConfigProp({
                     visible: true,
                     user: { ...record },
                   });
-                  // setUserProductProp({
-                  //   visible: true,
-                  //   user: { ...record },
-                  // });
                 }}
               >
                 配置
-              </a>
+              </PowerBotton>
             </>
           );
         },
@@ -251,9 +264,9 @@ const User: FC<IndexProps> = (props) => {
         request={getList}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button type="primary" key="add" onClick={() => handleAdd('goods')}>
+            <PowerBotton allowStr="add" type="primary" key="add" onClick={() => handleAdd('goods')}>
               <PlusOutlined /> 添加
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

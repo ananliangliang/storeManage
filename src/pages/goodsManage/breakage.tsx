@@ -1,3 +1,4 @@
+import PowerBotton from '@/components/PowerBotton';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { dict2select } from '@/models/dict';
 import serviceGoodsManageGoods from '@/services/goodsManageGoods';
@@ -105,9 +106,9 @@ const Breakage: FC<WarningRuleProps> = (props) => {
         return record.is_handled == 1 ? (
           '已处理'
         ) : (
-          <Button type="ghost" onClick={() => handleDispose(record)}>
+          <PowerBotton allowStr="dispose" type="ghost" onClick={() => handleDispose(record)}>
             立即处理
-          </Button>
+          </PowerBotton>
         );
       },
     },

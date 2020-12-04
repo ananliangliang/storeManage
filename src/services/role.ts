@@ -15,10 +15,10 @@ const serviceRole = {
     return post('/role/onAddEdit', data, true);
   },
   remove(id: string) {
-    return post(`/role/remove?id=${id}`);
+    return post(`/role/remove?id=${id}`, {}, true);
   },
   batchRemove(ids: string) {
-    return post(`/role/batch/remove?ids=${ids}`);
+    return post(`/role/batch/remove?ids=${ids}`, {}, true);
   },
   treeList() {
     return post<RespGoodsModel[]>('/role/treeList', {}, true);

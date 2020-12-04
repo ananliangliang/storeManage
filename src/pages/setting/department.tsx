@@ -10,6 +10,8 @@ import { FormInstance } from 'antd/lib/form';
 import { removeEmptyChildren, subEffect } from '@/utils/tools';
 import serviceCommon from '@/services/common';
 import DepartBtn from './components/departBtn';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 
 interface IndexProps {}
 
@@ -39,7 +41,14 @@ const Department: FC<IndexProps> = (props) => {
     },
     {
       title: '名称',
+      dataIndex: 'dep_name',
+      hideInForm: true,
+      hideInTable: true,
+    },
+    {
+      title: '名称',
       dataIndex: 'depName',
+      search: false,
     },
     {
       title: '简称',
@@ -57,7 +66,10 @@ const Department: FC<IndexProps> = (props) => {
         return (
           <>
             <Divider type="vertical" />
-            <a
+            <PowerBotton
+              allowStr="edit"
+              type="link"
+              showDivider
               onClick={() => {
                 setModalProp({
                   visible: true,
@@ -71,16 +83,18 @@ const Department: FC<IndexProps> = (props) => {
               }}
             >
               编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
+            </PowerBotton>
+            <PopconfirmPowerBtn
               title="确认删除?"
+              allowStr="del"
+              type="link"
+              showDivider
               onConfirm={() => {
                 handleDel(record.id);
               }}
             >
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </PopconfirmPowerBtn>
           </>
         );
       },
@@ -156,11 +170,12 @@ const Department: FC<IndexProps> = (props) => {
         request={getList}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button type="primary" key="add" onClick={() => handleAdd('goods')}>
+            <PowerBotton allowStr="add" type="primary" key="add" onClick={() => handleAdd('goods')}>
               <PlusOutlined /> 添加
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
               key="del"
+              allowStr="del"
               type="dashed"
               onClick={() => {
                 if (selectedRowKeys && selectedRowKeys.length > 0) {
@@ -174,7 +189,7 @@ const Department: FC<IndexProps> = (props) => {
               }}
             >
               <DeleteOutlined /> 删除
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

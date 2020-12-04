@@ -21,7 +21,7 @@ const UserConfig: FC<UserConfigProps> = ({ onFinish, visible, user = {}, orgTree
   async function handleFinish(data: Store) {
     console.log(data);
     let checked: number[] = [];
-    if (data.roleList?.checedk) {
+    if (data.roleList?.checked) {
       checked = data.roleList?.checked.map((item: number) => ({ id: item }));
     } else {
       checked = data.roleList.map((item: number) => ({ id: item }));

@@ -3,11 +3,14 @@ import serviceGoodsRule from '@/services/goodsRule';
 import { subEffect } from '@/utils/tools';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Divider, Modal, Popconfirm } from 'antd';
+import { Modal, Tooltip } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useRef, useState } from 'react';
 import StatusSwitch from '@/components/statusSwitch/statusSwitch';
+import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
+import { useModel } from 'umi';
 //import styles from './warningRule.less'
 
 interface WarningRuleProps {}
@@ -26,6 +29,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
   });
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
+  const auth = useModel('power', (state) => state.curAuth);
 
   const columns: ProColumns<any>[] = [
     {
@@ -59,6 +63,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
       render(text, record) {
         return (
           <StatusSwitch
+            disabled={!auth['changeState']}
             checked={record.state == 1}
             onChange={(flag) => switchStatus(record, flag)}
           />
@@ -72,7 +77,11 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
       render(_, record) {
         return (
           <>
-            <a
+            <PowerBotton
+              key="edit"
+              allowStr="edit"
+              type="link"
+              showDivider
               onClick={() => {
                 setModalProp({
                   visible: true,
@@ -84,16 +93,17 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
               }}
             >
               编辑
-            </a>
-            <Divider type="vertical" />
-            <Popconfirm
+            </PowerBotton>
+            <PopconfirmPowerBtn
+              allowStr="del"
               title="确认删除?"
+              type="link"
               onConfirm={() => {
                 handleDel(record.id);
               }}
             >
               <a>删除</a>
-            </Popconfirm>
+            </PopconfirmPowerBtn>
           </>
         );
       },
@@ -133,17 +143,19 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
         request={serviceGoodsRule.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
               type="primary"
+              allowStr="add"
               key="add"
               onClick={() => {
                 setModalProp({ visible: true, values: {} });
               }}
             >
               <PlusOutlined /> 新增规则
-            </Button>,
-            <Button
+            </PowerBotton>,
+            <PowerBotton
               key="del"
+              allowStr="del"
               type="dashed"
               onClick={() => {
                 if (selectedRowKeys && selectedRowKeys.length > 0) {
@@ -157,7 +169,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
               }}
             >
               <DeleteOutlined /> 删除
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}

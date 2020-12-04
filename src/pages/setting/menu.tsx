@@ -9,6 +9,8 @@ import TextArea from 'antd/lib/input/TextArea';
 import { treeDataFormate } from '@/utils/tools';
 import IconChiose from './components/IconChiose';
 import serviceMenu from '@/services/menu';
+import PowerBotton from '@/components/PowerBotton';
+import { useModel } from 'umi';
 
 interface MenuProps {}
 
@@ -92,6 +94,7 @@ const Menu: FC<MenuProps> = (props) => {
   const orgFuncs = useRef<{ [pid: string]: curItem[] }>({});
   const formRef = useRef<FormInstance>();
   const formModal = useRef<FormModalRef>(null);
+  const auth = useModel('power', (state) => state.curAuth);
 
   const deleteHandler = (ids: string[]) => {
     if (ids.length == 0) {
@@ -269,6 +272,7 @@ const Menu: FC<MenuProps> = (props) => {
                   setFuncs(orgFuncs.current[record.id]);
                 }, // 点击行
                 onDoubleClick: (event) => {
+                  if (!auth['editMenu']) return;
                   // if (btns.includes('edit')) {
                   setVisible(true);
                   setTimeout(() => {
@@ -288,23 +292,27 @@ const Menu: FC<MenuProps> = (props) => {
             pagination={false}
             toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
               return [
-                <Button
+                <PowerBotton
                   type="primary"
+                  allowStr="addMenu"
+                  key="add"
                   onClick={() => {
                     setVisible(true);
                     setActRow('');
                   }}
                 >
                   <PlusOutlined /> 添加
-                </Button>,
-                <Button
+                </PowerBotton>,
+                <PowerBotton
+                  allowStr="delMenu"
+                  key="del"
                   type="dashed"
                   onClick={() => {
                     deleteHandler(selectedRowKeys as string[]);
                   }}
                 >
                   <DeleteOutlined /> 删除
-                </Button>,
+                </PowerBotton>,
               ];
             }}
           ></ProTable>
@@ -322,6 +330,7 @@ const Menu: FC<MenuProps> = (props) => {
             onRow={(record) => {
               return {
                 onDoubleClick: (event) => {
+                  if (!auth['editFunc']) return;
                   if (actRow.length == 0) {
                     message.warn('请先选择一个页面');
                   } else {
@@ -339,7 +348,8 @@ const Menu: FC<MenuProps> = (props) => {
             }}
             toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
               return [
-                <Button
+                <PowerBotton
+                  allowStr="addFunc"
                   type="primary"
                   onClick={() => {
                     if (actRow.length == 0) {
@@ -353,15 +363,16 @@ const Menu: FC<MenuProps> = (props) => {
                   }}
                 >
                   <PlusOutlined /> 添加
-                </Button>,
-                <Button
+                </PowerBotton>,
+                <PowerBotton
+                  allowStr="delFunc"
                   type="dashed"
                   onClick={() => {
                     deleteHandler(selectedRowKeys as string[]);
                   }}
                 >
                   <DeleteOutlined /> 删除
-                </Button>,
+                </PowerBotton>,
               ];
             }}
           ></ProTable>

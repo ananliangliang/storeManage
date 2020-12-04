@@ -1,16 +1,15 @@
+import PowerBotton from '@/components/PowerBotton';
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { useModel } from 'umi';
 import { warehouseTreeListAll } from '../Warehouse/service';
 import OutForm from './components/outForm';
-import PutForm from './components/putForm';
 //import styles from './warningRule.less'
 
 const typeEnum = new Map([
@@ -160,7 +159,8 @@ const OutManage: FC = () => {
         request={getList}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
-            <Button
+            <PowerBotton
+              allowStr="add"
               type="primary"
               key="add"
               onClick={() => {
@@ -169,7 +169,7 @@ const OutManage: FC = () => {
             >
               <PlusOutlined />
               出库补录
-            </Button>,
+            </PowerBotton>,
           ];
         }}
         columns={columns}
