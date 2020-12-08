@@ -1,6 +1,6 @@
-import React, { FC, useState, useEffect, useRef, useMemo, CSSProperties } from 'react';
+import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { TreeSelect, Modal, Button, Row, Col, message, Input, Form } from 'antd';
+import { TreeSelect, Modal, Row, Col, message, Input, Form } from 'antd';
 import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 import styles from './Menu.less';
@@ -127,7 +127,7 @@ const Menu: FC<MenuProps> = (props) => {
     if (style == 1) {
       values['id'] = actRow;
     }
-    values['style'] = style;
+    values['type'] = style;
     const res: any = await serviceMenu.onAddEdit(values);
     console.log(values);
     hide();
@@ -272,8 +272,7 @@ const Menu: FC<MenuProps> = (props) => {
                   setFuncs(orgFuncs.current[record.id]);
                 }, // 点击行
                 onDoubleClick: (event) => {
-                  if (!auth['editMenu']) return;
-                  // if (btns.includes('edit')) {
+                  // if (!auth['editMenu']) return;
                   setVisible(true);
                   setTimeout(() => {
                     const temp = { ...record };
@@ -283,7 +282,6 @@ const Menu: FC<MenuProps> = (props) => {
                     console.log(temp);
                     formRef.current?.setFieldsValue(temp);
                   }, 10);
-                  // }
                 },
               };
             }}
@@ -330,7 +328,7 @@ const Menu: FC<MenuProps> = (props) => {
             onRow={(record) => {
               return {
                 onDoubleClick: (event) => {
-                  if (!auth['editFunc']) return;
+                  // if (!auth['editFunc']) return;
                   if (actRow.length == 0) {
                     message.warn('请先选择一个页面');
                   } else {

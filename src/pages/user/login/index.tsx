@@ -28,6 +28,7 @@ const goto = () => {
   const { redirect } = query as {
     redirect: string;
   };
+  console.log(redirect);
   // history.replace(redirect || '/');
   window.location.href = redirect || '/';
 };
@@ -50,6 +51,7 @@ const Login: React.FC<{}> = () => {
       signin(res);
       goto();
     } catch (error) {
+      console.log(error);
       message.error('登录失败，请重试！');
     }
     setSubmitting(false);

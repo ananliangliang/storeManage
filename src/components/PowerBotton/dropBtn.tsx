@@ -25,8 +25,11 @@ const PowerDropBtn: FC<DropBtnProps> = ({ menus, text, onClick }) => {
   const auth = useModel('power', (state) => state.curAuth);
   const [list, setList] = useState<IDropMenu[]>([]);
   useEffect(() => {
-    console.log(menus);
-    setList(menus.filter((item) => auth[item.allowStr]));
+    if (REACT_APP_ENV !== 'pre') {
+      setList(menus);
+    } else {
+      setList(menus.filter((item) => auth[item.allowStr]));
+    }
   }, [menus]);
   return list.length > 0 ? (
     <Dropdown

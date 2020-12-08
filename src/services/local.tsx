@@ -6,6 +6,9 @@ const serviceLocal = {
       data: codeList,
     });
   },
+  getRFID() {
+    return request.post('http://localhost:17556/api/epc');
+  },
 };
 
 export default serviceLocal;

@@ -14,7 +14,7 @@ interface PopconfirmPowerBtnProps extends ButtonProps {
 const PopconfirmPowerBtn: FC<PopconfirmPowerBtnProps> = (props) => {
   const auth = useModel('power', (state) => state.curAuth);
   const { allowStr, showDivider, title, onConfirm, ...btnProps } = props;
-  if (process.env.NODE_ENV === 'development' || auth[allowStr]) {
+  if (REACT_APP_ENV !== 'pre' || auth[allowStr]) {
     return (
       <>
         <Popconfirm title={title} onConfirm={onConfirm}>

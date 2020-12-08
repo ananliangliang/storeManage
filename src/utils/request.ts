@@ -85,6 +85,7 @@ request.interceptors.response.use(async (response) => {
   try {
     data = await response.clone().json();
   } catch (error) {
+    console.warn(error);
     notification.error({
       description: '返回结果类型出错',
       message: '服务异常',

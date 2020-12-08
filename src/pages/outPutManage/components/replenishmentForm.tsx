@@ -1,7 +1,9 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
 import { listByReginon } from '@/pages/goodsManage/service/goodsInfo';
 import serviceGoodsRule from '@/services/goodsRule';
+import serviceReceive from '@/services/receive';
 import serviceUser from '@/services/user';
+import { subEffect } from '@/utils/tools';
 import { ModalForm, ProFormDatePicker, ProFormDigit } from '@ant-design/pro-form';
 import { Cascader, Form, Select } from 'antd';
 import { Store } from 'antd/es/form/interface';
@@ -21,8 +23,25 @@ const ReplenishmentForm: FC<ReplenishmentFormProps> = ({ visible, onFinish, addr
 
   async function handleFinish(data: Store) {
     console.log(data);
-    await serviceGoodsRule.onAddEdit(data);
-    onFinish(data);
+    await subEffect(
+      async () => {
+        await serviceReceive.onAddEdit({
+          type: 2,
+          state: 2,
+          accessList: [
+            {
+              count: data.count,
+              goods: {
+                id: data.goodsId,
+              },
+            },
+          ],
+        });
+        onFinish(data);
+      },
+      '正在提交',
+      '提交成功',
+    );
   }
 
   useEffect(() => {
@@ -73,10 +92,10 @@ const ReplenishmentForm: FC<ReplenishmentFormProps> = ({ visible, onFinish, addr
       visible={visible}
       onFinish={handleFinish}
     >
-      <Form.Item name="user" label="入库人">
+      {/* <Form.Item name="user" label="入库人">
         <SearchSelect request={searchUser} />
       </Form.Item>
-      <ProFormDatePicker label="入库时间" name="time" />
+      <ProFormDatePicker label="入库时间" name="time" /> */}
       <Form.Item name="address" label="物资位置">
         <Cascader onChange={handleChooseAddress} options={addressTree} />
       </Form.Item>

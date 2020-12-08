@@ -1,0 +1,31 @@
+.box {
+  position: relative;
+  box-shadow: inset 0px 0px 56px 18px rgba(88, 215, 207, 0.3);
+  border-radius: 5px;
+  &::before,
+  &::after {
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  // &::before {
+  //   background: linear-gradient(
+  //     0deg,
+  //     rgba(72, 184, 239, 0.15) 0%,
+  //     rgba(43, 118, 153, 0.15) 47%,
+  //     rgba(53, 164, 208, 0.15) 100%
+  //   );
+  // }
+  // &::after {
+  //   background: linear-gradient(
+  //     0deg,
+  //     rgba(92, 219, 211, 0.5) 0%,
+  //     rgba(0, 109, 117, 0.5) 20%,
+  //     rgba(0, 109, 117, 0.5) 80%,
+  //     rgba(92, 219, 211, 0.5) 100%
+  //   );
+  // }
+}

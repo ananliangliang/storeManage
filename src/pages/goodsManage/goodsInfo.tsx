@@ -3,7 +3,7 @@ import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
 import { DeleteOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Col, Modal, Row } from 'antd';
+import { Col, message, Modal, Row } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -17,11 +17,12 @@ import QRCode from 'qrcode.react';
 import serviceLocal from '@/services/local';
 import PowerDropBtn from '@/components/PowerBotton/dropBtn';
 import PowerBotton from '@/components/PowerBotton';
+import RfidForm from './components/rfidForm';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
-  [1, 'RFID'],
-  [2, '二维码'],
+  ['1', 'RFID'],
+  ['2', '二维码'],
 ]);
 
 const menus = [
@@ -68,6 +69,13 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     visible: false,
     value: {},
   });
+  const [RfidProp, setRfidProp] = useState<{
+    visible: boolean;
+    goods: Store;
+  }>({
+    visible: false,
+    goods: {},
+  });
 
   useEffect(() => {
     if (!goodsState) {
@@ -76,7 +84,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   }, [goodsState]);
   const columns = useMemo(() => {
     const state = dict2select(goodsState);
-    console.log(state);
+
     return [
       {
         title: '序号',
@@ -85,7 +93,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       },
       {
         title: '物资名称',
-        dataIndex: 'goods',
+        dataIndex: 'name',
       },
       {
         title: '品牌',
@@ -99,6 +107,9 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         title: '入库时间',
         dataIndex: 'wareTime',
         valueType: 'dateRange',
+        render(node, record) {
+          return record.wareTime;
+        },
       },
       {
         title: '状态',
@@ -120,9 +131,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         valueType: 'option',
         render(_, record) {
           return (
-            <>
-              <PowerDropBtn text="操作" onClick={(e) => handleMenuClick(e, record)} menus={menus} />
-            </>
+            <PowerDropBtn text="操作" onClick={(e) => handleMenuClick(e, record)} menus={menus} />
           );
         },
       },
@@ -158,13 +167,14 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                 Qrcode: JSON.stringify({
                   code_no: record.codeNo,
                 }),
-                Label: record.goods,
+                Label: record.name,
               },
             ]);
           },
         });
         break;
       case 'rfid':
+        setRfidProp({ visible: true, goods: record });
         break;
       case 'warning':
         setWarningProp({
@@ -268,9 +278,11 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                       if (selectedRows && selectedRows.length > 0) {
                         const list = selectedRows.map((item) => ({
                           Qrcode: item.codeNo,
-                          Label: item.goods,
+                          Label: item.name,
                         }));
                         await serviceLocal.pointERCode(list);
+                      } else {
+                        message.warn('尚未勾选物资');
                       }
                     }}
                   >
@@ -334,6 +346,12 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         onFinish={handleAdd}
         onClose={() => {
           setModalProp({ visible: false, value: {} });
+        }}
+      />
+      <RfidForm
+        {...RfidProp}
+        onFinish={() => {
+          setRfidProp({ visible: false, goods: {} });
         }}
       />
     </div>

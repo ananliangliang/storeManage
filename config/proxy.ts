@@ -9,7 +9,9 @@ export default {
   dev: {
     '/proxy/': {
       // target: 'http://192.168.1.110:8082',
-      target: 'http://192.168.1.106',
+      // target: 'http://192.168.1.106',
+      target: ' http://web.zjspoint.com/',
+
       changeOrigin: true,
       pathRewrite: { '^/proxy/': '' },
     },

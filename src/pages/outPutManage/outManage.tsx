@@ -152,7 +152,7 @@ const OutManage: FC = () => {
       <ProTable<any>
         tableAlertRender={false}
         actionRef={actionRef}
-        headerTitle="入库管理"
+        headerTitle="出库管理"
         pagination={{
           pageSize: 10,
         }}

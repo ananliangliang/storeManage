@@ -104,10 +104,10 @@ const BreakageForm: FC<BreakageFormProps> = ({
           onClose();
         }
       }}
-      labelCol={{ span: 6 }}
-      wrapperCol={{ span: 18 }}
       visible={visible}
       onFinish={handleFinish}
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 18 }}
     >
       {type === '1' && (
         <>

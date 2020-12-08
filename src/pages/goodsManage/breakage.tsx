@@ -72,7 +72,7 @@ const Breakage: FC<WarningRuleProps> = (props) => {
     },
     {
       title: '物资名称',
-      dataIndex: 'goods',
+      dataIndex: 'name',
       renderFormItem() {
         return <ColText />;
       },

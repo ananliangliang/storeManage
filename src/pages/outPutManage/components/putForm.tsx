@@ -1,7 +1,7 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceGoodsModel from '@/services/goodsModel';
 import serviceReceive from '@/services/receive';
-import { ModalForm, ProFormCheckbox, ProFormDigit } from '@ant-design/pro-form';
+import { ModalForm, ProFormCheckbox, ProFormDigit, ProFormText } from '@ant-design/pro-form';
 import { Cascader, Form, TreeSelect } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { DataNode } from 'antd/lib/tree';
@@ -85,6 +85,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           count: values.count,
           goods: {
             modelId: values.modelId,
+            name: values.name,
             hlId: values.address[values.address.length - 1],
           },
         };
@@ -135,6 +136,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           request={sourceRequest}
         />
       </Form.Item>
+      <ProFormText label="物品名称" name="name" />
       <ProFormDigit
         name="count"
         label="入库数量"

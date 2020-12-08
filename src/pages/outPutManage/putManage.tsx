@@ -62,6 +62,7 @@ const PutManage: FC = () => {
       const { node } = warehouseTreeFormate(res);
       setTreeData(node);
     }
+
     if (!receiveType) {
       getDict('receiveType');
     }
@@ -123,7 +124,7 @@ const PutManage: FC = () => {
         title: '物品名称',
         dataIndex: 'goods_goods',
         render(_, record) {
-          return record.goods.goods;
+          return record.goods.name;
         },
       },
       {
