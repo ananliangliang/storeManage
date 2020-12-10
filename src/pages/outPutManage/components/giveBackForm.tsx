@@ -17,7 +17,7 @@ interface GiveBackFormProps {
 
 const columns: ProColumns<any>[] = [
   {
-    title: '种类名称',
+    title: '类型名称',
     dataIndex: 'goods',
     render(node, record) {
       return record.goods.goods;
@@ -65,13 +65,14 @@ const GiveBackForm: FC<GiveBackFormProps> = ({ visible, onFinish, width = 800 })
     }
   }, [visible]);
 
-  async function getList() {
+  async function getList(param: any) {
     if (user.id) {
       return await serviceAccess.list({
         isBorrowList: true,
         uid: user.id,
         type: '999',
         goods_type: 2,
+        ...param,
       });
     }
     return {
@@ -124,7 +125,7 @@ const GiveBackForm: FC<GiveBackFormProps> = ({ visible, onFinish, width = 800 })
         }}
         request={getList}
         columns={columns}
-        rowKey="goodsId"
+        rowKey="id"
       />
     </Drawer>
   );

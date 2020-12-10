@@ -3,7 +3,7 @@ import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
 import { DeleteOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Col, message, Modal, Row } from 'antd';
+import { Col, message, Modal, Row, Tooltip } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -90,6 +90,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         title: '序号',
         dataIndex: 'id',
         search: false,
+        hideInTable: true,
       },
       {
         title: '物资名称',
@@ -120,6 +121,13 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         title: '识别方式',
         dataIndex: 'type',
         valueEnum: typeEnum,
+        render(node, record) {
+          return (
+            <Tooltip trigger="hover" title={'RFID:' + record.signNo}>
+              {typeEnum.get(record.type)}
+            </Tooltip>
+          );
+        },
       },
       {
         title: '备注',
@@ -276,8 +284,11 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     allowStr="code"
                     onClick={async () => {
                       if (selectedRows && selectedRows.length > 0) {
+                        console.log(selectedRows);
                         const list = selectedRows.map((item) => ({
-                          Qrcode: item.codeNo,
+                          Qrcode: JSON.stringify({
+                            code_no: item.codeNo,
+                          }),
                           Label: item.name,
                         }));
                         await serviceLocal.pointERCode(list);

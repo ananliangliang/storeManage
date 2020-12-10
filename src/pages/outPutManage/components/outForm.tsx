@@ -1,9 +1,9 @@
-import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceGoodsModel from '@/services/goodsModel';
+import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceReceive from '@/services/receive';
 import serviceUser from '@/services/user';
-import { ModalForm, ProFormDatePicker, ProFormDigit } from '@ant-design/pro-form';
-import { Form, message, TreeSelect } from 'antd';
+import { ModalForm, ProFormDatePicker } from '@ant-design/pro-form';
+import { Form, InputNumber, message, TreeSelect } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { useModel } from 'umi';
@@ -22,6 +22,7 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
       goodsKindInit: init,
     };
   });
+  const [curCount, setCurCount] = useState(-1);
   const [fetchFlag, setFetchFlag] = useState(0);
   const goodsKindId = useRef();
 
@@ -64,6 +65,7 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
     console.log(e);
     const tar = curSearchList.current.find((item) => item.id == e);
     console.log(tar);
+    setCurCount(tar.count);
     if (tar && tar.type == 1) {
       formRef.current?.setFieldsValue({
         count: 1,
@@ -122,7 +124,7 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
         <SearchSelect request={searchUser} />
       </Form.Item>
       <ProFormDatePicker label="入库时间" name="time" /> */}
-      <Form.Item label="种类信息">
+      <Form.Item label="类型信息">
         <TreeSelect
           treeData={goodsKind}
           onChange={handlePickKind}
@@ -148,13 +150,9 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
           request={sourceRequest}
         />
       </Form.Item>
-      <ProFormDigit
-        name="count"
-        label="入库数量"
-        fieldProps={{
-          precision: 0,
-        }}
-      />
+      <Form.Item label="出库数量" name="count">
+        <InputNumber precision={0} /> {curCount > -1 && `当前库存 ${curCount}`}
+      </Form.Item>
     </ModalForm>
   );
 };

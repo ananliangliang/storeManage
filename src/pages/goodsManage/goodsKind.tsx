@@ -25,17 +25,17 @@ interface IndexProps {}
 const TreeBtn = [
   {
     key: 'add',
-    allowStr: 'add',
+    allowStr: 'addType',
     text: '添加',
   },
   {
     key: 'edit',
-    allowStr: 'edit',
+    allowStr: 'editType',
     text: '修改',
   },
   {
     key: 'remove',
-    allowStr: 'remove',
+    allowStr: 'removeType',
     text: '删除',
   },
 ];
@@ -63,6 +63,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
       title: '序号',
       dataIndex: 'id',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {
@@ -220,7 +221,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
         break;
       case 'remove':
         Modal.confirm({
-          content: '确定删除改种类吗?',
+          content: '确定删除改类型吗?',
           async onOk() {
             await serviceGoodsModel.remove(menuPos.data['id']);
             if (curData['id'] === menuPos.data['id']) {

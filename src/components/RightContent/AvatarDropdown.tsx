@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import { history, useModel } from 'umi';
-import { outLogin } from '@/services/login';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
@@ -15,11 +14,12 @@ export interface GlobalHeaderRightProps {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  await outLogin();
   const { query, pathname } = history.location;
   const { redirect } = query;
   // Note: There may be security issues, please note
   if (window.location.pathname !== '/user/login' && !redirect) {
+    sessionStorage.clear();
+    localStorage.clear();
     history.replace({
       pathname: '/user/login',
       search: stringify({
@@ -30,7 +30,7 @@ const loginOut = async () => {
 };
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
-  const user = useModel('user', (state) => state.user);
+  const user: any = useModel('user', (state) => state.user);
   const onMenuClick = useCallback(
     (event: {
       key: React.Key;
@@ -48,17 +48,17 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     [],
   );
 
-  const loading = (
-    <span className={`${styles.action} ${styles.account}`}>
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      />
-    </span>
-  );
+  // const loading = (
+  //   <span className={`${styles.action} ${styles.account}`}>
+  //     <Spin
+  //       size="small"
+  //       style={{
+  //         marginLeft: 8,
+  //         marginRight: 8,
+  //       }}
+  //     />
+  //   </span>
+  // );
 
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>

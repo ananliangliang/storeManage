@@ -36,6 +36,7 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
       title: '序号',
       dataIndex: 'id',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {

@@ -8,7 +8,7 @@ const serviceAccess = {
     return proTableReq<RespGoodsModel>('/access/list', params);
   },
   get(id: string) {
-    return getReq('/access/get?id=' + id, {});
+    return getReq('/access/get?id=' + id);
   },
   getFloor(data: ReqList<any>) {
     return post('/access/getFloor', data);

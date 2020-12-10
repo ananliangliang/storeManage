@@ -1,5 +1,4 @@
 import PowerBotton from '@/components/PowerBotton';
-import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 
@@ -7,7 +6,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { useModel } from 'umi';
 import { warehouseTreeListAll } from '../Warehouse/service';
 import OutForm from './components/outForm';
 //import styles from './warningRule.less'
@@ -22,41 +20,22 @@ const OutManage: FC = () => {
   const actionRef = useRef<ActionType>();
 
   const [treeData, setTreeData] = useState<DataNode[]>([]);
-  const [receiveType, entryType, getDict] = useModel('dict', (state) => [
-    state.dict.receiveType,
-    state.dict.entryType,
-    state.getDict,
-  ]);
-
-  const [receive, setReceive] = useState<any>();
-  const [entry, setEntry] = useState<any>();
-
   useEffect(() => {
     async function fetch() {
       const res = await warehouseTreeListAll();
       const { node } = warehouseTreeFormate(res);
       setTreeData(node);
     }
-    if (!receiveType) {
-      getDict('receiveType');
-    }
-    if (!entryType) {
-      getDict('entryType');
-    }
+
     fetch();
   }, []);
-
-  useEffect(() => {
-    setReceive(dict2select(receiveType));
-  }, [receiveType]);
-  useEffect(() => {
-    setEntry(dict2select(entryType));
-  }, [entryType]);
 
   const columns: ProColumns<any>[] = [
     {
       title: '序号',
       dataIndex: 'id',
+      hideInTable: true,
+      hideInForm: true,
       search: false,
     },
     {
@@ -99,6 +78,7 @@ const OutManage: FC = () => {
       dataIndex: 'goods_type',
       valueType: 'select',
       valueEnum: typeEnum,
+      hideInTable: true,
       render(_, record) {
         return typeEnum[record.goods.type];
       },
@@ -144,7 +124,7 @@ const OutManage: FC = () => {
   }
 
   function getList(params = {}) {
-    params['type'] = 2;
+    params['type'] = 1;
     return serviceAccess.list(params);
   }
   return (

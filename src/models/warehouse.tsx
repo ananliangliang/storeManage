@@ -17,12 +17,11 @@ export default function useWarehouseModel() {
   const init = useCallback(async () => {
     if (loading) return;
     setLoading(true);
-    console.log('init');
     const res = await warehouseTreeList();
-    console.log(res);
     const { node, pos } = warehouseTreeFormate(res);
     setWarehouse(node);
     setPos(pos);
+    console.log(node, pos);
     setLoading(false);
   }, []);
 
@@ -36,7 +35,6 @@ export default function useWarehouseModel() {
         const posArr = posKey.split('_');
         if (keyArr.length >= posArr.length) {
           const item = keyFindItem(warehouse, keyArr.slice(0, posArr.length).join('_'));
-          console.log(item);
           return item;
         }
       }
@@ -69,7 +67,7 @@ export function warehouseTreeFormate(list: RespWarehouse[], pid?: string) {
 
       if (idx === 0) {
         const type = getType(item);
-        pos[type] = p;
+        pos[type] ??= p;
       }
       if (item.children.length > 0) {
         newList = inner(item.children as any, p);
@@ -111,6 +109,17 @@ export function keyFindItem(treeData: DataNode[], key: string): DataNode {
 
 export function keyFindChild(treeData: DataNode[], key: string) {
   const arr = key.split('_');
+  return arr.reduce((previousValue, item) => {
+    if (previousValue[item] && previousValue[item].children) {
+      return previousValue[item].children;
+    }
+    return previousValue[item] || [];
+  }, treeData);
+}
+
+export function keyFindBrother(treeData: DataNode[], key: string) {
+  const arr = key.split('_');
+  arr.pop();
   return arr.reduce((previousValue, item) => {
     if (previousValue[item] && previousValue[item].children) {
       return previousValue[item].children;

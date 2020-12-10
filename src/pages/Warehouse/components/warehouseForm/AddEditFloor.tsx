@@ -79,7 +79,7 @@ const AddEditFloor: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
       onFinish={handleFinish}
     >
       <ProFormSelect options={ware} name="warehouseId" label="所属库房" />
-      <ProFormText name="mergerName" label="全名称" placeholder="请输入名称" />
+      {/* <ProFormText name="mergerName" label="全名称" placeholder="请输入名称" /> */}
       <ProFormDigit
         name="reserved"
         label="所在层数"

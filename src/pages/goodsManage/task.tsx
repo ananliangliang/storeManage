@@ -26,6 +26,7 @@ const Task: FC<TaskProps> = (props) => {
       title: '序号',
       hideInForm: true,
       dataIndex: 'id',
+      hideInTable: true,
       search: false,
     },
     {

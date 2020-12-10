@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
-import { Badge, Button, Divider, Modal } from 'antd';
+import { Badge, Button, Divider, Modal, Tooltip } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
@@ -15,6 +15,8 @@ import serviceCommon from '@/services/common';
 import serviceRole from '@/services/role';
 import UserConfig from './components/userConfig';
 import PowerBotton from '@/components/PowerBotton';
+import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
+import serviceAdmin from '@/services/admin';
 
 interface IndexProps {}
 
@@ -48,7 +50,6 @@ const User: FC<IndexProps> = (props) => {
 
   const auth = useModel('power', (state) => state.curAuth);
   const [role, setRole] = useState<any[]>([]);
-
   const actionRef = useRef<ActionType>();
 
   useEffect(() => {
@@ -69,6 +70,7 @@ const User: FC<IndexProps> = (props) => {
         title: 'id',
         dataIndex: 'id',
         hideInForm: true,
+        hideInTable: true,
         search: false,
       },
       {
@@ -115,6 +117,22 @@ const User: FC<IndexProps> = (props) => {
         },
       },
       {
+        title: '账号',
+        dataIndex: 'userName',
+        search: false,
+      },
+      {
+        title: '密码',
+        dataIndex: 'passWord',
+        hideInTable: true,
+        search: false,
+      },
+      {
+        title: '邮箱',
+        dataIndex: 'email',
+        search: false,
+      },
+      {
         title: '是否认证',
         dataIndex: 'auth',
         hideInForm: true,
@@ -127,7 +145,9 @@ const User: FC<IndexProps> = (props) => {
             case '2':
               return (
                 <Badge status="warning">
-                  <a onClick={() => handleAuth(record)}> 待认证</a>
+                  <PowerBotton allowStr="userAuth" type="link" onClick={() => handleAuth(record)}>
+                    待认证
+                  </PowerBotton>
                 </Badge>
               );
           }
@@ -146,8 +166,8 @@ const User: FC<IndexProps> = (props) => {
         render(text, record) {
           return (
             <StatusSwitch
-              disabled={!auth['changeUsed']}
-              checked={record.used}
+              disabled={!auth['changeUsed'] || record.used == 2}
+              checked={!!record.used}
               onChange={(flag) => switchStatus(record, flag)}
             />
           );
@@ -167,7 +187,7 @@ const User: FC<IndexProps> = (props) => {
                   setModalProp({
                     visible: true,
                     values: { ...record },
-                    columns: [...columns],
+                    columns: columns.filter((item) => item.dataIndex != 'passWord'),
                   });
                   setTimeout(() => {
                     console.log(record);
@@ -177,6 +197,17 @@ const User: FC<IndexProps> = (props) => {
               >
                 编辑
               </PowerBotton>
+              <PopconfirmPowerBtn
+                type="link"
+                title="是否重置改用户密码"
+                allowStr="resetPassWord"
+                showDivider
+                onConfirm={async () => {
+                  await serviceAdmin.resetPassword(record.id);
+                }}
+              >
+                <Tooltip title="默认密码:8888">重置密码</Tooltip>
+              </PopconfirmPowerBtn>
               <PowerBotton
                 type="link"
                 allowStr="config"
@@ -194,7 +225,7 @@ const User: FC<IndexProps> = (props) => {
         },
       },
     ];
-  }, []);
+  }, [auth]);
 
   function handleAuth(record: any) {
     setUserAuthProp({
@@ -208,8 +239,8 @@ const User: FC<IndexProps> = (props) => {
   }, [goodsKind]);
 
   async function switchStatus(data: any, flag: boolean) {
-    await serviceUser.onAddEdit({ ...data, used: flag });
-    data.state = flag ? 1 : 0;
+    await serviceUser.onAddEdit({ ...data, used: flag ? 1 : 0 });
+    data.used = flag ? 1 : 0;
   }
 
   async function getList(params: any): Promise<RequestData<any>> {
@@ -272,8 +303,6 @@ const User: FC<IndexProps> = (props) => {
         columns={columns}
         rowKey="id"
       />
-
-      {/* <UserProduct {...userProductProp} onClose={handleCloseUserProduct} /> */}
       <UserAuth {...userAuthProp} onFinish={handleAuthFinish} />
       <UserConfig
         {...userConfigProp}

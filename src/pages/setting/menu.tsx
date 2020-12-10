@@ -36,7 +36,6 @@ const formate = (data: any[]) => {
   console.log(menu);
   function loop(d: any[]): any[] {
     return d.map((item) => {
-      console.log(item);
       const children: any[] = [];
       if (item.children) {
         item.children.forEach((j: any) => {
@@ -272,7 +271,7 @@ const Menu: FC<MenuProps> = (props) => {
                   setFuncs(orgFuncs.current[record.id]);
                 }, // 点击行
                 onDoubleClick: (event) => {
-                  // if (!auth['editMenu']) return;
+                  if (!auth['editMenu']) return;
                   setVisible(true);
                   setTimeout(() => {
                     const temp = { ...record };
@@ -328,7 +327,7 @@ const Menu: FC<MenuProps> = (props) => {
             onRow={(record) => {
               return {
                 onDoubleClick: (event) => {
-                  // if (!auth['editFunc']) return;
+                  if (!auth['editFunc']) return;
                   if (actRow.length == 0) {
                     message.warn('请先选择一个页面');
                   } else {

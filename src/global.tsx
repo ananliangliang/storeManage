@@ -3,7 +3,9 @@ import { Button, message, notification } from 'antd';
 import React from 'react';
 import { useIntl } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
 const { pwa } = defaultSettings;
 const isHttps = document.location.protocol === 'https:';
 

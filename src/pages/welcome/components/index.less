@@ -1,0 +1,100 @@
+.content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 12px 0 12px;
+  :global {
+    .icon {
+      margin-right: 4px;
+    }
+    .full {
+      float: right;
+      font-size: 18px;
+      margin-top: -1px;
+    }
+  }
+}
+.box2,
+.box4,
+.box3,
+.box {
+  position: relative;
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0px 0px 56px 18px rgba(88, 215, 207, 0.3);
+  border-radius: 5px;
+  &::before {
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background-image: linear-gradient(
+      0deg,
+      rgba(72, 184, 239, 0.15) 0%,
+      rgba(43, 118, 153, 0.15) 47%,
+      rgba(53, 164, 208, 0.15) 100%
+    );
+  }
+}
+.box {
+  padding-top: 40%;
+}
+.box2 {
+  padding-top: 58.4%;
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.box4 {
+  padding-top: 72.4%;
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.box3 {
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+  padding-top: 36.2%;
+  :global {
+    .ant-table-thead {
+      display: none;
+    }
+    .ant-card {
+      background: inherit;
+    }
+    .ant-pro-table {
+      flex: 1 1 auto;
+    }
+  }
+}
+.canvas {
+  display: flex;
+  flex: 1 1 auto;
+}
+.btn {
+  position: absolute;
+  left: 0;
+  bottom: 12px;
+  line-height: 1;
+  padding-right: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: right;
+}
+.num {
+  font-size: 28px;
+  margin-right: 8px;
+}
+
+.fr {
+  float: right;
+}

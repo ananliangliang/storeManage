@@ -8,7 +8,7 @@ const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
   hash: true,
-  antd: {},
+  antd: { config: {} },
   dva: {
     hmr: true,
   },
@@ -69,7 +69,7 @@ export default defineConfig({
       routes: [
         {
           path: '/goodsManage/goodsKind',
-          name: '物资种类',
+          name: '物资类型',
           component: './goodsManage/goodsKind',
         },
         {

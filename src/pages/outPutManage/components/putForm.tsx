@@ -1,8 +1,9 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceGoodsModel from '@/services/goodsModel';
+import serviceLocal from '@/services/local';
 import serviceReceive from '@/services/receive';
 import { ModalForm, ProFormCheckbox, ProFormDigit, ProFormText } from '@ant-design/pro-form';
-import { Cascader, Form, TreeSelect } from 'antd';
+import { Cascader, Form, message, TreeSelect } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -24,7 +25,11 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
     };
   });
   const [fetchFlag, setFetchFlag] = useState(0);
-  const goodsKindId = useRef();
+  const [isRFID, setIsRFID] = useState(false);
+  const kind = useRef({
+    id: '',
+    name: '',
+  });
 
   useEffect(() => {
     async function init() {
@@ -36,7 +41,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
   }, []);
 
   const sourceRequest = async (param: string) => {
-    const res = await serviceGoodsModel.list({ name: param, parentId: goodsKindId.current });
+    const res = await serviceGoodsModel.list({ name: param, parentId: kind.current.id });
 
     return res.data.map((item: any) => {
       return {
@@ -51,13 +56,45 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
   useEffect(() => {
     if (!visible) {
       formRef.current?.resetFields();
+      setIsRFID(false);
     }
   }, [visible]);
 
-  function handlePickKind(e: any) {
-    console.log(e);
-    goodsKindId.current = e;
+  function handlePickKind(e: any, t: any[]) {
+    console.log(e, t);
+    kind.current = {
+      id: e,
+      name: t[0],
+    };
     setFetchFlag((e) => ++e);
+  }
+
+  function handlesetDefaultName(id: string, opt: any) {
+    //  类型+ 型号
+    console.log(opt);
+    formRef.current?.setFieldsValue({
+      name: kind.current.name + '-' + opt[0].name,
+    });
+  }
+  function handleFlagChange(e: string[]) {
+    console.log(e);
+    const flag = e.includes('2');
+    if (flag) {
+      formRef.current?.setFieldsValue({
+        count: 1,
+      });
+      serviceLocal.getRFID().then((res) => {
+        formRef.current?.setFieldsValue({
+          signNo: res,
+        });
+      });
+    } else {
+      formRef.current?.setFieldsValue({
+        signNo: '',
+      });
+    }
+    setIsRFID(flag);
+    return e;
   }
 
   return (
@@ -67,7 +104,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
       layout="horizontal"
       labelCol={{ span: 6 }}
       initialValues={{
-        flag: ['1', '2'],
+        flag: ['1'],
       }}
       modalProps={{
         width: 600,
@@ -82,7 +119,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
       onFinish={async (values) => {
         console.log(values);
         const data: any = {
-          count: values.count,
+          count: isRFID ? 1 : values.count,
           goods: {
             modelId: values.modelId,
             name: values.name,
@@ -95,12 +132,18 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
         } else {
           data.goods.flag = values.flag[0];
         }
-        await serviceReceive.onAddEdit({
-          type: 0,
-          state: 1,
-          accessList: [data],
-        });
-        onFinish(data);
+        try {
+          await serviceReceive.onAddEdit({
+            type: 0,
+            state: 1,
+            accessList: [data],
+          });
+          onFinish(data);
+        } catch (error) {
+          console.log(error);
+          message.error(error);
+          return false;
+        }
       }}
     >
       {/* <ProFormText
@@ -111,7 +154,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
         }}
         placeholder="请输入名称"
       /> */}
-      <Form.Item label="种类信息">
+      <Form.Item label="类型信息">
         <TreeSelect
           treeData={goodsKind}
           onChange={handlePickKind}
@@ -133,21 +176,19 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           // className={styles.inline}
           placeholder="请搜索物资名称"
           fetchFlag={fetchFlag}
+          onChange={handlesetDefaultName}
           request={sourceRequest}
         />
       </Form.Item>
       <ProFormText label="物品名称" name="name" />
-      <ProFormDigit
-        name="count"
-        label="入库数量"
-        fieldProps={{
-          precision: 0,
-        }}
-      />
+
       <ProFormCheckbox.Group
         name="flag"
         layout="horizontal"
         label="生成标签ID "
+        formItemProps={{
+          getValueFromEvent: handleFlagChange,
+        }}
         options={[
           {
             value: '1',
@@ -159,6 +200,16 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           },
         ]}
       />
+      {isRFID && <ProFormText label="RFID" name="signNo" />}
+      {!isRFID && (
+        <ProFormDigit
+          name="count"
+          label="入库数量"
+          fieldProps={{
+            precision: 0,
+          }}
+        />
+      )}
       <Form.Item name="address" label="物资位置">
         <Cascader options={addressTree} />
       </Form.Item>

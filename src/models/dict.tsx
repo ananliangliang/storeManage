@@ -72,8 +72,6 @@ export function dict2select(list?: { id: string; name: string }[]) {
  * @ruleState    状态
  * @manageType   报损类型
  * @handleType   处理方式
- * @entryType    入库类型
- * @receiveType  订单类型
  */
 type DICT_STRING =
   | '_allType'
@@ -82,9 +80,7 @@ type DICT_STRING =
   | 'reportState'
   | 'ruleState'
   | 'manageType'
-  | 'handleType'
-  | 'entryType'
-  | 'receiveType';
+  | 'handleType';
 type DICT_MAP = {
   [str in DICT_STRING]: number;
 };

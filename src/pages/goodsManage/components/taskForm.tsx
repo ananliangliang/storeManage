@@ -87,8 +87,8 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
       }}
       onFinish={async (values) => {
         // 不返回不会关闭弹框
-        console.log(values);
-        const data = { ...values, ...value };
+        const data = { ...value, ...values };
+        console.log(data);
         data.models = data.models.map((item: any) => ({
           id: item,
         }));
@@ -110,7 +110,7 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
             {fields.map((field, index) => (
               <Form.Item
                 {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                label={index === 0 ? '物资种类' : ''}
+                label={index === 0 ? '物资类型' : ''}
                 required={false}
                 key={field.key}
               >

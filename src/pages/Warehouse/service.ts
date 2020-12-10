@@ -62,7 +62,7 @@ export function regionList(
   >('/region/list', data);
 }
 export function regionGet(id: string) {
-  return getReq('/region/get', { id });
+  return getReq('/region/get?id=' + id);
 }
 export function regionBatchRemove(ids: string) {
   return post(`/region/batch/remove?ids=${ids}`);

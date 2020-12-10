@@ -81,6 +81,7 @@ const Index: FC<IndexProps> = (props) => {
       {
         dataIndex: 'id',
         hideInForm: true,
+        hideInTable: true,
         title: '编号',
       },
       {
@@ -178,6 +179,7 @@ const Index: FC<IndexProps> = (props) => {
       {
         dataIndex: 'id',
         hideInForm: true,
+        hideInTable: true,
         title: '组织ID',
       },
       {
@@ -254,6 +256,7 @@ const Index: FC<IndexProps> = (props) => {
       {
         dataIndex: 'id',
         hideInForm: true,
+        hideInTable: true,
         title: '编号ID',
       },
       {
@@ -333,6 +336,7 @@ const Index: FC<IndexProps> = (props) => {
     const goods_columns: ProColumns<any>[] = [
       {
         dataIndex: 'id',
+        hideInTable: true,
         hideInForm: true,
         title: 'ID',
       },
@@ -588,6 +592,7 @@ const Index: FC<IndexProps> = (props) => {
                           case 'goods':
                             initialValues['warehouseId'] = curData['warehouseId'];
                             initialValues['parentId'] = curData['id'];
+                            initialValues['parentKey'] = curData['key'];
                             break;
                         }
                         setModalProp({

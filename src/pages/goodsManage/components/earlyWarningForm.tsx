@@ -1,13 +1,6 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceGoodsModel from '@/services/goodsModel';
-import serviceGoodsRule from '@/services/goodsRule';
-import {
-  ModalForm,
-  ProFormDatePicker,
-  ProFormRadio,
-  ProFormSelect,
-  ProFormText,
-} from '@ant-design/pro-form';
+import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect } from '@ant-design/pro-form';
 import { Cascader, Form, Select } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
@@ -15,7 +8,7 @@ import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { listByReginon } from '../service/goodsInfo';
 //import styles from './earlyWarningForm.less'
-import Field from '@ant-design/pro-field';
+import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 
 interface EarlyWarningFormProps {
   value?: Store;
@@ -54,7 +47,7 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
 
   async function handleFinish(data: Store) {
     console.log(data);
-    await serviceGoodsRule.onAddEdit(data);
+    await serviceGoodsEarlyWarning.onAddEdit(data);
     onFinish(data);
   }
 
@@ -119,7 +112,7 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
           getValueFromEvent={handleCheckType}
           options={[
             {
-              label: '种类',
+              label: '类型',
               value: '0',
             },
             {
@@ -143,7 +136,7 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
             <Cascader onChange={handleChooseAddress} options={addressTree} />
           </Form.Item>
           <Form.Item name="goodsId" label="物资名称" required>
-            <Select options={goodsList} />
+            <Select options={goodsList} showSearch />
           </Form.Item>
         </>
       )}
@@ -153,21 +146,16 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
       )}
 
       {type !== '' && (
-        <>
-          <ProFormSelect
-            name="ruleId"
-            label="预警规则"
-            required
-            options={rule}
-            placeholder="请选择规则"
-          />
-          <ProFormDatePicker
-            label="起始时间"
-            required
-            name="endCheckTime"
-            placeholder="请选择时间"
-          />
-        </>
+        <ProFormSelect
+          name="ruleId"
+          label="预警规则"
+          required
+          options={rule}
+          placeholder="请选择规则"
+        />
+      )}
+      {type === '1' && (
+        <ProFormDatePicker label="起始时间" required name="endCheckTime" placeholder="请选择时间" />
       )}
     </ModalForm>
   );

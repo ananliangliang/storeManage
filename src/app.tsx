@@ -1,46 +1,60 @@
 import React from 'react';
-import { BasicLayoutProps, Settings as LayoutSettings } from '@ant-design/pro-layout';
+import { BasicLayoutProps, MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 
 import defaultSettings from '../config/defaultSettings';
 import sideLogo from '@/assets/image/sideLogo.png';
-
+import { IMenus } from './models/power';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+import zhCN from './locales/zh-CN';
+moment.locale('zh-cn');
 export async function getInitialState(): Promise<{
   settings?: LayoutSettings;
   currentUser?: API.CurrentUser;
   fetchUserInfo: () => Promise<API.CurrentUser | undefined>;
+  menuData: MenuDataItem[];
 }> {
-  // const fetchUserInfo = async () => {
-  //   try {
-  //     const currentUser = await queryCurrent();
-  //     return currentUser;
-  //   } catch (error) {
-  //     history.push('/user/login');
-  //   }
-  //   return undefined;
-  // };
-  // // 如果是登录页面，不执行
-  // if (history.location.pathname !== '/user/login') {
-  //   const currentUser = await fetchUserInfo();
-  //   return {
-  //     fetchUserInfo,
-  //     currentUser,
-  //     settings: defaultSettings,
-  //   };
-  // }
-  defaultSettings['logo'] = sideLogo;
   return {
     fetchUserInfo: {} as any,
     settings: defaultSettings,
+    menuData: [],
   };
 }
+
+export const antd = {
+  config: {
+    locale: zhCN, // 引用antd的语言包
+  },
+};
+const menuDataRender = (menuList: IMenus[]): MenuDataItem[] => {
+  return menuList.map((item) => {
+    const a: MenuDataItem = {
+      path: item.url,
+      name: item.menuName,
+      icon: (
+        <span className="anticon">
+          <span className={item.icon} />
+        </span>
+      ),
+      children: item.children ? menuDataRender(item.children) : [],
+      key: item.url,
+    };
+    return a;
+  });
+};
 
 export const layout = ({
   initialState,
 }: {
-  initialState: { settings?: LayoutSettings; currentUser?: API.CurrentUser };
+  initialState: {
+    settings?: LayoutSettings;
+    currentUser?: API.CurrentUser;
+    menuData: MenuDataItem[];
+  };
 }): BasicLayoutProps => {
+  console.warn(initialState);
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -54,6 +68,12 @@ export const layout = ({
       // }
     },
     menuHeaderRender: undefined,
+    // menuData: initialState.menuData || [],
+    // menuDataRender: (menuData) => initialState.menuData || menuData,
     ...initialState?.settings,
+    logo: sideLogo,
+    // menuDataRender: () => {
+    //   return menuDataRender(menus.menus);
+    // },
   };
 };

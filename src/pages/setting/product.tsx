@@ -20,6 +20,7 @@ const baseColumns: ProColumns<any>[] = [
   {
     title: '编号',
     dataIndex: 'id',
+    hideInTable: true,
     hideInForm: true,
     search: false,
   },

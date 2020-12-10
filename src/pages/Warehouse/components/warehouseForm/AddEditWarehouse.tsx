@@ -82,7 +82,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
         label="组织"
       />
 
-      <ProFormText name="regionName" label="分区名称" placeholder="请输入分区名称" />
+      {/* <ProFormText name="regionName" label="分区名称" placeholder="请输入分区名称" /> */}
       <ProFormText
         name="shortName"
         rules={[
@@ -91,7 +91,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
             message: '请输入名称',
           },
         ]}
-        label="简称"
+        label="名称"
         placeholder="请输入名称"
       />
       <ProFormText

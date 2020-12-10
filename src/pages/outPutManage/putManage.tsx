@@ -1,6 +1,5 @@
 import PowerBotton from '@/components/PowerBotton';
 import config from '@/config/config';
-import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 
@@ -37,6 +36,16 @@ const uploadProp = {
     }
   },
 };
+const stateEmnu = new Map([
+  [0, '归还'],
+  [1, '新增'],
+  [2, '补货'],
+]);
+const typeEmnu = new Map([
+  [0, '初始化'],
+  [1, '出库'],
+  [2, '入库'],
+]);
 
 const PutManage: FC = () => {
   const [putFormVisible, setPutFormVisible] = useState(false);
@@ -46,15 +55,7 @@ const PutManage: FC = () => {
   const actionRef = useRef<ActionType>();
 
   const [treeData, setTreeData] = useState<DataNode[]>([]);
-  const [receiveType, entryType, getDict] = useModel('dict', (state) => [
-    state.dict.receiveType,
-    state.dict.entryType,
-    state.getDict,
-  ]);
-
   const auth = useModel('power', (state) => state.curAuth);
-  const [receive, setReceive] = useState<any>();
-  const [entry, setEntry] = useState<any>();
 
   useEffect(() => {
     async function fetch() {
@@ -63,21 +64,8 @@ const PutManage: FC = () => {
       setTreeData(node);
     }
 
-    if (!receiveType) {
-      getDict('receiveType');
-    }
-    if (!entryType) {
-      getDict('entryType');
-    }
     fetch();
   }, []);
-
-  useEffect(() => {
-    setReceive(dict2select(receiveType));
-  }, [receiveType]);
-  useEffect(() => {
-    setEntry(dict2select(entryType));
-  }, [entryType]);
 
   const columns: ProColumns<any>[] = useMemo(() => {
     return [
@@ -85,6 +73,7 @@ const PutManage: FC = () => {
         title: '序号',
         dataIndex: 'id',
         search: false,
+        hideInTable: true,
       },
       {
         title: '操作人',
@@ -105,20 +94,21 @@ const PutManage: FC = () => {
         title: '状态',
         dataIndex: 'type',
         valueType: 'select',
+        hideInTable: true,
         search: false,
         render(_, reocrd) {
-          return receive ? receive[reocrd.receive.type] : reocrd.receive.type;
+          return typeEmnu.get(reocrd.receive.type);
         },
-        valueEnum: receive,
+        valueEnum: typeEmnu,
       },
       {
         title: '操作类型',
         dataIndex: 'state',
         valueType: 'select',
         render(_, reocrd) {
-          return entry ? entry[reocrd.receive.state] : reocrd.receive.state;
+          return stateEmnu.get(reocrd.receive.state);
         },
-        valueEnum: entry,
+        valueEnum: stateEmnu,
       },
       {
         title: '物品名称',
@@ -133,7 +123,7 @@ const PutManage: FC = () => {
         search: false,
       },
       {
-        title: '种类信息',
+        title: '类型信息',
         dataIndex: 'goods_lastModel',
         render(_, record) {
           return record.goods.lastModel;
@@ -157,6 +147,7 @@ const PutManage: FC = () => {
         title: '识别方式',
         dataIndex: 'goods_type',
         valueType: 'select',
+        hideInTable: true,
         valueEnum: typeEnum,
         render(_, record) {
           return typeEnum[record.goods.type];
@@ -194,26 +185,28 @@ const PutManage: FC = () => {
         search: false,
       },
     ];
-  }, [entry, receive]);
+  }, []);
 
   function handleFinish(flag: boolean) {
     setPutFormVisible(false);
+    console.log(flag);
     if (flag) {
-      actionRef.current?.reload;
+      actionRef.current?.reload();
     }
   }
 
   function handleGiveBackFinish(flag: boolean) {
     setGiveBackVisible(false);
+    console.log(flag);
     if (flag) {
-      actionRef.current?.reload;
+      actionRef.current?.reload();
     }
   }
 
   function handleReplenishmentFinish(flag: boolean) {
     setReplenishment(false);
     if (flag) {
-      actionRef.current?.reload;
+      actionRef.current?.reload();
     }
   }
   return (

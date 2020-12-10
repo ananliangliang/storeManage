@@ -1,4 +1,4 @@
-import { keyFindChild } from '@/models/warehouse';
+import { keyFindBrother } from '@/models/warehouse';
 import ProForm, {
   DrawerForm,
   ProFormDigit,
@@ -9,71 +9,69 @@ import ProForm, {
 import { Form } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { Store } from 'antd/es/form/interface';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { regionOnAddEdit } from '../../service';
+import { regionGet, regionOnAddEdit } from '../../service';
 //import styles from './AddEditPlace.less'
 
 interface AddEditPlaceProps {
-  initialValues?: Store;
+  initialValues: Store;
   visible: boolean;
   orgNo?: { label: string; value: string }[];
   onFinish: (data: Store) => Promise<void | boolean> | void | boolean;
   onClose: () => void;
 }
 
-const AddEditGoods: FC<AddEditPlaceProps> = ({
-  initialValues,
-  orgNo,
-  visible,
-  onFinish,
-  onClose,
-}) => {
+const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish, onClose }) => {
   const [title, setTitle] = useState('新增货架');
-  const [warehouse, pos, keyFindParent] = useModel('warehouse', (state) => [
-    state.warehouse,
-    state.pos,
-    state.keyFindParent,
-  ]);
+  const [warehouse] = useModel('warehouse', (state) => [state.warehouse]);
   const [part, setPart] = useState<any>();
   const [form] = useForm();
 
   useEffect(() => {
-    if (warehouse && pos.partition) {
-      const res = keyFindChild(warehouse, pos.partition);
+    if (warehouse && initialValues.parentKey) {
+      console.log(initialValues.parentKey);
+      const res = keyFindBrother(warehouse, initialValues.parentKey);
       console.log(res);
-
       setPart(res);
     }
-  }, [warehouse]);
+  }, [initialValues.parentKey]);
 
   useEffect(() => {
-    if (initialValues && initialValues.id) {
-      setTitle('修改货架');
-    } else {
-      setTitle('新增货架');
-    }
-    console.warn(initialValues);
-    if (form) {
-      let hlDetail: any = [];
-      if (initialValues?.hlDetail) {
-        for (const key in initialValues.hlDetail) {
-          if (Object.prototype.hasOwnProperty.call(initialValues.hlDetail, key)) {
-            const element = initialValues.hlDetail[key];
+    async function fetch() {
+      const res = await regionGet(initialValues.id);
+      console.log(res);
+      const hlDetail: any[] = [];
+      if (res?.hlDetail) {
+        for (const key in res.hlDetail) {
+          if (Object.prototype.hasOwnProperty.call(res.hlDetail, key)) {
+            const element = res.hlDetail[key];
+            element.sort += '';
             hlDetail.push(element);
           }
         }
       }
-      form.setFieldsValue({ ...initialValues, hlDetail });
+      res.sort += '';
+      res.orgNo = res.parentId - 0;
+      form.setFieldsValue({ ...res, hlDetail });
+    }
+    if (initialValues && initialValues.id) {
+      setTitle('修改货架');
+      fetch();
+    } else {
+      setTitle('新增货架');
     }
   }, [initialValues]);
 
-  const warehouseId = useRef();
-  function handleChangePrt(value: number, opt: any) {
-    const res = keyFindParent(opt.key, 'warehouse');
-    warehouseId.current = res['id'];
-    console.log(res);
-  }
+  // const warehouseId = useRef();
+
+  // function handleChangePrt(value: number, opt: any) {
+  //   if (opt) {
+  //     const res = keyFindParent(opt.key, 'warehouse');
+  //     warehouseId.current = res['id'];
+  //     console.log(res, opt);
+  //   }
+  // }
 
   async function handleFinish(data: Store) {
     try {
@@ -83,7 +81,7 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({
       });
       data.level = 4;
       data.hlDetail = temp;
-      if (!initialValues?.warehouseId) data.warehouseId = warehouseId.current;
+      // if (!initialValues?.warehouseId) data.warehouseId = warehouseId.current;
       const res = await regionOnAddEdit({ ...initialValues, ...data });
       console.log(res);
       onFinish(data);
@@ -128,9 +126,9 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({
       <ProForm.Group>
         <ProFormSelect
           options={part}
-          fieldProps={{
-            onChange: handleChangePrt,
-          }}
+          // fieldProps={{
+          //   onChange: handleChangePrt,
+          // }}
           name="orgNo"
           label="分区"
         />
@@ -203,7 +201,7 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({
         {(fields, { add, remove }, { errors }) => (
           <>
             {fields.map((field, index) => (
-              <ProForm.Group>
+              <ProForm.Group key={index}>
                 <ProFormDigit
                   name={[field.name, 'count']}
                   rules={[

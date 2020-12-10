@@ -33,6 +33,7 @@ const Department: FC<IndexProps> = (props) => {
       title: 'id',
       dataIndex: 'id',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {

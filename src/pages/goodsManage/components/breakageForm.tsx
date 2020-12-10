@@ -115,7 +115,7 @@ const BreakageForm: FC<BreakageFormProps> = ({
             <Cascader onChange={handleChooseAddress} options={addressTree} />
           </Form.Item>
           <Form.Item name="goodsId" label="物资名称" required>
-            <Select options={goodsList} />
+            <Select options={goodsList} showSearch />
           </Form.Item>
         </>
       )}

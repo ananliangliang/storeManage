@@ -17,7 +17,9 @@ const statusEnum = new Map([
   [1, '未处理'],
   [0, '已处理'],
 ]);
-const ColText = ({ value }: any) => <div>{value} </div>;
+const ColText = (props: any) => {
+  return <div>{props.value} </div>;
+};
 const Breakage: FC<WarningRuleProps> = (props) => {
   const [manageType, handleType, getDict] = useModel('dict', (state) => [
     state.dict.manageType,
@@ -45,8 +47,9 @@ const Breakage: FC<WarningRuleProps> = (props) => {
   const columns: ProColumns<any>[] = [
     {
       title: '序号',
-      dataIndex: 'id',
+      dataIndex: 'manageId',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {
@@ -73,7 +76,7 @@ const Breakage: FC<WarningRuleProps> = (props) => {
     {
       title: '物资名称',
       dataIndex: 'name',
-      renderFormItem() {
+      renderFormItem(item, config) {
         return <ColText />;
       },
     },
@@ -141,7 +144,7 @@ const Breakage: FC<WarningRuleProps> = (props) => {
   function handleDispose(record: any) {
     setModalProp({ visible: true, values: { ...record } });
     setTimeout(() => {
-      formRef.current?.setFieldsValue({ goods: record.goods });
+      formRef.current?.setFieldsValue({ name: record.name });
     }, 120);
     console.log(record);
   }
@@ -161,7 +164,7 @@ const Breakage: FC<WarningRuleProps> = (props) => {
         }}
         request={serviceGoodsManageGoods.list}
         columns={columns}
-        rowKey="id"
+        rowKey="manageId"
       />
 
       <Modal

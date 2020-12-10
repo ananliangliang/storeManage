@@ -116,6 +116,10 @@ function getType(data: any) {
           return 'partition';
         } else if (data.level == 3) {
           return 'goods';
+        } else if (data.level == 4) {
+          return 'shelf';
+        } else if (data.level == 5) {
+          return 'grid';
         }
       default:
         throw '错误的数据';

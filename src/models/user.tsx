@@ -1,10 +1,12 @@
 import serviceAdmin from '@/services/admin';
 import { useState, useCallback, useEffect } from 'react';
-import { useModel, useRequest } from 'umi';
+import { useModel } from 'umi';
+import defaultSettings from '../../config/defaultSettings';
 
 export default function useUserModel() {
   const [user, setUser] = useState(null);
   const forMatePower = useModel('power', (state) => state.forMatePower);
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   useEffect(() => {
     fetch();
@@ -15,18 +17,24 @@ export default function useUserModel() {
       const res: any = await serviceAdmin.getLoginInfo();
       signin(res);
     }
-    fetch();
+    return fetch();
   }, []);
 
   const signin = useCallback((res: any) => {
     sessionStorage.setItem('token', res.loginToken);
     setUser(res);
-    forMatePower(res.menus);
+    const menu = forMatePower(res.menus);
+
+    setInitialState({
+      settings: defaultSettings,
+      menuData: menu.menus,
+    } as any);
   }, []);
   const signout = useCallback(() => {
     // signout implementation
     // setUser(null)
   }, []);
+
   return {
     user,
     signin,

@@ -84,6 +84,7 @@ const Dictionary: FC<DictionaryProps> = () => {
       title: '字典编号',
       dataIndex: 'id',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {

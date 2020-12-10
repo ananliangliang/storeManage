@@ -13,6 +13,9 @@ const serviceAdmin = {
   updatePassword(params: any = {}) {
     return post('/admin/login', params, true);
   },
+  resetPassword(userId: number) {
+    return post('/admin/resetPassword', { userId },true);
+  },
 };
 
 export default serviceAdmin;

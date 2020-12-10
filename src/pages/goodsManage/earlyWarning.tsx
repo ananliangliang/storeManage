@@ -65,6 +65,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       title: '序号',
       dataIndex: 'id',
       hideInForm: true,
+      hideInTable: true,
       search: false,
     },
     {
@@ -73,7 +74,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       hideInForm: true,
     },
     {
-      title: '种类信息',
+      title: '类型信息',
       dataIndex: 'type',
       render(_, record) {
         return record.lastModel;

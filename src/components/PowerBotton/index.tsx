@@ -11,7 +11,6 @@ interface IndexProps extends ButtonProps {
 const PowerBotton: FC<IndexProps> = (props) => {
   const { allowStr, showDivider, ...btnProps } = props;
   const auth = useModel('power', (state) => state.curAuth);
-  console.log(REACT_APP_ENV);
   if (REACT_APP_ENV !== 'pre' || auth[allowStr]) {
     return (
       <>

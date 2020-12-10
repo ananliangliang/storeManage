@@ -1,4 +1,4 @@
-import { post } from '@/utils/request';
+import { getReq, post } from '@/utils/request';
 import { proTableReq } from '@/utils/tools';
 
 export function goodsInfoList(param: any) {
@@ -15,4 +15,8 @@ export function listByReginonAll(param: any) {
 
 export function goodsChangeRFID(id: string, signNo: string) {
   return post('/goods/changeRFID', { id, signNo });
+}
+
+export function goodsGet(id: string) {
+  return getReq('/goods/get?id=' + id);
 }

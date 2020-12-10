@@ -34,6 +34,7 @@ const codeMessage: {
  */
 const errorHandler = (error: { response: Response }): Response => {
   const { response } = error;
+  console.warn(error);
   if (response) {
     if (response && response.status) {
       const errorText = codeMessage[response.status] || response.statusText;
@@ -112,6 +113,10 @@ request.interceptors.response.use(async (response) => {
     }
     throw '登录过期';
   }
+  notification.error({
+    description: '返回结果类型出错',
+    message: '服务异常',
+  });
   throw '服务器异常';
 });
 
