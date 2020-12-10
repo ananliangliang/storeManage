@@ -169,7 +169,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     <div>
       <ProTable<any>
         tableAlertRender={false}
-        // rowSelection={{}}
+        rowSelection={{}}
         pagination={{
           pageSize: 10,
         }}

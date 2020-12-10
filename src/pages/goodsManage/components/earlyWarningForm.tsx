@@ -124,7 +124,7 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
       )}
       {type === '0' && (
         <>
-          <Form.Item name="goodsId" label="物资名称" required>
+          <Form.Item name="goodsId" label="物资种类" required>
             <SearchSelect request={sourceRequest} />
           </Form.Item>
         </>

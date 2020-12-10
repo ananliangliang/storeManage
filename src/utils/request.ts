@@ -5,7 +5,7 @@
 import { extend } from 'umi-request';
 import { getPageQuery } from './utils';
 import { stringify } from 'qs';
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 import config from '@/config/config';
 import { history } from 'umi';
 import localData from '@/localStore';
@@ -113,10 +113,14 @@ request.interceptors.response.use(async (response) => {
     }
     throw '登录过期';
   }
-  notification.error({
-    description: '返回结果类型出错',
-    message: '服务异常',
-  });
+  if (data.msg) {
+    message.error(data.msg);
+  } else {
+    notification.error({
+      description: '返回结果类型出错',
+      message: '服务异常',
+    });
+  }
   throw '服务器异常';
 });
 

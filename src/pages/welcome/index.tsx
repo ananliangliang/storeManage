@@ -57,7 +57,7 @@ const Index: FC<IndexProps> = (props) => {
   }
   function handleFetchData(id: any) {
     console.log(id);
-    setWarehouseId(id);
+    setWarehouseId(id == 'all' ? '' : id);
   }
   return (
     <>

@@ -117,7 +117,7 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                 <Form.Item {...field} noStyle>
                   <SearchSelect
                     className={styles.inline}
-                    placeholder="请搜索物资名称"
+                    placeholder="请搜索物资类型"
                     defaultOpt={defopt[index]}
                     request={sourceRequest}
                   />

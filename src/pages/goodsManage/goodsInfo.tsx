@@ -12,12 +12,13 @@ import { warehouseTreeListAll } from '../Warehouse/service';
 import BreakageForm from './components/breakageForm';
 import EarlyWarningForm from './components/earlyWarningForm';
 import styles from './goodsInfo.less';
-import { listByReginon } from './service/goodsInfo';
+import { goodsDel, listByReginon } from './service/goodsInfo';
 import QRCode from 'qrcode.react';
 import serviceLocal from '@/services/local';
 import PowerDropBtn from '@/components/PowerBotton/dropBtn';
 import PowerBotton from '@/components/PowerBotton';
 import RfidForm from './components/rfidForm';
+import EditGoodsInfoForm from './components/editGoodsInfoForm';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
@@ -40,6 +41,11 @@ const menus = [
     allowStr: 'warning',
     key: 'warning',
     text: '添加预警',
+  },
+  {
+    allowStr: 'edit',
+    key: 'edit',
+    text: '编辑',
   },
   {
     allowStr: 'mod',
@@ -75,6 +81,13 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   }>({
     visible: false,
     goods: {},
+  });
+  const [editProp, setEditProp] = useState<{
+    visible: boolean;
+    value: Store;
+  }>({
+    visible: false,
+    value: {},
   });
 
   useEffect(() => {
@@ -127,6 +140,27 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
               {typeEnum.get(record.type)}
             </Tooltip>
           );
+        },
+      },
+
+      {
+        title: '库房',
+        dataIndex: 'kf',
+        hideInForm: true,
+        search: false,
+      },
+      {
+        title: '分区',
+        dataIndex: 'fq',
+        hideInForm: true,
+        search: false,
+      },
+      {
+        title: '位置',
+        search: false,
+        hideInForm: true,
+        render(node, record) {
+          return record.hj + record.hl;
         },
       },
       {
@@ -184,6 +218,9 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       case 'rfid':
         setRfidProp({ visible: true, goods: record });
         break;
+      case 'edit':
+        setEditProp({ visible: true, value: record });
+        break;
       case 'warning':
         setWarningProp({
           visible: true,
@@ -232,8 +269,11 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     }
   };
 
-  function handleDel(id: string | string[]) {
+  async function handleDel(id: string | string[]) {
     console.log(id);
+    const ids = typeof id === 'object' ? id.join(',') : id;
+    await goodsDel(ids);
+    actionRef.current?.reload();
   }
 
   function getList(param: any) {
@@ -363,6 +403,14 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         {...RfidProp}
         onFinish={() => {
           setRfidProp({ visible: false, goods: {} });
+        }}
+      />
+      <EditGoodsInfoForm
+        {...editProp}
+        addressTree={treeData}
+        onFinish={() => {
+          setEditProp({ visible: false, value: {} });
+          actionRef.current?.reload();
         }}
       />
     </div>

@@ -20,3 +20,11 @@ export function goodsChangeRFID(id: string, signNo: string) {
 export function goodsGet(id: string) {
   return getReq('/goods/get?id=' + id);
 }
+
+export function goodOnAddEdit(data: any) {
+  return post('/goods/onAddEdit', data);
+}
+
+export function goodsDel(ids: string) {
+  return post(`/goods/batch/remove?ids=${ids}`);
+}

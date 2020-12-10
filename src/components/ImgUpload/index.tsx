@@ -24,6 +24,7 @@ function beforeUpload(file: File) {
 
 type IProps = {
   imgSrc?: string;
+  value?: string;
   onChange?: (url: string) => void;
 };
 
@@ -36,6 +37,11 @@ export class ImgUpload extends React.Component<IProps> {
     if (p.imgSrc !== s.imgSrc) {
       return {
         imageUrl: p.imgSrc,
+      };
+    }
+    if (p.value !== s.imgSrc) {
+      return {
+        imageUrl: p.value,
       };
     }
     return null;

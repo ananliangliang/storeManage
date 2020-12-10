@@ -23,7 +23,7 @@ const RightMenu: FC<IndexProps> = ({ className, pos, onClick, closeType = 'leave
   const [list, setList] = useState<any[]>([]);
   useEffect(() => {
     setList(btns.filter((item) => auth[item.allowStr]));
-  }, [btns]);
+  }, [btns, auth]);
 
   useEffect(() => {
     setStyle({

@@ -38,6 +38,7 @@ const Department: FC<IndexProps> = (props) => {
     },
     {
       title: '项目标识',
+      hideInTable: true,
       dataIndex: 'ident',
     },
     {

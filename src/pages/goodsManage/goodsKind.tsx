@@ -35,7 +35,7 @@ const TreeBtn = [
   },
   {
     key: 'remove',
-    allowStr: 'removeType',
+    allowStr: 'delType',
     text: '删除',
   },
 ];
@@ -109,10 +109,10 @@ const GoodsKind: FC<IndexProps> = (props) => {
       render(_, record) {
         return <Image width={120} src={record.imageUrl} />;
       },
-      formItemProps: {
-        // trigger: '',
-      },
-      renderFormItem(url: any, record) {
+      // formItemProps: {
+      //   valuePropName: 'imageUrl',
+      // },
+      renderFormItem() {
         return <ImgUpload />;
       },
     },
