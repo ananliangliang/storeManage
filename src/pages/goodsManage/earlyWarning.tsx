@@ -2,7 +2,6 @@ import PowerBotton from '@/components/PowerBotton';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 import serviceGoodsRule from '@/services/goodsRule';
-import { subEffect } from '@/utils/tools';
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import { Modal, Tooltip, TreeSelect } from 'antd';
@@ -15,6 +14,11 @@ import EarlyWarningForm from './components/earlyWarningForm';
 //import styles from './ earlyWarning.less'
 
 interface EarlyWarningProps {}
+
+const handleEnum = new Map([
+  [0, '未处理'],
+  [1, '已处理'],
+]);
 
 const EarlyWarning: FC<EarlyWarningProps> = (props) => {
   const { goodsKind, goodsKindInit } = useModel('goodsKind', (state) => {
@@ -115,6 +119,8 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     {
       title: '状态',
       dataIndex: 'isHandle',
+      valueType: 'select',
+      valueEnum: handleEnum,
       render(cur, record) {
         if (cur === 0) {
           return (

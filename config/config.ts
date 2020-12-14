@@ -118,6 +118,24 @@ export default defineConfig({
       ],
     },
     {
+      path: '/log',
+      name: '日志管理',
+      icon: 'smile',
+      component: '../layout/NavLayout',
+      routes: [
+        {
+          path: '/log/commonLog',
+          name: '系统日志',
+          component: './log/commonLog',
+        },
+        {
+          path: '/log/messageLog',
+          name: '消息日志',
+          component: './log/messageLog',
+        },
+      ],
+    },
+    {
       name: '系统配置',
       icon: 'smile',
       path: '/setting',

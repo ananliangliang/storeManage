@@ -1,7 +1,8 @@
 import { keyFindChild } from '@/models/warehouse';
+import { exitFullscreen, fullScreen } from '@/utils/tools';
 import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Menu } from 'antd';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useModel } from 'umi';
 import styles from '../index.less';
 interface BoxProps {
@@ -18,10 +19,12 @@ const WareBox: FC<BoxProps> = ({ onClick, onChange }) => {
 
   const [curWare, setCurWare] = useState<any>({});
   const [isFull, setIsFull] = useState(false);
+  const root = useRef<Element | null>();
   useEffect(() => {
     if (data.length == 0) {
       init();
     }
+    root.current = document.querySelector('#welcome_root');
   }, []);
 
   const menus = useMemo(() => {
@@ -50,8 +53,13 @@ const WareBox: FC<BoxProps> = ({ onClick, onChange }) => {
     onChange(key);
   }
   function handleFull() {
+    if (!root.current) root.current = document.querySelector('#welcome_root');
     if (isFull) {
+      exitFullscreen();
+      root.current?.classList.remove('full');
     } else {
+      fullScreen(root.current as HTMLElement);
+      root.current?.classList.add('full');
     }
     setIsFull(!isFull);
   }

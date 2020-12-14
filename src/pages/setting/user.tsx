@@ -206,7 +206,7 @@ const User: FC<IndexProps> = (props) => {
                   await serviceAdmin.resetPassword(record.id);
                 }}
               >
-                <Tooltip title="默认密码:8888">重置密码</Tooltip>
+                <Tooltip title="默认密码:888888">重置密码</Tooltip>
               </PopconfirmPowerBtn>
               <PowerBotton
                 type="link"

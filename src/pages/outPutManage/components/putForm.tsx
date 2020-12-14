@@ -192,6 +192,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
         options={[
           {
             value: '1',
+            disabled: true,
             label: '生成二维码',
           },
           {

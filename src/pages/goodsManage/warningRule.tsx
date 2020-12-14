@@ -11,6 +11,7 @@ import StatusSwitch from '@/components/statusSwitch/statusSwitch';
 import PowerBotton from '@/components/PowerBotton';
 import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import { useModel } from 'umi';
+import DrawerRuleGoods from './components/drawerRuleGoods';
 //import styles from './warningRule.less'
 
 interface WarningRuleProps {}
@@ -30,6 +31,13 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
   const auth = useModel('power', (state) => state.curAuth);
+  const [ruleGoodsProp, setRuleGoodsProp] = useState<{
+    visible: boolean;
+    data: Store;
+  }>({
+    visible: false,
+    data: {},
+  });
 
   const columns: ProColumns<any>[] = [
     {
@@ -95,6 +103,21 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
             >
               编辑
             </PowerBotton>
+            <PowerBotton
+              key="seeRuleGoods"
+              allowStr="edit"
+              type="link"
+              showDivider
+              onClick={() => {
+                setRuleGoodsProp({
+                  visible: true,
+                  data: { ...record },
+                });
+              }}
+            >
+              查看关联物资
+            </PowerBotton>
+
             <PopconfirmPowerBtn
               allowStr="del"
               title="确认删除?"
@@ -131,6 +154,12 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     setModalProp({ visible: false, values: {} });
     formRef.current?.resetFields();
   };
+  function handleClose() {
+    setRuleGoodsProp({
+      visible: false,
+      data: {},
+    });
+  }
   const submitLock = useRef(false);
   return (
     <div>
@@ -176,6 +205,8 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
         columns={columns}
         rowKey="id"
       />
+
+      <DrawerRuleGoods {...ruleGoodsProp} onClose={handleClose} />
 
       <Modal
         title={modalProp.values?.id ? '修改' : '新增'}

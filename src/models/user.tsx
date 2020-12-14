@@ -6,7 +6,7 @@ import defaultSettings from '../../config/defaultSettings';
 export default function useUserModel() {
   const [user, setUser] = useState(null);
   const forMatePower = useModel('power', (state) => state.forMatePower);
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
 
   useEffect(() => {
     fetch();

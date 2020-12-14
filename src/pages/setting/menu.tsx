@@ -200,6 +200,7 @@ const Menu: FC<MenuProps> = (props) => {
         title: '排序',
         hideInSearch: true,
         dataIndex: 'sortIndex',
+        valueType: 'digit',
         required: false,
       },
     ];

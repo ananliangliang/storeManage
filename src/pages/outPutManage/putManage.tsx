@@ -20,22 +20,6 @@ const typeEnum = new Map([
   [2, '二维码'],
 ]);
 
-const uploadProp = {
-  name: 'excelFile',
-  action: config.baseUrl + '/warehouse/file/uploadExcel',
-  withCredentials: true,
-  showUploadList: false,
-  onChange(info: any) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
 const stateEmnu = new Map([
   [0, '归还'],
   [1, '新增'],
@@ -66,6 +50,24 @@ const PutManage: FC = () => {
 
     fetch();
   }, []);
+
+  const uploadProp = {
+    name: 'excelFile',
+    action: config.baseUrl + '/warehouse/file/uploadExcel2',
+    withCredentials: true,
+    showUploadList: false,
+    onChange(info: any) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} 文件上传成功`);
+        actionRef.current?.reload();
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} 文件上传失败`);
+      }
+    },
+  };
 
   const columns: ProColumns<any>[] = useMemo(() => {
     return [
@@ -149,6 +151,7 @@ const PutManage: FC = () => {
         valueType: 'select',
         hideInTable: true,
         valueEnum: typeEnum,
+        search: false,
         render(_, record) {
           return typeEnum[record.goods.type];
         },

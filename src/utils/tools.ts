@@ -212,3 +212,36 @@ export function getOsInfo() {
   }
   return { name, version };
 }
+
+export function fullScreen(dom: HTMLElement) {
+  const element: any = dom;
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else {
+    message.error('当前浏览器不支持全屏方法');
+    throw '当前浏览器不支持全屏方法';
+  }
+}
+
+//退出全屏
+export function exitFullscreen() {
+  const dom: any = document;
+  if (dom.exitFullscreen) {
+    dom.exitFullscreen();
+  } else if (dom.msExitFullscreen) {
+    dom.msExitFullscreen();
+  } else if (dom.mozCancelFullScreen) {
+    dom.mozCancelFullScreen();
+  } else if (dom.webkitExitFullscreen) {
+    dom.webkitExitFullscreen();
+  } else {
+    message.error('当前浏览器不支持退出全屏');
+    throw '当前浏览器不支持退出全屏';
+  }
+}

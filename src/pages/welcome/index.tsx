@@ -4,7 +4,7 @@ import { Row, Col } from 'antd';
 import WareBox from './components/box/wareBox';
 import Box from './components/box/box';
 import GoodsBox from './components/goodsBox';
-import AreaBox from './components/areaBox';
+import AreaBox from './components/areaBox/index';
 import classNames from 'classnames';
 import IndexList from './components/indexList/IndexList';
 import WarningBox from './components/warningBox';
@@ -38,29 +38,30 @@ const Index: FC<IndexProps> = (props) => {
     let arr: any[] = [];
     res.wzyj.map((item: any) => {
       arr.push({
-        name: '即将维护',
+        name: item.model + '-即将维护',
         value: item.jjwh,
         type: item.model,
       });
       arr.push({
-        name: '维护预期',
+        name: item.model + '-维护预期',
         value: item.whyq,
         type: item.model,
       });
       arr.push({
-        name: '完成维护',
+        name: item.model + '-完成维护',
         value: item.wcwh,
         type: item.model,
       });
     });
-    setPieData(arr);
+    setPieData(arr.filter((item) => item.type));
   }
   function handleFetchData(id: any) {
     console.log(id);
-    setWarehouseId(id == 'all' ? '' : id);
+
+    setWarehouseId(id == 'all' ? undefined : id);
   }
   return (
-    <>
+    <div id="welcome_root">
       <Row gutter={12} className={styles.row}>
         <Col flex={1}>
           <WareBox onChange={handleFetchData} />
@@ -109,7 +110,7 @@ const Index: FC<IndexProps> = (props) => {
           <IndexList warehouseId={warehouseId} />
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 export default Index;

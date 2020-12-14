@@ -8,11 +8,12 @@ interface IndexListProps {
 }
 const columns: ProColumnType<any>[] = [
   {
-    dataIndex: '',
+    dataIndex: 'date',
   },
-  {},
+  {
+    dataIndex: 'createTime',
+  },
 ];
-
 const IndexList: FC<IndexListProps> = ({ warehouseId }) => {
   const actionRef = useRef<ActionType>();
   function getList(param: any) {
@@ -34,6 +35,7 @@ const IndexList: FC<IndexListProps> = ({ warehouseId }) => {
           actionRef={actionRef}
           pagination={{
             size: 'small',
+            pageSize: 6,
           }}
           request={getList}
           toolBarRender={false}

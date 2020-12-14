@@ -1,6 +1,11 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
 import serviceGoodsModel from '@/services/goodsModel';
-import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect } from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProFormDateTimePicker,
+  ProFormRadio,
+  ProFormSelect,
+} from '@ant-design/pro-form';
 import { Cascader, Form, Select } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
@@ -47,8 +52,13 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
 
   async function handleFinish(data: Store) {
     console.log(data);
-    await serviceGoodsEarlyWarning.onAddEdit(data);
-    onFinish(data);
+    try {
+      await serviceGoodsEarlyWarning.onAddEdit(data);
+      onFinish(data);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   useEffect(() => {
@@ -155,7 +165,12 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
         />
       )}
       {type === '1' && (
-        <ProFormDatePicker label="起始时间" required name="endCheckTime" placeholder="请选择时间" />
+        <ProFormDateTimePicker
+          label="起始时间"
+          required
+          name="endCheckTime"
+          placeholder="请选择时间"
+        />
       )}
     </ModalForm>
   );

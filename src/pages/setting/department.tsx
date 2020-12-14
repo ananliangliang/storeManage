@@ -1,5 +1,5 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
-import { Button, Divider, Popconfirm, Modal } from 'antd';
+import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
+import { Button, Divider, Popconfirm, Modal, Select, TreeSelect } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
@@ -7,7 +7,7 @@ import { Store } from 'antd/es/form/interface';
 import { DataNode } from 'antd/lib/tree';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { FormInstance } from 'antd/lib/form';
-import { removeEmptyChildren, subEffect } from '@/utils/tools';
+import { removeEmptyChildren, subEffect, treeDataFormate } from '@/utils/tools';
 import serviceCommon from '@/services/common';
 import DepartBtn from './components/departBtn';
 import PowerBotton from '@/components/PowerBotton';
@@ -19,6 +19,7 @@ const Department: FC<IndexProps> = (props) => {
   const { goodsKind, init } = useModel('goodsKind', (state) => state);
   const kind = useRef<DataNode[]>([]);
   const formRef = useRef<FormInstance>();
+  const [dataSource, setDataSource] = useState<any>([]);
   const [modalProp, setModalProp] = useState<{
     visible: boolean;
     values: Store;
@@ -28,7 +29,14 @@ const Department: FC<IndexProps> = (props) => {
     values: {},
     columns: [],
   });
-  const [columns] = useState<ProColumns<any>[]>([
+
+  const treeData = useMemo(() => {
+    const data = treeDataFormate(dataSource, 'id', 'depName');
+    console.log(data);
+    return data;
+  }, [dataSource]);
+
+  const columns: ProColumns<any>[] = [
     {
       title: 'id',
       dataIndex: 'id',
@@ -37,9 +45,12 @@ const Department: FC<IndexProps> = (props) => {
       search: false,
     },
     {
-      title: '项目标识',
+      title: '父名称',
       hideInTable: true,
-      dataIndex: 'ident',
+      dataIndex: 'parentId',
+      renderFormItem() {
+        return <TreeSelect treeData={treeData} />;
+      },
     },
     {
       title: '名称',
@@ -101,7 +112,7 @@ const Department: FC<IndexProps> = (props) => {
         );
       },
     },
-  ]);
+  ];
   const actionRef = useRef<ActionType>();
   const [depMenu, setDepMenu] = useState<any>([]);
 
@@ -112,6 +123,9 @@ const Department: FC<IndexProps> = (props) => {
     async function fetch() {
       const depMenu = await serviceCommon.departmentGetOrgAll();
       setDepMenu(depMenu);
+      const res = await serviceCommon.departmentList();
+      removeEmptyChildren(res.data);
+      setDataSource(res.data);
     }
     fetch();
   }, []);
@@ -132,11 +146,11 @@ const Department: FC<IndexProps> = (props) => {
 
   const selectData = useRef({});
 
-  async function getList(params: any): Promise<RequestData<any>> {
+  async function getList(params: any) {
     params.parent_id = selectData.current?.['id'];
     const res = await serviceCommon.departmentList(params);
     removeEmptyChildren(res.data);
-    return res;
+    setDataSource(res.data);
   }
 
   const onClose = () => {
@@ -164,12 +178,15 @@ const Department: FC<IndexProps> = (props) => {
       <ProTable<any>
         actionRef={actionRef}
         tableAlertRender={false}
+        search={false}
         headerTitle={<DepartBtn btnList={depMenu} onClick={handleCheck} />}
         rowSelection={{}}
+        // beforeSearchSubmit = {handleBeforeSearch}
+        dataSource={dataSource}
         pagination={{
           pageSize: 10,
         }}
-        request={getList}
+        // request={getList}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
             <PowerBotton allowStr="add" type="primary" key="add" onClick={() => handleAdd('goods')}>

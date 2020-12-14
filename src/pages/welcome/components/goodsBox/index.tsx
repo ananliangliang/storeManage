@@ -91,6 +91,13 @@ const GoodsBox: FC<IndexProps> = ({
     if (data.length !== 0) {
       console.warn(data);
       chartInstance.current?.changeData(data);
+    } else {
+      chartInstance.current?.changeData([
+        {
+          model: '',
+          value: undefined,
+        },
+      ]);
     }
   }, [data]);
   return (

@@ -50,7 +50,7 @@ const UserConfig: FC<UserConfigProps> = ({ onFinish, visible, user = {}, orgTree
   }, [roleTree]);
   useEffect(() => {
     form.setFieldsValue({
-      orgId: user?.userProduct?.orgNo,
+      depId: user?.userProduct?.depId,
       roleList: user?.userProduct?.roleList?.map((item: any) => item.id),
     });
   }, [user]);

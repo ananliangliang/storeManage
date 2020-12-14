@@ -101,6 +101,11 @@ const Dictionary: FC<DictionaryProps> = () => {
       },
     },
     {
+      title: '排序',
+      dataIndex: 'sortIndex',
+      valueType: 'digit',
+    },
+    {
       title: '操作',
       valueType: 'option',
       render: (text, record, index) => {
@@ -123,6 +128,7 @@ const Dictionary: FC<DictionaryProps> = () => {
             <PopconfirmPowerBtn
               title="确认删除?"
               allowStr="del"
+              type="link"
               onConfirm={async () => {
                 const res = await handleDel(record.id);
                 if (res) {
