@@ -18,7 +18,13 @@ export async function getInitialState(): Promise<{
 }> {
   return {
     fetchUserInfo: {} as any,
-    settings: defaultSettings,
+    settings: {
+      ...defaultSettings,
+      menu: {
+        locale: false,
+        loading: true,
+      },
+    },
     menuData: [],
   };
 }
@@ -33,6 +39,7 @@ const menuDataRender = (menuList: IMenus[]): MenuDataItem[] => {
     const a: MenuDataItem = {
       path: item.url,
       name: item.menuName,
+      locale: 'menu.' + item.menuName,
       icon: (
         <span className="anticon">
           <span className={item.icon} />
@@ -41,6 +48,7 @@ const menuDataRender = (menuList: IMenus[]): MenuDataItem[] => {
       children: item.children ? menuDataRender(item.children) : [],
       key: item.url,
     };
+    console.log(a);
     return a;
   });
 };
@@ -54,7 +62,8 @@ export const layout = ({
     menuData: MenuDataItem[];
   };
 }): BasicLayoutProps => {
-  console.warn(initialState);
+  const menuData = menuDataRender((initialState.menuData as any) || []);
+  console.warn(menuData);
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -68,12 +77,17 @@ export const layout = ({
       // }
     },
     menuHeaderRender: undefined,
-    // menuData: initialState.menuData || [],
+    menuData,
+    menuDataRender: (org) => {
+      console.warn(org);
+      return menuDataRender((initialState.menuData as any) || []);
+    },
     // menuDataRender: (menuData) => initialState.menuData || menuData,
     ...initialState?.settings,
     logo: sideLogo,
-    // menuDataRender: () => {
-    //   return menuDataRender(menus.menus);
+    // menuItemRender(prop, def) {
+    //   console.log(prop, def);
+    //   return def;
     // },
   };
 };

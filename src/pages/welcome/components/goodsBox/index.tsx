@@ -67,7 +67,6 @@ const GoodsBox: FC<IndexProps> = ({
       .interval()
       .position('model*count')
       .color('rgba(15,184,233,0.50)')
-      .size(26)
       .label('count', {
         style: {
           fill: 'rgba(255,255,255,0.85)',

@@ -14,8 +14,8 @@ import { useModel } from 'umi';
 
 interface WarningRuleProps {}
 const statusEnum = new Map([
-  [1, '未处理'],
-  [0, '已处理'],
+  [0, '未处理'],
+  [1, '已处理'],
 ]);
 const ColText = (props: any) => {
   return <div>{props.value} </div>;
@@ -76,6 +76,13 @@ const Breakage: FC<WarningRuleProps> = (props) => {
     {
       title: '物资名称',
       dataIndex: 'name',
+      hideInForm: true,
+      hideInTable: true,
+    },
+    {
+      title: '物资名称',
+      dataIndex: 'name',
+      search: false,
       renderFormItem(item, config) {
         return <ColText />;
       },
@@ -137,6 +144,7 @@ const Breakage: FC<WarningRuleProps> = (props) => {
     {
       title: '备注',
       dataIndex: 'remarks',
+      search: false,
       valueType: 'textarea',
     },
   ];

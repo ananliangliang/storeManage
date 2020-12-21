@@ -7,7 +7,7 @@ import { Col, message, Modal, Row, Tooltip } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { useModel } from 'umi';
+import { useModel, useLocation } from 'umi';
 import { warehouseTreeListAll } from '../Warehouse/service';
 import BreakageForm from './components/breakageForm';
 import EarlyWarningForm from './components/earlyWarningForm';
@@ -19,6 +19,7 @@ import PowerDropBtn from '@/components/PowerBotton/dropBtn';
 import PowerBotton from '@/components/PowerBotton';
 import RfidForm from './components/rfidForm';
 import EditGoodsInfoForm from './components/editGoodsInfoForm';
+import { FormInstance } from 'antd/lib/form';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
@@ -118,6 +119,10 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         dataIndex: 'specs',
       },
       {
+        title: '库存',
+        dataIndex: 'count',
+      },
+      {
         title: '入库时间',
         dataIndex: 'wareTime',
         valueType: 'dateRange',
@@ -159,6 +164,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         title: '位置',
         search: false,
         hideInForm: true,
+        valueType: 'textarea',
         render(node, record) {
           return record.hj + record.hl;
         },
@@ -180,11 +186,12 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     ] as ProColumns<any>[];
   }, [goodsState]);
 
+  const formRef = useRef<FormInstance>();
   const actionRef = useRef<ActionType>();
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [curData, setCurData] = useState({});
   const [ruleList, setRuleList] = useState<any[]>([]);
-
+  const location = useLocation();
   const treePos = useRef<any>({});
 
   function handleMenuClick(event: any, record: any) {
@@ -254,6 +261,17 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       const list = await serviceGoodsRule.list();
       setRuleList(list.data);
     }
+    const filter = location['query'];
+    if (filter) {
+      if (formRef.current) {
+        formRef.current?.setFieldsValue(filter);
+      } else {
+        setTimeout(() => {
+          formRef.current?.setFieldsValue(filter);
+          formRef.current?.submit();
+        }, 10000);
+      }
+    }
     fetch();
   }, []);
 
@@ -288,6 +306,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     setModalProp({ visible: false, value: {} });
     actionRef.current?.reload();
   }
+
   return (
     <div>
       <Row gutter={20} className={styles.row}>
@@ -315,6 +334,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
               headerTitle="物资信息"
               actionRef={actionRef}
               tableAlertRender={false}
+              formRef={formRef}
               rowSelection={{}}
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return [

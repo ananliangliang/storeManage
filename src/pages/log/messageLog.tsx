@@ -53,7 +53,7 @@ const MessageLog: FC<MessageLogProps> = (props) => {
           ];
         }}
         columns={columns}
-        rowKey="logId"
+        rowKey="id"
       />
     </>
   );

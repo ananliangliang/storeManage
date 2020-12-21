@@ -4,7 +4,7 @@ import { useModel } from 'umi';
 import defaultSettings from '../../config/defaultSettings';
 
 export default function useUserModel() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>({});
   const forMatePower = useModel('power', (state) => state.forMatePower);
   const { setInitialState } = useModel('@@initialState');
 
@@ -26,7 +26,13 @@ export default function useUserModel() {
     const menu = forMatePower(res.menus);
 
     setInitialState({
-      settings: defaultSettings,
+      settings: {
+        ...defaultSettings,
+        menu: {
+          loading: false,
+          locale: false,
+        },
+      },
       menuData: menu.menus,
     } as any);
   }, []);

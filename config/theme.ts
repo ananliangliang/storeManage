@@ -33,4 +33,5 @@ export default {
   'switch-color': 'rgb(19, 194, 194);',
   'disabled-bg': '#4c7e80',
   'disabled-color': '@text-color-secondary',
+  'background-color-base': '@hover-color',
 };

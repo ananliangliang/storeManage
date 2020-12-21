@@ -6,7 +6,7 @@ import ProForm, {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-form';
-import { Form } from 'antd';
+import { Form, message, Spin } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { Store } from 'antd/es/form/interface';
 import React, { FC, useEffect, useState } from 'react';
@@ -26,6 +26,7 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
   const [title, setTitle] = useState('新增货架');
   const [warehouse] = useModel('warehouse', (state) => [state.warehouse]);
   const [part, setPart] = useState<any>();
+  const [loading, setLoading] = useState(false);
   const [form] = useForm();
 
   useEffect(() => {
@@ -39,21 +40,27 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
 
   useEffect(() => {
     async function fetch() {
-      const res = await regionGet(initialValues.id);
-      console.log(res);
-      const hlDetail: any[] = [];
-      if (res?.hlDetail) {
-        for (const key in res.hlDetail) {
-          if (Object.prototype.hasOwnProperty.call(res.hlDetail, key)) {
-            const element = res.hlDetail[key];
-            element.sort += '';
-            hlDetail.push(element);
+      setLoading(true);
+      try {
+        const res = await regionGet(initialValues.id);
+        console.log(res);
+        const hlDetail: any[] = [];
+        if (res?.hlDetail) {
+          for (const key in res.hlDetail) {
+            if (Object.prototype.hasOwnProperty.call(res.hlDetail, key)) {
+              const element = res.hlDetail[key];
+              element.sort += '';
+              hlDetail.push(element);
+            }
           }
         }
+        res.sort += '';
+        res.orgNo = res.parentId - 0;
+        form.setFieldsValue({ ...res, hlDetail });
+      } catch (error) {
+        message.error(error);
       }
-      res.sort += '';
-      res.orgNo = res.parentId - 0;
-      form.setFieldsValue({ ...res, hlDetail });
+      setLoading(false);
     }
     if (initialValues && initialValues.id) {
       setTitle('修改货架');
@@ -123,118 +130,120 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
       visible={visible}
       onFinish={handleFinish}
     >
-      <ProForm.Group>
-        <ProFormSelect
-          options={part}
-          // fieldProps={{
-          //   onChange: handleChangePrt,
-          // }}
-          name="orgNo"
-          label="分区"
-        />
-        <ProFormText
-          name="num"
-          rules={[
-            {
-              required: true,
-              message: '请输入编号',
-            },
-          ]}
-          width="s"
-          label="编号"
-          placeholder="请输入编号"
-        />
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormText width="m" required placeholder="请输入编号" name="regionName" label="名称" />
-        <ProFormRadio.Group
-          name="shortName"
-          label="AB面"
-          width="s"
-          options={[
-            {
-              label: 'A面',
-              value: 'A面',
-            },
-            {
-              label: 'B面',
-              value: 'B面',
-            },
-          ]}
-        />
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormDigit
-          name="reserved"
-          rules={[
-            {
-              required: true,
-              message: '请输入编号',
-            },
-          ]}
-          width="m"
-          label="行数"
-          fieldProps={{
-            onBlur: handleLine,
-            precision: 0,
-          }}
-          placeholder="请输入编号"
-        />
-        <ProFormRadio.Group
-          name="sort"
-          label="方向"
-          width="s"
-          options={[
-            {
-              label: '从上到下',
-              value: '1',
-            },
-            {
-              label: '从下到上',
-              value: '2',
-            },
-          ]}
-        />
-      </ProForm.Group>
+      <Spin spinning={loading}>
+        <ProForm.Group>
+          <ProFormSelect
+            options={part}
+            // fieldProps={{
+            //   onChange: handleChangePrt,
+            // }}
+            name="orgNo"
+            label="分区"
+          />
+          <ProFormText
+            name="num"
+            rules={[
+              {
+                required: true,
+                message: '请输入编号',
+              },
+            ]}
+            width="s"
+            label="编号"
+            placeholder="请输入编号"
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormText width="m" required placeholder="请输入名称" name="regionName" label="名称" />
+          <ProFormRadio.Group
+            name="shortName"
+            label="AB面"
+            width="s"
+            options={[
+              {
+                label: 'A面',
+                value: 'A面',
+              },
+              {
+                label: 'B面',
+                value: 'B面',
+              },
+            ]}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormDigit
+            name="reserved"
+            rules={[
+              {
+                required: true,
+                message: '请输入行数',
+              },
+            ]}
+            width="m"
+            label="行数"
+            fieldProps={{
+              onBlur: handleLine,
+              precision: 0,
+            }}
+            placeholder="请输入行数"
+          />
+          <ProFormRadio.Group
+            name="sort"
+            label="方向"
+            width="s"
+            options={[
+              {
+                label: '从上到下',
+                value: '1',
+              },
+              {
+                label: '从下到上',
+                value: '2',
+              },
+            ]}
+          />
+        </ProForm.Group>
 
-      <Form.List name="hlDetail">
-        {(fields, { add, remove }, { errors }) => (
-          <>
-            {fields.map((field, index) => (
-              <ProForm.Group key={index}>
-                <ProFormDigit
-                  name={[field.name, 'count']}
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入编号',
-                    },
-                  ]}
-                  width="m"
-                  label="列数"
-                  fieldProps={{ precision: 0 }}
-                  placeholder="请输入编号"
-                />
-                <ProFormRadio.Group
-                  name={[field.name, 'sort']}
-                  label="方向"
-                  width="s"
-                  options={[
-                    {
-                      label: '从左到右',
-                      value: '1',
-                    },
-                    {
-                      label: '从右到左',
-                      value: '2',
-                    },
-                  ]}
-                />
-              </ProForm.Group>
-            ))}
-          </>
-        )}
-      </Form.List>
+        <Form.List name="hlDetail">
+          {(fields, { add, remove }, { errors }) => (
+            <>
+              {fields.map((field, index) => (
+                <ProForm.Group key={index}>
+                  <ProFormDigit
+                    name={[field.name, 'count']}
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入列数',
+                      },
+                    ]}
+                    width="m"
+                    label={'第' + (index + 1) + '列数'}
+                    fieldProps={{ precision: 0 }}
+                    placeholder="请输入列数"
+                  />
+                  <ProFormRadio.Group
+                    name={[field.name, 'sort']}
+                    label="方向"
+                    width="s"
+                    options={[
+                      {
+                        label: '从左到右',
+                        value: '1',
+                      },
+                      {
+                        label: '从右到左',
+                        value: '2',
+                      },
+                    ]}
+                  />
+                </ProForm.Group>
+              ))}
+            </>
+          )}
+        </Form.List>
+      </Spin>
     </DrawerForm>
   );
 };

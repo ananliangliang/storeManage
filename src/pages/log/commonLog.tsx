@@ -27,11 +27,11 @@ const columns: ProColumns<any>[] = [
     dataIndex: 'description',
     title: '动作',
   },
-  {
-    dataIndex: 'parameter',
-    title: '参数',
-    search: false,
-  },
+  // {
+  //   dataIndex: 'parameter',
+  //   title: '参数',
+  //   search: false,
+  // },
   {
     dataIndex: 'msg',
     title: '结果',

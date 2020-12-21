@@ -1,9 +1,9 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Spin, Modal, Image, TreeSelect } from 'antd';
+import { Row, Col, Tree, Spin, Modal, Image, TreeSelect, Divider } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './goodsKind.less';
-import { useModel } from 'umi';
+import { useModel, history } from 'umi';
 import { Store } from 'antd/es/form/interface';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
 import RightMenu from '@/components/rightMenu';
@@ -107,11 +107,8 @@ const GoodsKind: FC<IndexProps> = (props) => {
       dataIndex: 'imageUrl',
       search: false,
       render(_, record) {
-        return <Image width={120} src={record.imageUrl} />;
+        return <Image width={30} height={30} src={record.imageUrl} />;
       },
-      // formItemProps: {
-      //   valuePropName: 'imageUrl',
-      // },
       renderFormItem() {
         return <ImgUpload />;
       },
@@ -122,27 +119,37 @@ const GoodsKind: FC<IndexProps> = (props) => {
       render: (text, record, index) => {
         return (
           <>
-            {
-              <PowerBotton
-                type="link"
-                showDivider
-                allowStr="editGoods"
-                onClick={() => {
-                  setModalProp({
-                    visible: true,
-                    values: { ...record },
-                    columns: [...columns],
-                  });
-                  setTimeout(() => {
-                    console.log(record);
-                    formRef.current?.setFieldsValue(record);
-                  }, 10);
-                }}
-              >
-                编辑
-              </PowerBotton>
-            }
-
+            <a
+              onClick={() => {
+                history.push({
+                  pathname: '/goodsManage/goodsInfo',
+                  query: {
+                    name: record.goods,
+                  },
+                });
+              }}
+            >
+              相关物资
+            </a>
+            <Divider type="vertical" />
+            <PowerBotton
+              type="link"
+              showDivider
+              allowStr="editGoods"
+              onClick={() => {
+                setModalProp({
+                  visible: true,
+                  values: { ...record },
+                  columns: [...columns],
+                });
+                setTimeout(() => {
+                  console.log(record);
+                  formRef.current?.setFieldsValue(record);
+                }, 10);
+              }}
+            >
+              编辑
+            </PowerBotton>
             <PopconfirmPowerBtn
               title="确认删除?"
               type="link"

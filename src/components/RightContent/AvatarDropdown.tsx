@@ -17,7 +17,8 @@ const loginOut = async () => {
   const { query, pathname } = history.location;
   const { redirect } = query;
   // Note: There may be security issues, please note
-  if (window.location.pathname !== '/user/login' && !redirect) {
+  const path = window.location.pathname;
+  if (!(path == '/user/login' || path == '/charts') && !redirect) {
     sessionStorage.clear();
     localStorage.clear();
     history.replace({
@@ -40,6 +41,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     }) => {
       const { key } = event;
       if (key === 'logout') {
+        sessionStorage.clear();
+        localStorage.clear();
         loginOut();
         return;
       }

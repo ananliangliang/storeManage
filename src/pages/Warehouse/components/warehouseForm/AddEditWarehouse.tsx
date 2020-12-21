@@ -1,4 +1,7 @@
+import serviceCommon from '@/services/common';
+import { removeEmptyChildren, treeDataFormate } from '@/utils/tools';
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-form';
+import { Form, TreeSelect } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
 import React, { FC, useEffect, useState } from 'react';
@@ -21,6 +24,16 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
   const [form] = useForm();
 
   useEffect(() => {
+    async function fetch() {
+      // const res = await serviceCommon.departmentList();
+      const res: any = await serviceCommon.departmentListAllTree();
+      console.log(treeDataFormate(res.depTree, 'id', 'depName'));
+      setOrg(treeDataFormate(res.depTree, 'id', 'depName'));
+    }
+    fetch();
+  }, []);
+
+  useEffect(() => {
     const list = getOrgData(warehouse);
     const org = list.map((item) => ({
       label: item.mergerName,
@@ -35,7 +48,15 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
       setTitle('新增库房');
     }
     if (form) {
-      form.setFieldsValue(initialValues);
+      form.setFieldsValue({
+        ...initialValues,
+        orgNo: initialValues?.orgNo?.split(',').reduce((prev: number[], cur: string) => {
+          if (cur) {
+            prev.push(Number(cur));
+          }
+          return prev;
+        }, []),
+      });
     }
   }, [initialValues]);
   useEffect(() => {
@@ -45,6 +66,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
   }, [visible]);
   async function handleFinish(data: Store) {
     try {
+      data.orgNo = data.orgNo.join(',');
       const res = await warehouseOnAddEdit({ ...initialValues, ...data });
       console.log(res);
       onFinish(data);
@@ -70,7 +92,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
       // initialValues={initialValues}
       onFinish={handleFinish}
     >
-      <ProFormSelect
+      {/* <ProFormSelect
         options={org}
         rules={[
           {
@@ -80,7 +102,11 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
         ]}
         name="orgNo"
         label="组织"
-      />
+      /> */}
+
+      <Form.Item label="部门" name="orgNo">
+        <TreeSelect treeData={org} allowClear multiple showSearch placeholder="请选择部门" />
+      </Form.Item>
 
       {/* <ProFormText name="regionName" label="分区名称" placeholder="请输入分区名称" /> */}
       <ProFormText

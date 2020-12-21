@@ -25,6 +25,9 @@ const serviceGoodsRule = {
   treeList() {
     return post<RespGoodsModel[]>('/rule/treeList');
   },
+  getGoodsList(params: any = {}) {
+    return proTableReq<RespGoodsModel>('/rule/getGoodsList', params);
+  },
 };
 
 export default serviceGoodsRule;

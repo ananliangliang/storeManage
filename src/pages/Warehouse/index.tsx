@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Button, Divider, Popconfirm, Spin, Modal } from 'antd';
+import { Row, Col, Tree, Spin, Modal } from 'antd';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './index.less';
@@ -299,7 +299,7 @@ const Index: FC<IndexProps> = (props) => {
               </PowerBotton>
               <PowerBotton
                 type="link"
-                allowStr="eidtPartition"
+                allowStr="editPartition"
                 showDivider
                 onClick={() => {
                   setModalProp({
@@ -373,7 +373,7 @@ const Index: FC<IndexProps> = (props) => {
             <>
               <PowerBotton
                 type="link"
-                allowStr="eidtGoods"
+                allowStr="editGoods"
                 showDivider
                 onClick={() => {
                   setModalProp({

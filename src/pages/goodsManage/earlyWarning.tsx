@@ -99,7 +99,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     {
       title: '位置',
       hideInForm: true,
-      ellipsis: true,
+      // ellipsis: true,
       render(_, record) {
         const text = textAppend(record.kf, record.lc, record.fq, record.hj, record.hl);
         return <Tooltip title={text}>{text}</Tooltip>;
@@ -114,6 +114,10 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
     {
       title: '预警时间',
       dataIndex: 'endCheckTime',
+      valueType: 'dateRange',
+      render(node, record) {
+        return record.endCheckTime;
+      },
       hideInForm: true,
     },
     {
@@ -122,7 +126,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       valueType: 'select',
       valueEnum: handleEnum,
       render(cur, record) {
-        if (cur === 0) {
+        if (record.isHandle === 0) {
           return (
             <PowerBotton
               key="dispose"

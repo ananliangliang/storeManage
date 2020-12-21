@@ -12,7 +12,7 @@ interface IndexProps {
   warehouseId?: string;
   type: 1 | 2;
 }
-const text = ['一周', '一月'];
+const text = ['最近一周', '最近一月'];
 
 const AreaBox: FC<IndexProps> = ({ title, icon, contentId, warehouseId, type }) => {
   const [cur, setCur] = useState<0 | 1>(0);
@@ -70,7 +70,7 @@ const AreaBox: FC<IndexProps> = ({ title, icon, contentId, warehouseId, type }) 
   }, []);
   function handleClick(event: any) {
     const { key } = event;
-    if (cur == key) return;
+    console.log(key, cur);
     setCur(key);
   }
   return (

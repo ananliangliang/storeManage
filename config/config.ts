@@ -49,22 +49,25 @@ export default defineConfig({
       ],
     },
     {
+      path: '/charts',
+      layout: false,
+      name: '仓库大屏',
+      component: './welcome/index',
+    },
+    {
       path: '/welcome',
       name: '首页',
-      icon: 'smile',
       component: './welcome/index',
     },
 
     {
       path: '/warehouse',
       name: '库房管理',
-      icon: 'smile',
       component: './Warehouse/index',
     },
     {
       path: '/goodsManage',
       name: '物资管理',
-      icon: 'smile',
       component: '../layout/NavLayout',
       routes: [
         {
@@ -102,7 +105,6 @@ export default defineConfig({
     {
       path: '/outPutManage',
       name: '出入库管理',
-      icon: 'smile',
       component: '../layout/NavLayout',
       routes: [
         {
@@ -120,7 +122,6 @@ export default defineConfig({
     {
       path: '/log',
       name: '日志管理',
-      icon: 'smile',
       component: '../layout/NavLayout',
       routes: [
         {
@@ -137,7 +138,6 @@ export default defineConfig({
     },
     {
       name: '系统配置',
-      icon: 'smile',
       path: '/setting',
       component: '../layout/NavLayout',
       routes: [

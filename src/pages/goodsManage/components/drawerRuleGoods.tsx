@@ -1,6 +1,6 @@
 import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
-import serviceUserProduct from '@/services/userProduct';
+import serviceGoodsRule from '@/services/goodsRule';
 import { subEffect } from '@/utils/tools';
 import { DeleteOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
@@ -66,7 +66,7 @@ const DrawerRuleGoods: FC<DrawerRuleGoodsProps> = ({
   function getList(params: any) {
     if (data.id) {
       params.ruleId = data.id;
-      return serviceGoodsEarlyWarning.list(params);
+      return serviceGoodsRule.getGoodsList(params);
     }
     throw '';
   }
@@ -74,15 +74,15 @@ const DrawerRuleGoods: FC<DrawerRuleGoodsProps> = ({
   async function handleDel(id: string | string[]) {
     await subEffect(async () => {
       if (typeof id === 'object') {
-        await serviceUserProduct.batchRemove(id.join(','));
+        await serviceGoodsEarlyWarning.batchRemove(id.join(','));
       } else {
-        await serviceUserProduct.remove(id);
+        await serviceGoodsEarlyWarning.remove(id);
       }
       actionRef.current?.reload();
     });
   }
   return (
-    <Drawer title="产品配置" width={width} onClose={onClose} visible={visible}>
+    <Drawer title="规则关联物资" width={width} onClose={onClose} visible={visible}>
       <ProTable<any>
         actionRef={actionRef}
         tableAlertRender={false}

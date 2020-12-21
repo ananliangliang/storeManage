@@ -45,7 +45,8 @@ export default function usePowerModel() {
 
   function pathAllow() {
     if (refMenu.current.length == 0) return;
-    if (history.location.pathname == '/user/login') return;
+    const path = history.location.pathname;
+    if (path == '/user/login' || path == '/charts') return;
     const res = refKeyMenu.current[history.location.pathname];
     if (!res) {
       message.warn('没有权限访问该页面!');
