@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Spin, Modal, Image, TreeSelect, Divider } from 'antd';
+import { Row, Col, Tree, Spin, Modal, Image, TreeSelect, Divider, Form } from 'antd';
 import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './goodsKind.less';
@@ -15,6 +15,10 @@ import serviceGoodsModel from '../../services/goodsModel';
 import PowerBotton from '@/components/PowerBotton';
 import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import FileUpload from '@/components/Upload/FileUpload';
+import { ProFormSelect } from '@ant-design/pro-form';
+import serviceGoodsRule from '@/services/goodsRule';
+import FormModal, { FormModalRef } from '@/components/Modals/FormModal';
+import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 // import { TreeNode } from 'antd/lib/tree-select';
 const typeEnum = new Map([
   [1, 'RFID'],
@@ -40,11 +44,16 @@ const TreeBtn = [
     text: '删除',
   },
 ];
-
+const ColText = (props: any) => {
+  return <div>{props.value} </div>;
+};
 const GoodsKind: FC<IndexProps> = (props) => {
   const { goodsKind, init, loading } = useModel('goodsKind', (state) => state);
   const kind = useRef<DataNode[]>([]);
   const formRef = useRef<FormInstance>();
+  const [ruleList, setRuleList] = useState<any[]>([]);
+  const formModal = useRef<FormModalRef>(null);
+
   const [menuPos, setMenuPos] = useState({
     x: -9999,
     y: -9999,
@@ -142,6 +151,31 @@ const GoodsKind: FC<IndexProps> = (props) => {
               相关物资
             </a>
             <Divider type="vertical" />
+
+            <PowerBotton
+              type="link"
+              showDivider
+              allowStr="earlyWarning"
+              onClick={() => {
+                formModal.current?.form.setFieldsValue({
+                  goods: record.goods,
+                });
+                formModal.current?.show({
+                  title: '添加预警',
+                  async onSubmit(data) {
+                    record.id;
+                    console.log(data);
+                    await serviceGoodsEarlyWarning.onAddEdit({
+                      goodsId: record.id,
+                      ruleId: data.ruleId,
+                      type: 0,
+                    });
+                  },
+                });
+              }}
+            >
+              添加预警
+            </PowerBotton>
             <PowerBotton
               type="link"
               showDivider
@@ -182,6 +216,16 @@ const GoodsKind: FC<IndexProps> = (props) => {
     if (goodsKind.length == 0) {
       init();
     }
+    async function fetch() {
+      const list = await serviceGoodsRule.list();
+      setRuleList(
+        list.data.map((item: any) => ({
+          label: item.rule,
+          value: item.id,
+        })),
+      );
+    }
+    fetch();
   }, []);
 
   useEffect(() => {
@@ -380,6 +424,18 @@ const GoodsKind: FC<IndexProps> = (props) => {
           }}
         />
       </Modal>
+      <FormModal ref={formModal}>
+        <Form.Item label="物资种类" name="goods">
+          <ColText />
+        </Form.Item>
+        <ProFormSelect
+          name="ruleId"
+          label="预警规则"
+          required
+          options={ruleList}
+          placeholder="请选择规则"
+        />
+      </FormModal>
       <RightMenu btns={TreeBtn} pos={menuPos} onClick={handleMenuClick} closeType="click" />
     </div>
   );

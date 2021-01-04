@@ -18,6 +18,9 @@ const serviceMessageLog = {
   onAddEdit(data: any) {
     return post('/messagelog/onAddEdit', data);
   },
+  onEditUser(data: any) {
+    return post('/messagelog/onEditUser', data);
+  },
   remove(id: string) {
     return post(`/messagelog/remove?id=${id}`, null);
   },

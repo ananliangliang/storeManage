@@ -5,7 +5,7 @@ import React, {
   useRef,
   ForwardRefRenderFunction,
 } from 'react';
-import { message, Modal, Form } from 'antd';
+import { Modal, Form } from 'antd';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
 import { FormInstance, useForm } from 'antd/lib/form/Form';
 //import styles from './ScheduPlanModal.less'
@@ -45,7 +45,8 @@ const FormModal: ForwardRefRenderFunction<FormModalRef, FormModalProps> = (props
       onsubmit.current && (await onsubmit.current(form.getFieldsValue()));
       onClose();
     } catch (error) {
-      message.error(error);
+      console.log(error);
+      // message.error(error);
     }
   };
   const onClose = () => {

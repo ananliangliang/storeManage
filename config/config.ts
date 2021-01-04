@@ -61,7 +61,7 @@ export default defineConfig({
     },
 
     {
-      path: '/warehouse',
+      path: '/warehome',
       name: '库房管理',
       component: './Warehouse/index',
     },
