@@ -14,6 +14,7 @@ import { subEffect } from '@/utils/tools';
 import serviceGoodsModel from '../../services/goodsModel';
 import PowerBotton from '@/components/PowerBotton';
 import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
+import FileUpload from '@/components/Upload/FileUpload';
 // import { TreeNode } from 'antd/lib/tree-select';
 const typeEnum = new Map([
   [1, 'RFID'],
@@ -111,6 +112,15 @@ const GoodsKind: FC<IndexProps> = (props) => {
       },
       renderFormItem() {
         return <ImgUpload />;
+      },
+    },
+    {
+      title: '附件',
+      dataIndex: 'filePaths',
+      search: false,
+      hideInTable: true,
+      renderFormItem() {
+        return <FileUpload />;
       },
     },
     {

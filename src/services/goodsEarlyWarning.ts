@@ -11,8 +11,8 @@ const serviceGoodsEarlyWarning = {
     return getReq('/goodsRule/get', { id });
   },
 
-  handle(id: string) {
-    return post('/goodsRule/handle', { id });
+  handle(id: string, remark?: string) {
+    return post('/goodsRule/handle', { id, remark });
   },
 
   getFloor(data: ReqList<any>) {

@@ -13,6 +13,10 @@ export function listByReginonAll(param: any) {
   return proTableReq(`/goods/listByReginonAll`, param);
 }
 
+export function goodGetHistory(data: any) {
+  return proTableReq('/goods/getHistory', data);
+}
+
 export function goodsChangeRFID(id: string, signNo: string) {
   return post('/goods/changeRFID', { id, signNo });
 }

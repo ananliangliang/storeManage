@@ -48,6 +48,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
       setTitle('新增库房');
     }
     if (form) {
+      console.warn(initialValues);
       form.setFieldsValue({
         ...initialValues,
         orgNo: initialValues?.orgNo?.split(',').reduce((prev: number[], cur: string) => {

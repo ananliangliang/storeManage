@@ -3,8 +3,9 @@ import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 import serviceGoodsRule from '@/services/goodsRule';
 import { PlusOutlined } from '@ant-design/icons';
+import { ModalForm, ProFormTextArea } from '@ant-design/pro-form';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Modal, Tooltip, TreeSelect } from 'antd';
+import { message, Tooltip, TreeSelect } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -43,7 +44,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
   useEffect(() => {
     async function fetch() {
       const res = await warehouseTreeListAll();
-      const { pos, node } = warehouseTreeFormate(res);
+      const { node } = warehouseTreeFormate(res);
 
       setTreeData(node);
       console.warn(node);
@@ -96,6 +97,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
         return <Tooltip title={text}>{text}</Tooltip>;
       },
     },
+
     {
       title: '位置',
       hideInForm: true,
@@ -128,23 +130,25 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       render(cur, record) {
         if (record.isHandle === 0) {
           return (
-            <PowerBotton
-              key="dispose"
-              allowStr="dispose"
-              onClick={() => {
-                Modal.confirm({
-                  content: '确定处理吗',
-                  okText: '确定',
-                  cancelText: '取消',
-                  async onOk() {
-                    await serviceGoodsEarlyWarning.handle(record.id);
-                    actionRef.current?.reload();
-                  },
-                });
+            <ModalForm
+              modalProps={{
+                width: 600,
               }}
+              onFinish={async (values) => {
+                await serviceGoodsEarlyWarning.handle(record.id, values.remark);
+                actionRef.current?.reload();
+                console.log(values);
+                message.success('提交成功');
+                return true;
+              }}
+              trigger={
+                <PowerBotton key="dispose" allowStr="dispose">
+                  立即处理
+                </PowerBotton>
+              }
             >
-              立即处理
-            </PowerBotton>
+              <ProFormTextArea label="处理方式" name="remark" />
+            </ModalForm>
           );
         }
         return '已处理';
@@ -152,7 +156,7 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
       hideInForm: true,
     },
     {
-      title: '备注',
+      title: '处理方式',
       dataIndex: 'remark',
       search: false,
     },
@@ -197,11 +201,39 @@ const EarlyWarning: FC<EarlyWarningProps> = (props) => {
             >
               <PlusOutlined /> 新增预警
             </PowerBotton>,
+            <ModalForm
+              modalProps={{
+                width: 600,
+              }}
+              onFinish={async (values) => {
+                if (selectedRowKeys && selectedRowKeys.length > 0) {
+                  try {
+                    await serviceGoodsEarlyWarning.handle(selectedRowKeys.join(','), values.remark);
+                    actionRef.current?.reload();
+                    console.log(values);
+                    message.success('提交成功');
+                    return true;
+                  } catch (error) {}
+                  return false;
+                } else {
+                  message.error('尚未选中任意一项');
+                  return true;
+                }
+              }}
+              trigger={
+                <PowerBotton key="dispose" allowStr="dispose">
+                  批量处理
+                </PowerBotton>
+              }
+            >
+              <ProFormTextArea label="处理方式" name="remark" />
+            </ModalForm>,
           ];
         }}
         columns={columns}
         rowKey="id"
       />
+
       <EarlyWarningForm
         {...modalProp}
         addressTree={treeData}

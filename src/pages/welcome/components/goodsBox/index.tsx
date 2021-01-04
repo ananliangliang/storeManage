@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useRef } from 'react';
-import { Chart } from '@antv/g2';
-
+import React, { FC, useMemo } from 'react';
+import { Chart, Coordinate, Interval, Interaction } from 'bizcharts';
+import DataSet from '@antv/data-set';
 import styles from '../index.less';
 
 interface IndexProps {
@@ -10,95 +10,23 @@ interface IndexProps {
   }[];
 }
 
-const GoodsBox: FC<IndexProps> = ({
-  data = [
-    {
-      model: '',
-      value: undefined,
-    },
-  ],
-}) => {
-  const chartInstance = useRef<Chart>();
-  useEffect(() => {
-    const chart = new Chart({
-      container: 'goodsBox',
-      autoFit: true,
-      padding: [0, 40, 10, 100],
-      // height: 500,
+const GoodsBox: FC<IndexProps> = ({ data = [] }) => {
+  const dv = useMemo(() => {
+    const ds = new DataSet();
+    data.map((item) => {
+      item['总数'] = item.count;
     });
-    chart.data(data);
-    chart.scale({
-      count: {
-        alias: ' ',
-        nice: true,
+    const dv = ds.createView().source(data);
+    dv.source(data).transform({
+      type: 'sort',
+      callback(a, b) {
+        // 排序依据，和原生js的排序callback一致
+        return a['总数'] - b['总数'];
       },
     });
-    chart.axis('model', {
-      title: null,
-      tickLine: null,
-      // line: null,
-      label: {
-        style: {
-          fill: 'rgba(255,255,255,0.85)',
-        },
-      },
-    });
-
-    chart.axis('count', {
-      label: null,
-      // label: {
-      //   style: {
-      //     fill: 'rgba(255,255,255,0.85)',
-      //   },
-      // },
-      title: {
-        offset: 30,
-        style: {
-          fill: 'rgba(255,255,255,0.85)',
-          fontSize: 12,
-          fontWeight: 300,
-        },
-      },
-      grid: null,
-    });
-    chart.legend(false);
-    chart.coordinate().transpose();
-    chart
-      .interval()
-      .position('model*count')
-      .color('rgba(15,184,233,0.50)')
-      .label('count', {
-        style: {
-          fill: 'rgba(255,255,255,0.85)',
-        },
-        offset: 10,
-      })
-      .state({
-        active: {
-          style: {
-            stroke: null,
-            fill: 'rgb(15,184,233)',
-          },
-        },
-      });
-
-    chart.interaction('element-active');
-    chart.render();
-    chartInstance.current = chart;
-  }, []);
-  useEffect(() => {
-    if (data.length !== 0) {
-      console.warn(data);
-      chartInstance.current?.changeData(data);
-    } else {
-      chartInstance.current?.changeData([
-        {
-          model: '',
-          value: undefined,
-        },
-      ]);
-    }
+    return dv;
   }, [data]);
+
   return (
     <div className={styles.box2}>
       <div className={styles.content}>
@@ -106,7 +34,31 @@ const GoodsBox: FC<IndexProps> = ({
           <span className={`iconfont icon icon-yujing`} />
           库房物资
         </div>
-        <div id="goodsBox" className={styles.canvas}></div>
+        <Chart data={dv.rows} autoFit padding={[0, 40, 10, 100]}>
+          <Coordinate transpose />
+          <Interval
+            position="model*总数"
+            color="rgba(15,184,233,0.50)"
+            label={[
+              '总数',
+              {
+                style: {
+                  fill: 'rgba(255,255,255,0.85)',
+                },
+                offset: 10,
+              },
+            ]}
+            state={{
+              active: {
+                style: {
+                  stroke: null,
+                  fill: 'rgb(15,184,233)',
+                },
+              },
+            }}
+          />
+          <Interaction type="element-active" />
+        </Chart>
       </div>
     </div>
   );

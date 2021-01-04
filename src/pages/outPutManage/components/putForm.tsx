@@ -144,6 +144,7 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           message.error(error);
           return false;
         }
+        return true;
       }}
     >
       {/* <ProFormText
@@ -211,7 +212,16 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
           }}
         />
       )}
-      <Form.Item name="address" label="物资位置">
+      <Form.Item
+        name="address"
+        rules={[
+          {
+            required: true,
+            message: '请选择物资位置',
+          },
+        ]}
+        label="物资位置"
+      >
         <Cascader options={addressTree} />
       </Form.Item>
     </ModalForm>

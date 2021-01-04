@@ -1,30 +1,35 @@
+import config from '@/config/config';
+import localData from '@/localStore';
 import serviceAdmin from '@/services/admin';
 import { useState, useCallback, useEffect } from 'react';
-import { useModel } from 'umi';
+import { history, useModel } from 'umi';
 import defaultSettings from '../../config/defaultSettings';
 
 export default function useUserModel() {
   const [user, setUser] = useState<any>({});
-  const forMatePower = useModel('power', (state) => state.forMatePower);
   const { setInitialState } = useModel('@@initialState');
-
+  const forMatePower = useModel('power', (state) => state.forMatePower);
+  const dictInit = useModel('dict', (state) => state.init);
   useEffect(() => {
     fetch();
   }, []);
 
   const fetch = useCallback(() => {
-    async function fetch() {
+    async function fetchData() {
+      const path: string = history.location.pathname;
+      console.warn(path, config.noAuthPage.includes(path));
+      if (config.noAuthPage.includes(path)) return;
       const res: any = await serviceAdmin.getLoginInfo();
       signin(res);
+      dictInit();
     }
-    return fetch();
+    fetchData();
   }, []);
 
   const signin = useCallback((res: any) => {
-    sessionStorage.setItem('token', res.loginToken);
+    localData.setToken(res.loginToken);
     setUser(res);
     const menu = forMatePower(res.menus);
-
     setInitialState({
       settings: {
         ...defaultSettings,

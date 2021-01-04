@@ -48,7 +48,6 @@ const menuDataRender = (menuList: IMenus[]): MenuDataItem[] => {
       children: item.children ? menuDataRender(item.children) : [],
       key: item.url,
     };
-    console.log(a);
     return a;
   });
 };
@@ -62,8 +61,7 @@ export const layout = ({
     menuData: MenuDataItem[];
   };
 }): BasicLayoutProps => {
-  const menuData = menuDataRender((initialState.menuData as any) || []);
-  console.warn(menuData);
+  // const menuData = menuDataRender((initialState.menuData as any) || []);
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -77,11 +75,8 @@ export const layout = ({
       // }
     },
     menuHeaderRender: undefined,
-    menuData,
-    menuDataRender: (org) => {
-      console.warn(org);
-      return menuDataRender((initialState.menuData as any) || []);
-    },
+    // menuData,
+    menuDataRender: (org) => menuDataRender((initialState.menuData as any) || []),
     // menuDataRender: (menuData) => initialState.menuData || menuData,
     ...initialState?.settings,
     logo: sideLogo,

@@ -1,6 +1,6 @@
 import serviceBase from '@/services/base';
 import { delay } from 'lodash';
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 /**
  * @getDict 写做 get 实际上是 fetch
  *
@@ -11,22 +11,24 @@ export default function useDictModel() {
   const [dict, setDict] = useState<Partial<DICT_TYPE>>({});
   const initFlag = useRef(false);
   const map = useRef<Partial<DICT_MAP>>({});
-  useEffect(() => {
-    init();
-  }, []);
+  // useEffect(() => {
+  //   init();
+  // }, []);
 
-  async function init() {
-    const res: any = await serviceBase.getDicByOne(0);
-    console.log(res);
-    map.current = { _allType: 0 };
-    res.map((item: any) => {
-      map.current[item.value] = item.id;
-    });
-    setDict((e) => {
-      return { ...e, _allType: res };
-    });
-    initFlag.current = true;
-  }
+  const init = useCallback(() => {
+    (async function () {
+      const res: any = await serviceBase.getDicByOne(0);
+      console.log(res);
+      map.current = { _allType: 0 };
+      res.map((item: any) => {
+        map.current[item.value] = item.id;
+      });
+      setDict((e) => {
+        return { ...e, _allType: res };
+      });
+      initFlag.current = true;
+    })();
+  }, []);
 
   const getDict = useCallback((key: DICT_STRING) => {
     if (!initFlag.current) {

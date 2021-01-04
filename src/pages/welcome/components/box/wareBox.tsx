@@ -8,9 +8,10 @@ import styles from '../index.less';
 interface BoxProps {
   onClick?: () => void;
   onChange: (id: number) => void;
+  fetchFlag: boolean;
 }
 
-const WareBox: FC<BoxProps> = ({ onClick, onChange }) => {
+const WareBox: FC<BoxProps> = ({ onClick, onChange, fetchFlag }) => {
   const [data, init, pos] = useModel('warehouse', (state) => [
     state.warehouse,
     state.init,
@@ -21,11 +22,14 @@ const WareBox: FC<BoxProps> = ({ onClick, onChange }) => {
   const [isFull, setIsFull] = useState(false);
   const root = useRef<Element | null>();
   useEffect(() => {
-    if (data.length == 0) {
-      init();
-    }
     root.current = document.querySelector('#welcome_root');
   }, []);
+
+  useEffect(() => {
+    if (fetchFlag && data.length == 0) {
+      init();
+    }
+  }, [fetchFlag]);
 
   const menus = useMemo(() => {
     console.log(data);
@@ -38,15 +42,21 @@ const WareBox: FC<BoxProps> = ({ onClick, onChange }) => {
   }, [data, pos]);
   function handleClick(event: any) {
     const { key } = event;
+    console.log(key);
     if (key == curWare.id) return;
     if (key) {
       const tar = menus.find((item: any) => item.value == key);
       if (tar) {
         setCurWare(tar);
+      } else {
+        setCurWare({
+          id: 'all',
+          text: '所有库房',
+        });
       }
     } else {
       setCurWare({
-        id: '',
+        id: 'all',
         text: '所有库房',
       });
     }

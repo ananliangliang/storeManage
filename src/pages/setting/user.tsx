@@ -89,14 +89,15 @@ const User: FC<IndexProps> = (props) => {
         dataIndex: 'phone',
         search: false,
       },
-      {
-        title: '所属组织',
-        hideInForm: true,
-        search: false,
-        render(node, record) {
-          return record?.userProduct?.orgName || '未分配';
-        },
-      },
+      // {
+      //   title: '所属组织',
+      //   hideInForm: true,
+      //   hideInTable: true,
+      //   search: false,
+      //   render(node, record) {
+      //     return record?.userProduct?.orgName || '未分配';
+      //   },
+      // },
       {
         title: '所属部门',
         hideInForm: true,
@@ -191,7 +192,10 @@ const User: FC<IndexProps> = (props) => {
                   });
                   setTimeout(() => {
                     console.log(record);
-                    formRef.current?.setFieldsValue(record);
+                    formRef.current?.setFieldsValue({
+                      ...record,
+                      used: record.used > 0 ? true : false,
+                    });
                   }, 10);
                 }}
               >
@@ -335,6 +339,8 @@ const User: FC<IndexProps> = (props) => {
             console.log(value);
             if (submitLock.current) return;
             submitLock.current = true;
+            value.used = value.used ? 1 : 0;
+            if (modalProp.values.used == 2) value.used = 2;
             const data = { ...modalProp.values, ...value };
             await subEffect(async () => {
               await serviceUser.onAddEdit(data);

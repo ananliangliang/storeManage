@@ -2,6 +2,7 @@ import PowerBotton from '@/components/PowerBotton';
 import config from '@/config/config';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
+import { download } from '@/utils/tools';
 
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
@@ -212,6 +213,9 @@ const PutManage: FC = () => {
       actionRef.current?.reload();
     }
   }
+  function handleDownFile() {
+    download('/excel/tools.xlsx');
+  }
   return (
     <div>
       <ProTable<any>
@@ -258,6 +262,9 @@ const PutManage: FC = () => {
               <PlusOutlined />
               补货
             </PowerBotton>,
+            <Button icon={<PlusOutlined />} onClick={handleDownFile}>
+              模板下载
+            </Button>,
             auth['import'] && (
               <Upload {...uploadProp}>
                 <Button icon={<PlusOutlined />}>导入</Button>

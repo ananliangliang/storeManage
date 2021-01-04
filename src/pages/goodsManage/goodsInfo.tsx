@@ -20,11 +20,17 @@ import PowerBotton from '@/components/PowerBotton';
 import RfidForm from './components/rfidForm';
 import EditGoodsInfoForm from './components/editGoodsInfoForm';
 import { FormInstance } from 'antd/lib/form';
+import GoodsLog from './components/GoodsLog';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
   ['1', 'RFID'],
   ['2', '二维码'],
+]);
+
+const reignEnum = new Map([
+  [0, '离位'],
+  [1, '在位'],
 ]);
 
 const menus = [
@@ -42,6 +48,11 @@ const menus = [
     allowStr: 'warning',
     key: 'warning',
     text: '添加预警',
+  },
+  {
+    allowStr: 'log',
+    key: 'log',
+    text: '历史记录',
   },
   {
     allowStr: 'edit',
@@ -83,6 +94,14 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     visible: false,
     goods: {},
   });
+  const [goodsLogProp, setGoodsLogProp] = useState<{
+    visible: boolean;
+    goods: Store;
+  }>({
+    visible: false,
+    goods: {},
+  });
+
   const [editProp, setEditProp] = useState<{
     visible: boolean;
     value: Store;
@@ -111,6 +130,14 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         dataIndex: 'name',
       },
       {
+        title: '在位情况',
+        dataIndex: 'reign',
+        hideInForm: true,
+        hideInTable: true,
+        valueType: 'select',
+        valueEnum: reignEnum,
+      },
+      {
         title: '品牌',
         dataIndex: 'brand',
       },
@@ -121,6 +148,15 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       {
         title: '库存',
         dataIndex: 'count',
+        search: false,
+        render(node, record) {
+          return record.type == 1 ? (record.count == 0 ? '离位' : '在位') : record.count;
+        },
+      },
+      {
+        title: '单位',
+        dataIndex: 'unit',
+        search: false,
       },
       {
         title: '入库时间',
@@ -169,11 +205,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
           return record.hj + record.hl;
         },
       },
-      {
-        title: '备注',
-        dataIndex: 'remark',
-        search: false,
-      },
+
       {
         title: '操作',
         valueType: 'option',
@@ -224,6 +256,9 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         break;
       case 'rfid':
         setRfidProp({ visible: true, goods: record });
+        break;
+      case 'log':
+        setGoodsLogProp({ visible: true, goods: record });
         break;
       case 'edit':
         setEditProp({ visible: true, value: record });
@@ -417,6 +452,12 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         onFinish={handleAdd}
         onClose={() => {
           setModalProp({ visible: false, value: {} });
+        }}
+      />
+      <GoodsLog
+        {...goodsLogProp}
+        onFinish={() => {
+          setGoodsLogProp({ visible: false, goods: {} });
         }}
       />
       <RfidForm

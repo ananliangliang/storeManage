@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 import { Row, Col } from 'antd';
 import WareBox from './components/box/wareBox';
@@ -9,9 +9,12 @@ import classNames from 'classnames';
 import IndexList from './components/indexList/IndexList';
 import WarningBox from './components/warningBox';
 import serviceIndex from '@/services';
-
+import { history, useLocation, useModel } from 'umi';
+import serviceAdmin from '@/services/admin';
+import { debounce } from 'lodash';
 interface IndexProps {}
 
+const whk = 882 / 1616;
 const Index: FC<IndexProps> = (props) => {
   const [warehouseId, setWarehouseId] = useState(undefined);
   const [rowData, setRowData] = useState<any>({
@@ -21,17 +24,49 @@ const Index: FC<IndexProps> = (props) => {
     jrrkwz: 0,
   });
   const [pieData, setPieData] = useState<any[]>([]);
-
+  const [fetchFlag, setFetchFlag] = useState(false);
+  const [user, signin] = useModel('user', (state) => [state.user, state.signin]);
+  const { query }: any = useLocation<any>();
+  const welcome = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const root = document.getElementById('root');
-    root?.classList.add('hideFoot');
+    root?.classList.add(styles.hideFoot);
+    const resize = debounce(() => {
+      if (welcome.current && box.current) {
+        const { clientHeight, clientWidth } = welcome.current;
+        const ca = whk - clientHeight / clientWidth;
+        box.current.style.width = clientWidth * (1 - ca) + 'px';
+      }
+    }, 300);
+    window.addEventListener('resize', resize);
+    resize();
+    async function fetch() {
+      if (history.location.pathname === '/charts') {
+        root?.classList.add(styles.havBg);
+
+        if (!user.loginToken) {
+          const res = await serviceAdmin.getLoginInfo2(query.ident);
+          signin(res);
+        }
+      }
+    }
+    fetch();
     return () => {
-      root?.classList.remove('hideFoot');
+      window.removeEventListener('resize', resize);
+      root?.classList.remove(styles.hideFoot);
     };
   }, []);
   useEffect(() => {
-    fetchPageData();
-  }, [warehouseId]);
+    if (user.loginToken) {
+      setFetchFlag(true);
+    }
+  }, [user]);
+  useEffect(() => {
+    if (fetchFlag) {
+      fetchPageData();
+    }
+  }, [warehouseId, fetchFlag]);
   async function fetchPageData() {
     const res: any = await serviceIndex.getGoodsCount(warehouseId);
     setRowData(res);
@@ -56,16 +91,14 @@ const Index: FC<IndexProps> = (props) => {
     setPieData(arr.filter((item) => item.type));
   }
   function handleFetchData(id: any) {
-    console.log(id);
-
     setWarehouseId(id == 'all' ? undefined : id);
   }
   return (
-    <div id="welcome_root">
-      <div>
+    <div id="welcome_root" className={styles.welcome} ref={welcome}>
+      <div className={styles.mainBox} ref={box}>
         <Row gutter={12} className={styles.row}>
           <Col flex={1}>
-            <WareBox onChange={handleFetchData} />
+            <WareBox fetchFlag={fetchFlag} onChange={handleFetchData} />
           </Col>
           <Col flex={1}>
             <Box title="库房物资数" icon="huowu" number={rowData.kfwzs} />
@@ -84,22 +117,12 @@ const Index: FC<IndexProps> = (props) => {
           <Col flex={1}>
             <GoodsBox data={rowData.kfwz} />
           </Col>
-          <Col flex={1}>
+          <Col flex={2}>
             <AreaBox
               warehouseId={warehouseId}
-              type={1}
-              contentId="outArea"
-              title="物资出库"
+              fetchFlag={fetchFlag}
+              title="物资出入库"
               icon="chuku"
-            />
-          </Col>
-          <Col flex={1}>
-            <AreaBox
-              warehouseId={warehouseId}
-              type={2}
-              contentId="inArea"
-              title="物资入库"
-              icon="ruku"
             />
           </Col>
         </Row>
@@ -108,7 +131,7 @@ const Index: FC<IndexProps> = (props) => {
             <WarningBox warehouseId={warehouseId} data={pieData} />
           </Col>
           <Col flex={2}>
-            <IndexList warehouseId={warehouseId} />
+            <IndexList fetchFlag={fetchFlag} warehouseId={warehouseId} />
           </Col>
         </Row>
       </div>

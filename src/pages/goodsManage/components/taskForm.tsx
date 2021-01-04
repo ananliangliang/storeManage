@@ -4,7 +4,7 @@ import serviceGoodsModel from '@/services/goodsModel';
 import serviceGoodsPreliminary from '@/services/goodsPreliminary';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { DrawerForm, ProFormText } from '@ant-design/pro-form';
-import { Button, Form } from 'antd';
+import { Button, Form, Input, InputNumber, Space } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -89,11 +89,12 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
         // 不返回不会关闭弹框
         const data = { ...value, ...values };
         console.log(data);
-        data.models = data.models.map((item: any) => ({
-          id: item,
-        }));
-        await serviceGoodsPreliminary.onAddEdit(data);
-        onFinish(data);
+        // data.models = data.models.map((item: any) => ({
+        //   id: item.id,
+
+        // }));
+        // await serviceGoodsPreliminary.onAddEdit(data);
+        // onFinish(data);
       }}
     >
       <ProFormText
@@ -114,17 +115,49 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                 required={false}
                 key={field.key}
               >
-                <Form.Item {...field} noStyle>
-                  <SearchSelect
-                    className={styles.inline}
-                    placeholder="请搜索物资类型"
-                    defaultOpt={defopt[index]}
-                    request={sourceRequest}
-                  />
-                </Form.Item>
-                {fields.length > 1 ? (
-                  <MinusCircleOutlined className={styles.del} onClick={() => remove(field.name)} />
-                ) : null}
+                {console.log(fields)}
+
+                <Space
+                  key={field.key}
+                  style={{ display: 'flex', marginBottom: 8 }}
+                  align="baseline"
+                >
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'id']}
+                    fieldKey={[field.fieldKey, 'id']}
+                    noStyle
+                  >
+                    <SearchSelect
+                      className={styles.inline}
+                      placeholder="请搜索物资类型"
+                      defaultOpt={defopt[index]}
+                      request={sourceRequest}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'preliminaryCount']}
+                    fieldKey={[field.fieldKey, 'preliminaryCount']}
+                    noStyle
+                  >
+                    <InputNumber />
+                  </Form.Item>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'preliminarySet']}
+                    fieldKey={[field.fieldKey, 'preliminarySet']}
+                    noStyle
+                  >
+                    <Input />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className={styles.del}
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Space>
               </Form.Item>
             ))}
             <Form.Item>

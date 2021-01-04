@@ -4,6 +4,7 @@ import configProd from './config.prod';
 const conf = {
   thumbSuffix: '_yasuo.jpg',
   ident: 'tools',
+  noAuthPage: ['/user/login', '/charts'],
 };
 
 const config =

@@ -15,6 +15,9 @@ const serviceAdmin = {
     }
     return post(`/admin/getLoginInfo${ident ? '?ident=' + ident : ''}`, {}, true);
   },
+  getLoginInfo2(ident: string) {
+    return post(`/admin/getLoginInfo2${ident ? '?ident=' + ident : ''}`, {}, true);
+  },
   updatePassword(params: any = {}) {
     return post('/admin/login', params, true);
   },

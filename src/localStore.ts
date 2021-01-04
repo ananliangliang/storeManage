@@ -82,11 +82,11 @@ export default class localData {
 
   static setToken = (value: string) => {
     console.log(value);
-    sessionStorage.setItem('token', value);
+    localStorage.setItem('token', value);
   };
 
   static getToken = () => {
-    return sessionStorage.getItem('token') || '';
+    return localStorage.getItem('token') || '';
   };
 
   static setDepartment = (value: any) => {
