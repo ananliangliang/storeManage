@@ -21,8 +21,8 @@ import serviceAdmin from '@/services/admin';
 interface IndexProps {}
 
 const usedEmun = new Map([
-  [true, '启用'],
-  [false, '禁用'],
+  [1, '启用'],
+  [0, '禁用'],
 ]) as any;
 
 const User: FC<IndexProps> = (props) => {
@@ -165,6 +165,9 @@ const User: FC<IndexProps> = (props) => {
         dataIndex: 'used',
         valueEnum: usedEmun,
         render(text, record) {
+          if (record.realName == '周剑蒙') {
+            console.log(record);
+          }
           return (
             <StatusSwitch
               disabled={!auth['changeUsed'] || record.used == 2}
@@ -194,7 +197,7 @@ const User: FC<IndexProps> = (props) => {
                     console.log(record);
                     formRef.current?.setFieldsValue({
                       ...record,
-                      used: record.used > 0 ? true : false,
+                      used: record.used > 0 ? 1 : 0,
                     });
                   }, 10);
                 }}
@@ -328,7 +331,7 @@ const User: FC<IndexProps> = (props) => {
             ...DEFAULT_FORM_LAYOUT,
             layout: 'horizontal',
             initialValues: {
-              used: true,
+              used: 1,
             },
           }}
           columns={modalProp.columns}
@@ -339,7 +342,6 @@ const User: FC<IndexProps> = (props) => {
             console.log(value);
             if (submitLock.current) return;
             submitLock.current = true;
-            value.used = value.used ? 1 : 0;
             if (modalProp.values.used == 2) value.used = 2;
             const data = { ...modalProp.values, ...value };
             await subEffect(async () => {

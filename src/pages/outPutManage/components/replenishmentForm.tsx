@@ -62,10 +62,12 @@ const ReplenishmentForm: FC<ReplenishmentFormProps> = ({ visible, onFinish, addr
       });
 
       setGoodsList(
-        res.data.map((item: any) => ({
-          label: item.goods + item.specs,
-          value: item.id,
-        })),
+        res.data
+          .filter((item: any) => item.type === '1')
+          .map((item: any) => ({
+            label: item.goods + item.specs,
+            value: item.id,
+          })),
       );
     }
   }

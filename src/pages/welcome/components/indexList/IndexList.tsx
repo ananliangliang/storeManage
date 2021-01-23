@@ -11,7 +11,7 @@ const columns: ProColumnType<any>[] = [
   {
     dataIndex: 'date',
     render(node, record) {
-      const warn = record.state.includes('ALARM');
+      const warn = record?.state.includes('ALARM');
       return <span style={warn ? { color: '#f5222d' } : {}}>{record.date}</span>;
     },
   },

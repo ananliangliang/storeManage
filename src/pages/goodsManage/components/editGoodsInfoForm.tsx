@@ -4,6 +4,7 @@ import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect } from 'react';
+import { useModel } from 'umi';
 import { goodOnAddEdit } from '../service/goodsInfo';
 
 interface EarlyWarningFormProps {
@@ -20,19 +21,26 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
   addressTree,
 }) => {
   const [form] = useForm();
-
+  const warehouse = useModel('warehouse', (state) => state.warehouse);
+  console.warn(warehouse);
   async function handleFinish(data: Store) {
     console.log(data);
     data.id = value.id;
+
     data.hlId = data.address[data.address.length - 1];
-    await goodOnAddEdit(data);
-    onFinish(data);
+    // await goodOnAddEdit(data);
+    // onFinish(data);
   }
   useEffect(() => {
-    console.log(value);
+    console.log(value, warehouse);
+    let address: any[] = [];
+    if (value.hlId) {
+      address = getIdLink(addressTree, value.hlId);
+      console.log(address);
+    }
     form.setFieldsValue({
       name: value.name,
-      // address:
+      address,
     });
   }, [value]);
 
@@ -69,3 +77,23 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
   );
 };
 export default EditGoodsInfoForm;
+
+function getIdLink(list: DataNode[], id: string, idLink: string[] = []): string[] {
+  const tempLink = idLink.slice();
+  tempLink.push('');
+  const idx = tempLink.length - 1;
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    if (item['value'] == id) {
+      tempLink[idx] = id;
+      return tempLink;
+    } else if (item.children && item.children.length > 0) {
+      tempLink[idx] = item['value'];
+      const newList = getIdLink(item.children, id, tempLink);
+      if (newList[newList.length - 1] == id) {
+        return newList;
+      }
+    }
+  }
+  return tempLink;
+}

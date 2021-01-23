@@ -117,7 +117,6 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
   }, [goodsState]);
   const columns = useMemo(() => {
     const state = dict2select(goodsState);
-
     return [
       {
         title: '序号',
@@ -248,7 +247,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                 Qrcode: JSON.stringify({
                   code_no: record.codeNo,
                 }),
-                Label: record.name,
+                Label: record.specs ? record.name + record.specs : record.name,
               },
             ]);
           },
@@ -384,7 +383,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                           Qrcode: JSON.stringify({
                             code_no: item.codeNo,
                           }),
-                          Label: item.name,
+                          Label: item.specs ? item.name + item.specs : item.name,
                         }));
                         await serviceLocal.pointERCode(list);
                       } else {
@@ -469,9 +468,11 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       <EditGoodsInfoForm
         {...editProp}
         addressTree={treeData}
-        onFinish={() => {
+        onFinish={(flag) => {
           setEditProp({ visible: false, value: {} });
-          actionRef.current?.reload();
+          if (flag) {
+            actionRef.current?.reload();
+          }
         }}
       />
     </div>

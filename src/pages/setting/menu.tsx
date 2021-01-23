@@ -329,6 +329,7 @@ const Menu: FC<MenuProps> = (props) => {
               return {
                 onDoubleClick: (event) => {
                   if (!auth['editFunc']) return;
+                  console.log(actRow);
                   if (actRow.length == 0) {
                     message.warn('请先选择一个页面');
                   } else {

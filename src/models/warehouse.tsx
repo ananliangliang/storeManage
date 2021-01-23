@@ -21,7 +21,7 @@ export default function useWarehouseModel() {
     const { node, pos } = warehouseTreeFormate(res);
     setWarehouse(node);
     setPos(pos);
-    console.log(node, pos);
+    console.warn(node, pos);
     setLoading(false);
   }, []);
 

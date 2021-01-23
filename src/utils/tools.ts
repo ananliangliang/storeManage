@@ -34,7 +34,7 @@ export function removeEmptyChildren(list: any[]) {
 export async function waitTime(time: number) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve();
+      resolve(true);
     }, time);
   });
 }

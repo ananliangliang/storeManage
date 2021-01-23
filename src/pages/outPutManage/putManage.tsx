@@ -1,5 +1,6 @@
 import PowerBotton from '@/components/PowerBotton';
 import config from '@/config/config';
+import localData from '@/localStore';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 import { download } from '@/utils/tools';
@@ -57,6 +58,9 @@ const PutManage: FC = () => {
     action: config.baseUrl + '/warehouse/file/uploadExcel2',
     withCredentials: true,
     showUploadList: false,
+    headers: {
+      loginToken: localData.getToken(),
+    },
     onChange(info: any) {
       if (info.file.status !== 'uploading') {
         console.log(info.file, info.fileList);

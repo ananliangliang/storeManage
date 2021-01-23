@@ -20,7 +20,7 @@ const StatusSwitch: FC<StatusSwitchProps> = ({
   const [_checked, setChecked] = useState(checked);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    setChecked(_checked);
+    setChecked(checked);
   }, [checked]);
 
   async function handleChange(checked: boolean) {

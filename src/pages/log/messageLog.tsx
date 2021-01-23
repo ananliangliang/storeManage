@@ -52,7 +52,6 @@ const MessageLog: FC<MessageLogProps> = (props) => {
       title: '补录',
       async onSubmit(data) {
         const t = curUser.current as any;
-
         await serviceMessageLog.onEditUser({ userId: t.id, userName: t.realName, id });
         curUser.current = {};
         curList.current = [];

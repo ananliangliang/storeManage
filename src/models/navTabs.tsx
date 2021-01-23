@@ -1,10 +1,9 @@
-import serviceWarehouse from '@/pages/Warehouse/service';
 import { useState, useCallback, useEffect } from 'react';
 
 import { history } from 'umi';
 
 export default function useNavTabsModel() {
-  const [navTabs, setTabs] = useState([]);
+  const [navTabs, setTabs] = useState<any[]>([]);
   const [current, setCurrent] = useState('');
 
   useEffect(() => {
