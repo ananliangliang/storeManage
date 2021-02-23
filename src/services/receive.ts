@@ -25,6 +25,9 @@ const serviceReceive = {
   treeList() {
     return post<RespGoodsModel[]>('/receive/treeList');
   },
+  plGoodsOut(goodsList: any[]) {
+    return post<RespGoodsModel[]>('/receive/plGoodsOut', { goodsList });
+  },
 };
 
 export default serviceReceive;

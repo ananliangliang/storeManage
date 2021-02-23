@@ -10,20 +10,23 @@ interface UserAuthProps {
   onFinish: (flag: any) => void;
   visible: boolean;
   user: any;
+  isDetail?: boolean;
 }
 
-const UserAuth: FC<UserAuthProps> = ({ onFinish, visible, user = {} }) => {
+const UserAuth: FC<UserAuthProps> = ({ onFinish, visible, user = {}, isDetail }) => {
   const [form] = useForm();
   async function handleFinish(data: Store) {
     console.log(data);
-    await post(
-      '/auth/AuthPass',
-      {
-        uid: user.id,
-        ...data,
-      },
-      true,
-    );
+    if (!isDetail) {
+      await post(
+        '/auth/AuthPass',
+        {
+          uid: user.id,
+          ...data,
+        },
+        true,
+      );
+    }
     onFinish(data);
   }
   useEffect(() => {
@@ -58,21 +61,23 @@ const UserAuth: FC<UserAuthProps> = ({ onFinish, visible, user = {} }) => {
         <Image width="300" src={user.idcardUrl} />
       </Form.Item>
       <Form.Item label="姓名">{user.realName}</Form.Item>
-      <ProFormText label="身份证号" name="idcard" />
-      <ProFormRadio.Group
-        label="评审结果"
-        name="auth"
-        options={[
-          {
-            value: '1',
-            label: '通过',
-          },
-          {
-            value: '0',
-            label: '驳回',
-          },
-        ]}
-      />
+      <ProFormText label="身份证号" name="idcard" disabled={isDetail} />
+      {!isDetail && (
+        <ProFormRadio.Group
+          label="评审结果"
+          name="auth"
+          options={[
+            {
+              value: '1',
+              label: '通过',
+            },
+            {
+              value: '0',
+              label: '驳回',
+            },
+          ]}
+        />
+      )}
     </ModalForm>
   );
 };

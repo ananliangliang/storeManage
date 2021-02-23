@@ -30,8 +30,8 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
   const [form] = useForm();
 
   useEffect(() => {
+    console.log(initialValues, warehouse);
     if (warehouse && initialValues.parentKey) {
-      console.log(initialValues.parentKey);
       const res = keyFindBrother(warehouse, initialValues.parentKey);
       console.log(res);
       setPart(res);

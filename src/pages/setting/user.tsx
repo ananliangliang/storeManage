@@ -42,6 +42,7 @@ const User: FC<IndexProps> = (props) => {
   const [userAuthProp, setUserAuthProp] = useState({
     visible: false,
     user: {},
+    isDetail: false,
   });
   const [userConfigProp, setUserConfigProp] = useState({
     visible: false,
@@ -138,18 +139,32 @@ const User: FC<IndexProps> = (props) => {
         dataIndex: 'auth',
         hideInForm: true,
         render(node, record) {
+          const state = ['default', 'success', 'warning'] as any;
+          const text = ['未认证', '已认证', '待认证'];
+          const flag = [true, true, false];
+          return (
+            <PowerBotton
+              allowStr="userAuth"
+              type="link"
+              onClick={() => handleAuth(record, flag[record.auth])}
+            >
+              <Badge status={state[record.auth]} text={text[record.auth]} />
+            </PowerBotton>
+          );
           switch (record.auth) {
-            case '0':
+            case 0:
               return <Badge status="default" text="未认证" />;
-            case '1':
+            case 1:
               return <Badge status="success" text="已认证" />;
-            case '2':
+            case 2:
               return (
-                <Badge status="warning">
-                  <PowerBotton allowStr="userAuth" type="link" onClick={() => handleAuth(record)}>
-                    待认证
-                  </PowerBotton>
-                </Badge>
+                <PowerBotton
+                  allowStr="userAuth"
+                  type="link"
+                  onClick={() => handleAuth(record, false)}
+                >
+                  <Badge status="warning" text="待认证" />
+                </PowerBotton>
               );
           }
           return null;
@@ -165,9 +180,6 @@ const User: FC<IndexProps> = (props) => {
         dataIndex: 'used',
         valueEnum: usedEmun,
         render(text, record) {
-          if (record.realName == '周剑蒙') {
-            console.log(record);
-          }
           return (
             <StatusSwitch
               disabled={!auth['changeUsed'] || record.used == 2}
@@ -210,7 +222,13 @@ const User: FC<IndexProps> = (props) => {
                 allowStr="resetPassWord"
                 showDivider
                 onConfirm={async () => {
-                  await serviceAdmin.resetPassword(record.id);
+                  await subEffect(
+                    async () => {
+                      await serviceAdmin.resetPassword(record.id);
+                    },
+                    '正在请求',
+                    '修改成功',
+                  );
                 }}
               >
                 <Tooltip title="默认密码:888888">重置密码</Tooltip>
@@ -234,9 +252,10 @@ const User: FC<IndexProps> = (props) => {
     ];
   }, [auth]);
 
-  function handleAuth(record: any) {
+  function handleAuth(record: any, isDetail: boolean) {
     setUserAuthProp({
       user: record,
+      isDetail,
       visible: true,
     });
   }
@@ -269,13 +288,14 @@ const User: FC<IndexProps> = (props) => {
   }
 
   function handleAuthFinish(flag: boolean) {
-    setUserAuthProp({
-      visible: false,
-      user: {},
-    });
-    if (flag) {
+    if (flag && !userAuthProp.isDetail) {
       actionRef.current?.reload();
     }
+    setUserAuthProp({
+      visible: false,
+      isDetail: false,
+      user: {},
+    });
   }
 
   function handleConfigFinish(flag: boolean) {

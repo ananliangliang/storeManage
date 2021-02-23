@@ -1,11 +1,9 @@
 import SearchSelect from '@/components/FormComponents/searchSelect';
-import { getGoodsAddressIdLink } from '@/pages/goodsManage/components/editGoodsInfoForm';
 import serviceGoodsModel from '@/services/goodsModel';
 import serviceLocal from '@/services/local';
 import serviceReceive from '@/services/receive';
 import { ModalForm, ProFormCheckbox, ProFormDigit, ProFormText } from '@ant-design/pro-form';
 import { Cascader, Form, message, TreeSelect } from 'antd';
-import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -16,10 +14,9 @@ interface PutFormProps {
   visible: boolean;
   onFinish: (data?: any) => void;
   addressTree: DataNode[];
-  value?: Store;
 }
 
-const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) => {
+const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
   const { goodsKind, goodsKindInit } = useModel('goodsKind', (state) => {
     const { goodsKind, init } = state;
     return {
@@ -42,20 +39,6 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
     }
     init();
   }, []);
-
-  useEffect(() => {
-    console.log(value);
-    if (value && value.hlId) {
-      let address: any[] = [];
-      if (value.hlId) {
-        address = getGoodsAddressIdLink(addressTree, value.hlId);
-        console.log(address);
-      }
-      formRef.current?.setFieldsValue({
-        address,
-      });
-    }
-  }, [value]);
 
   useEffect(() => {
     console.warn(goodsKind);
@@ -170,14 +153,6 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
         return true;
       }}
     >
-      {/* <ProFormText
-        name="name"
-        label="任务名称"
-        labelCol={{
-          span: 6,
-        }}
-        placeholder="请输入名称"
-      /> */}
       <Form.Item label="类型信息">
         <TreeSelect
           treeData={goodsKind}
@@ -236,18 +211,6 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
           }}
         />
       )}
-      <Form.Item
-        name="address"
-        rules={[
-          {
-            required: true,
-            message: '请选择物资位置',
-          },
-        ]}
-        label="物资位置"
-      >
-        <Cascader options={addressTree} />
-      </Form.Item>
     </ModalForm>
   );
 };

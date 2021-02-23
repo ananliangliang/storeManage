@@ -19,6 +19,7 @@ import { ProFormSelect } from '@ant-design/pro-form';
 import serviceGoodsRule from '@/services/goodsRule';
 import FormModal, { FormModalRef } from '@/components/Modals/FormModal';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
+import goodsDefault from '@/assets/goodsDefault.jpg';
 // import { TreeNode } from 'antd/lib/tree-select';
 const typeEnum = new Map([
   [1, 'RFID'],
@@ -79,6 +80,14 @@ const GoodsKind: FC<IndexProps> = (props) => {
     {
       title: '类型',
       dataIndex: 'parentId',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '请选择类型',
+          },
+        ],
+      },
       search: false,
       render(_, record) {
         return record.lastModel;
@@ -90,21 +99,49 @@ const GoodsKind: FC<IndexProps> = (props) => {
     {
       title: '名称',
       dataIndex: 'goods',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '描述',
       dataIndex: 'des',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '规格',
       dataIndex: 'specs',
       search: false,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '识别方式',
       dataIndex: 'type',
       valueType: 'select',
       valueEnum: typeEnum,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '数量',
@@ -117,7 +154,9 @@ const GoodsKind: FC<IndexProps> = (props) => {
       dataIndex: 'imageUrl',
       search: false,
       render(_, record) {
-        return <Image width={30} height={30} src={record.imageUrl} />;
+        return (
+          <Image width={30} height={30} src={record.imageUrl ? record.imageUrl : goodsDefault} />
+        );
       },
       renderFormItem() {
         return <ImgUpload />;

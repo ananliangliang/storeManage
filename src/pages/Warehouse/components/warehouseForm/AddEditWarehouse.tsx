@@ -111,7 +111,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
 
       {/* <ProFormText name="regionName" label="分区名称" placeholder="请输入分区名称" /> */}
       <ProFormText
-        name="shortName"
+        name="mergerName"
         rules={[
           {
             required: true,

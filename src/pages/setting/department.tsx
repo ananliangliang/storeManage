@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
-import { Button, Divider, Popconfirm, Modal, Select, TreeSelect } from 'antd';
-import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
+import { Divider, Modal, TreeSelect } from 'antd';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 import { Store } from 'antd/es/form/interface';
@@ -123,35 +123,31 @@ const Department: FC<IndexProps> = (props) => {
     async function fetch() {
       const depMenu = await serviceCommon.departmentGetOrgAll();
       setDepMenu(depMenu);
-      const res = await serviceCommon.departmentList();
-      removeEmptyChildren(res.data);
-      setDataSource(res.data);
+      fetchList();
     }
+
     fetch();
   }, []);
+
+  async function fetchList() {
+    const res = await serviceCommon.departmentList();
+    removeEmptyChildren(res.data);
+    setDataSource(res.data);
+  }
 
   useEffect(() => {
     kind.current = goodsKind;
   }, [goodsKind]);
   async function handleDel(id: string | string[]) {
-    console.log(id);
-
     if (typeof id === 'object') {
       await serviceCommon.departmentBatchRemove(id.join(','));
     } else {
       await serviceCommon.departmentRemove(id);
     }
-    actionRef.current?.reload();
+    fetchList();
   }
 
   const selectData = useRef({});
-
-  async function getList(params: any) {
-    params.parent_id = selectData.current?.['id'];
-    const res = await serviceCommon.departmentList(params);
-    removeEmptyChildren(res.data);
-    setDataSource(res.data);
-  }
 
   const onClose = () => {
     setModalProp({ visible: false, values: {}, columns: [] });
@@ -170,7 +166,7 @@ const Department: FC<IndexProps> = (props) => {
 
   function handleCheck(e: any) {
     selectData.current = e;
-    actionRef.current?.reload();
+    fetchList();
   }
 
   return (
@@ -246,8 +242,9 @@ const Department: FC<IndexProps> = (props) => {
               if (data.type == 3) {
                 init();
               } else {
-                actionRef.current?.reload();
+                // actionRef.current?.reload();
               }
+              fetchList();
             });
             submitLock.current = false;
           }}

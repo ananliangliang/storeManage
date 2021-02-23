@@ -128,6 +128,7 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
         <TreeSelect
           treeData={goodsKind}
           onChange={handlePickKind}
+          showSearch
           allowClear
           treeDefaultExpandAll
         />
@@ -158,13 +159,3 @@ const OutForm: FC<OutFormProps> = ({ visible, onFinish }) => {
 };
 
 export default OutForm;
-
-const searchUser = async (param: string) => {
-  const res = await serviceUser.list({ realName: param });
-  return res.data.map((item: any) => {
-    return {
-      id: item.id,
-      name: item.realName + item.phone,
-    };
-  });
-};

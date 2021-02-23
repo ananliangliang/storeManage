@@ -1,0 +1,350 @@
+.fill() {
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.linearBg(@opt:0.251) {
+  .fill;
+  background-image: linear-gradient(
+    rgba(78, 223, 240, @opt) 0%,
+    rgba(6, 59, 63, @opt) 47%,
+    rgba(6, 59, 63, @opt) 53%,
+    rgba(78, 223, 240, @opt) 100%
+  );
+}
+
+.box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  // box-shadow: inset 0px 0px 56px 18px rgba(88, 215, 207, 0.3);
+  box-shadow: inset 0px 0px 24px 6px rgba(73, 209, 226, 0.004);
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+
+  &::before {
+    .linearBg(0.251);
+  }
+}
+
+.lineBtn {
+  position: relative;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  // box-shadow: inset 0px 0px 56px 18px rgba(88, 215, 207, 0.3);
+  box-shadow: inset 0px 0px 24px 6px rgba(73, 209, 226, 0.004);
+  border-radius: 5px;
+  overflow: hidden;
+  height: 0.505rem;
+  cursor: pointer;
+  font-size: 0.176rem;
+  line-height: 0.505rem;
+  padding: 0 0.15rem;
+
+  &.act {
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    .bg {
+      &::before {
+        .linearBg(0.75);
+      }
+    }
+  }
+  .bg {
+    z-index: -1;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 0.53rem;
+  height: 0.53rem;
+  padding: 0 0.13rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+.title {
+  font-size: 0.2rem;
+  font-weight: bold;
+  color: #fff !important;
+
+  .tag {
+    font-size: 0.15rem;
+    font-weight: 400;
+    margin-left: 0.21rem;
+  }
+}
+
+.summaryBlock,
+.wareBlock,
+.shelfBlock {
+  position: relative;
+  margin-bottom: 0.13rem;
+  .empty {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -0.3rem;
+    margin-left: -92px;
+  }
+  .bar {
+    height: 18px;
+    background: #ffffff;
+    width: 100%;
+    margin-bottom: 0.12rem;
+    opacity: 0.12;
+  }
+}
+.summaryBlock {
+  height: 1.75rem;
+}
+.wareBlock {
+  height: 1.3rem;
+  .content {
+    height: 0.8rem;
+    display: flex;
+    align-items: center;
+  }
+}
+.areaBlock {
+  position: relative;
+  height: 5.16rem;
+}
+.shelfBlock {
+  height: 4.17rem;
+}
+.goodsBlock {
+  position: relative;
+  height: 4.17rem;
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .header {
+    :global {
+      .ant-btn {
+        margin-left: 0.11rem;
+        font-size: 0.1758rem;
+        height: 0.377rem;
+      }
+    }
+  }
+}
+
+.goodsBlock {
+  :global {
+    .ant-table-body {
+      &::-webkit-scrollbar {
+        width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+        height: 1px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+}
+.content {
+  &::-webkit-scrollbar {
+    width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.wareFlex {
+  display: flex;
+  color: #fff !important;
+  justify-content: space-between;
+  font-size: 0.1768rem;
+  padding: 0 0.15rem;
+  & > div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .icon {
+    font-size: 0.45rem;
+    margin-right: 0.08rem;
+    color: #fff !important;
+  }
+  .num {
+    font-size: 0.227rem;
+    font-weight: bold;
+    line-height: 100%;
+    color: #fff !important;
+  }
+}
+
+.summaryBlock {
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    max-height: 1.2rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0.13rem;
+  }
+  .lineBtn {
+    margin-right: 0.12rem;
+    margin-bottom: 0.12rem;
+  }
+}
+.shelfBlock {
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    max-height: 3.62rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0.13rem;
+  }
+  .lineBtn {
+    margin-right: 0.12rem;
+    margin-bottom: 0.12rem;
+  }
+}
+
+.areaBlock {
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    overflow-x: hidden;
+    max-height: 4.08rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: 0.13rem;
+  }
+  .select {
+    margin-left: 0.1rem;
+    min-width: 1.6rem;
+  }
+}
+
+.shelfItem {
+  position: relative;
+  display: flex;
+  width: 2.36rem;
+  height: 1.01rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.14rem 0.13rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  overflow: hidden;
+  margin: 0 0.12rem 0.12rem 0;
+  border-radius: 5px;
+  .bg {
+    z-index: -1;
+  }
+  &.act {
+    border: 1px solid rgba(255, 255, 255, 1);
+
+    .bg {
+      &::before {
+        .linearBg(1);
+      }
+    }
+  }
+
+  .shelfImg {
+    margin-right: 0.17rem;
+  }
+  .n {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+}
+
+.footer {
+  position: relative;
+  height: 0.54rem;
+  padding: 0 0.12rem;
+  border-top: 1px solid rgba(92, 219, 211, 0.5);
+  display: flex;
+  align-items: center;
+}
+
+.areaBlock {
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.table {
+  :global {
+    .ant-table-thead > tr > th {
+      background-color: transparent !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25) !important;
+      height: 0.46rem;
+      line-height: 0.46rem;
+      font-size: 0.1768rem;
+      padding: 0 0.078rem;
+    }
+    .ant-table-tbody {
+      max-height: 2.47rem;
+      overflow-y: scroll;
+      box-sizing: border-box;
+    }
+    .ant-table-tbody > tr > td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.08rem 0.08rem;
+      font-size: 0.1758rem;
+      line-height: 0.289rem;
+    }
+    .ant-table-tbody > tr:last-child > td {
+      border: none;
+    }
+    .ant-empty {
+      margin-top: 0.96rem;
+    }
+    .ant-dropdown-trigger {
+      height: 0.28rem;
+      line-height: 0.2rem;
+    }
+  }
+}

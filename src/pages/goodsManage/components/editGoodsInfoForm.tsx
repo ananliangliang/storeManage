@@ -28,14 +28,14 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
     data.id = value.id;
 
     data.hlId = data.address[data.address.length - 1];
-    // await goodOnAddEdit(data);
-    // onFinish(data);
+    await goodOnAddEdit(data);
+    onFinish(data);
   }
   useEffect(() => {
     console.log(value, warehouse);
     let address: any[] = [];
     if (value.hlId) {
-      address = getIdLink(addressTree, value.hlId);
+      address = getGoodsAddressIdLink(addressTree, value.hlId);
       console.log(address);
     }
     form.setFieldsValue({
@@ -78,7 +78,7 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
 };
 export default EditGoodsInfoForm;
 
-function getIdLink(list: DataNode[], id: string, idLink: string[] = []): string[] {
+export function getGoodsAddressIdLink(list: DataNode[], id: string, idLink: string[] = []): string[] {
   const tempLink = idLink.slice();
   tempLink.push('');
   const idx = tempLink.length - 1;
@@ -89,7 +89,7 @@ function getIdLink(list: DataNode[], id: string, idLink: string[] = []): string[
       return tempLink;
     } else if (item.children && item.children.length > 0) {
       tempLink[idx] = item['value'];
-      const newList = getIdLink(item.children, id, tempLink);
+      const newList = getGoodsAddressIdLink(item.children, id, tempLink);
       if (newList[newList.length - 1] == id) {
         return newList;
       }

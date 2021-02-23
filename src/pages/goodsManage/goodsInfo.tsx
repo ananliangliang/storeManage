@@ -247,7 +247,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                 Qrcode: JSON.stringify({
                   code_no: record.codeNo,
                 }),
-                Label: record.specs ? record.name + record.specs : record.name,
+                Label: record.name,
               },
             ]);
           },
@@ -383,7 +383,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                           Qrcode: JSON.stringify({
                             code_no: item.codeNo,
                           }),
-                          Label: item.specs ? item.name + item.specs : item.name,
+                          Label: item.name,
                         }));
                         await serviceLocal.pointERCode(list);
                       } else {

@@ -50,6 +50,12 @@ const Index: FC<IndexProps> = (props) => {
         total: res.total,
         pageSize: 10,
       });
+      console.warn(curData);
+      if (curData && curData['key']) {
+        res.list.map((item) => {
+          item['parentKey'] = curData['key'];
+        });
+      }
       setDataSource(res.list);
     },
   });
@@ -332,7 +338,6 @@ const Index: FC<IndexProps> = (props) => {
         },
       },
     ];
-
     const goods_columns: ProColumns<any>[] = [
       {
         dataIndex: 'id',
@@ -406,7 +411,6 @@ const Index: FC<IndexProps> = (props) => {
         },
       },
     ];
-
     // const goods_columns: ProColumns<any>[] = [];
     const type = getText(obj);
     switch (type) {
@@ -447,7 +451,7 @@ const Index: FC<IndexProps> = (props) => {
       setPage({
         pageNum: 1,
         total: newList.length,
-        pageSize: newList.length,
+        pageSize: 10,
       });
     }
   }
@@ -469,7 +473,12 @@ const Index: FC<IndexProps> = (props) => {
     console.log(res);
     const type = getText(curData);
     if (type === 'goods') {
-      actionRef.current?.reload();
+      fetch.run({
+        filter: {
+          parent_id: curData['id'],
+        },
+        pageNum: page.pageNum,
+      });
     } else {
       init();
     }
@@ -556,6 +565,22 @@ const Index: FC<IndexProps> = (props) => {
               headerTitle={TITLE_TEXT[curType]}
               loading={fetch.loading}
               actionRef={actionRef}
+              options={{
+                reload: () => {
+                  const type = getText(curData);
+                  if (type == 'goods') {
+                    fetch.run({
+                      filter: {
+                        parent_id: curData['id'],
+                      },
+                      pageNum: page.pageNum,
+                    });
+                  } else {
+                    init();
+                  }
+                  // actionRef.current?.reload();
+                },
+              }}
               tableAlertRender={false}
               rowSelection={{}}
               pagination={{

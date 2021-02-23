@@ -1,139 +1,123 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styles from './index.less';
-import { Row, Col } from 'antd';
-import WareBox from './components/box/wareBox';
-import Box from './components/box/box';
-import GoodsBox from './components/goodsBox';
-import AreaBox from './components/areaBox/index';
-import classNames from 'classnames';
-import IndexList from './components/indexList/IndexList';
-import WarningBox from './components/warningBox';
-import serviceIndex from '@/services';
-import { history, useLocation, useModel } from 'umi';
-import serviceAdmin from '@/services/admin';
-import { debounce } from 'lodash';
+import SummaryBlock, { STORAGE_WAERE_ID } from './components/summaryBlock';
+import WareBlock from './components/wareBlock';
+import AreaBlock, { TAreaItem } from './components/areaBlock';
+import ShelfBlock from './components/shelfBlock';
+import GoodsBlock from './components/goodsBlock';
+import serviceIndex, { TWareItem } from '@/services';
+import { useRequest } from 'umi';
+
 interface IndexProps {}
 
-const whk = 882 / 1616;
 const Index: FC<IndexProps> = (props) => {
-  const [warehouseId, setWarehouseId] = useState(undefined);
-  const [rowData, setRowData] = useState<any>({
-    fkwzs: 0,
-    wzyj: 0,
-    jrckwz: 0,
-    jrrkwz: 0,
+  const [ware, setWare] = useState({
+    lwwz: 0,
+    zwwz: 0,
+    kfList: [] as TWareItem[],
   });
-  const [pieData, setPieData] = useState<any[]>([]);
-  const [fetchFlag, setFetchFlag] = useState(false);
-  const [user, signin] = useModel('user', (state) => [state.user, state.signin]);
-  const { query }: any = useLocation<any>();
-  const welcome = useRef<HTMLDivElement>(null);
-  const box = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const root = document.getElementById('root');
-    root?.classList.add(styles.hideFoot);
-    const resize = debounce(() => {
-      if (welcome.current && box.current) {
-        const { clientHeight, clientWidth } = welcome.current;
-        const ca = whk - clientHeight / clientWidth;
-        box.current.style.width = clientWidth * (1 - ca) + 'px';
-      }
-    }, 300);
-    window.addEventListener('resize', resize);
-    resize();
-    async function fetch() {
-      if (history.location.pathname === '/charts') {
-        root?.classList.add(styles.havBg);
 
-        if (!user.loginToken) {
-          const res = await serviceAdmin.getLoginInfo2(query.ident);
-          signin(res);
-        }
-      }
+  const [wareVal, setWareVal] = useState({
+    wareName: '',
+    address: '',
+    shelfNum: 0,
+    goodsNum: 0,
+    outNum: 0,
+    inNum: 0,
+  });
+
+  const [curKf, setCurKf] = useState<number>(() => {
+    const defaultId = localStorage.getItem(STORAGE_WAERE_ID);
+    return Number(defaultId);
+  });
+
+  const [curHj, setCurHj] = useState<TAreaItem>({} as any);
+
+  const [hlId, setHlId] = useState<number>();
+
+  const fetchWareDetail = useRequest(serviceIndex.getWarehouseDetail, {
+    manual: true,
+    onSuccess(res: any, param) {
+      const tar = ware.kfList.find((item) => item.id === param[0]);
+      setWareVal((e) => ({
+        address: tar?.address ?? '',
+        wareName: tar?.mergerName ?? '',
+        shelfNum: res.zhjs,
+        goodsNum: res.zwzs,
+        outNum: res.jrcks,
+        inNum: res.jrrks,
+      }));
+    },
+  });
+  // resize
+  useEffect(() => {
+    const content = document.querySelector('.ant-layout-content') as Element;
+    const body = document.body;
+    body.classList.add(styles.root);
+    function resize() {
+      document.documentElement.setAttribute('style', 'font-size:100px');
     }
-    fetch();
+    resize();
+    content.addEventListener('resize', resize);
     return () => {
-      window.removeEventListener('resize', resize);
-      root?.classList.remove(styles.hideFoot);
+      body.classList.remove(styles.root);
+      document.documentElement.setAttribute('style', '');
+      content.removeEventListener('resize', resize);
     };
   }, []);
+
+  // init
   useEffect(() => {
-    if (user.loginToken) {
-      setFetchFlag(true);
+    async function fetchWarehouseList() {
+      const res: any = await serviceIndex.getWarehouseList();
+      const tar: TWareItem = res.kfList.find((item: any) => item.id === curKf);
+      if (tar) {
+        setWareVal((e) => ({
+          ...e,
+          address: tar.address,
+          wareName: tar.mergerName,
+        }));
+      }
+      setWare(res);
     }
-  }, [user]);
+    fetchWarehouseList();
+  }, []);
+
   useEffect(() => {
-    if (fetchFlag) {
-      fetchPageData();
+    if (curKf) {
+      fetchWareDetail.run(curKf);
+      setCurHj({} as any);
     }
-  }, [warehouseId, fetchFlag]);
-  async function fetchPageData() {
-    const res: any = await serviceIndex.getGoodsCount(warehouseId);
-    setRowData(res);
-    let arr: any[] = [];
-    res.wzyj.map((item: any) => {
-      arr.push({
-        name: item.model + '-即将维护',
-        value: item.jjwh,
-        type: item.model,
-      });
-      arr.push({
-        name: item.model + '-维护预期',
-        value: item.whyq,
-        type: item.model,
-      });
-      arr.push({
-        name: item.model + '-完成维护',
-        value: item.wcwh,
-        type: item.model,
-      });
-    });
-    setPieData(arr.filter((item) => item.type));
+  }, [curKf]);
+
+  function handleChioseWare(data: TWareItem) {
+    setCurKf(data.id);
+    setCurHj({} as any);
   }
-  function handleFetchData(id: any) {
-    setWarehouseId(id == 'all' ? undefined : id);
+
+  function handleChioseHj(data: TAreaItem) {
+    console.log(data);
+    setCurHj(data);
+    setHlId(undefined);
+  }
+  function handleChioseShelf(data: any) {
+    setHlId(data.id);
   }
   return (
-    <div id="welcome_root" className={styles.welcome} ref={welcome}>
-      <div className={styles.mainBox} ref={box}>
-        <Row gutter={12} className={styles.row}>
-          <Col flex={1}>
-            <WareBox fetchFlag={fetchFlag} onChange={handleFetchData} />
-          </Col>
-          <Col flex={1}>
-            <Box title="库房物资数" icon="huowu" number={rowData.kfwzs} />
-          </Col>
-          <Col flex={1}>
-            <Box title="物资预警" icon="yujing" number={rowData.wzyjs} />
-          </Col>
-          <Col flex={1}>
-            <Box title="今日出库物资" icon="chuku" number={rowData.jrckwz} />
-          </Col>
-          <Col flex={1}>
-            <Box title="今日入库物资" icon="ruku" number={rowData.jrrkwz} />
-          </Col>
-        </Row>
-        <Row gutter={12} className={classNames(styles.row, styles.mar25)}>
-          <Col flex={1}>
-            <GoodsBox data={rowData.kfwz} />
-          </Col>
-          <Col flex={2}>
-            <AreaBox
-              warehouseId={warehouseId}
-              fetchFlag={fetchFlag}
-              title="物资出入库"
-              icon="chuku"
-            />
-          </Col>
-        </Row>
-        <Row gutter={12} className={classNames(styles.row, styles.mar25)}>
-          <Col flex={1}>
-            <WarningBox warehouseId={warehouseId} data={pieData} />
-          </Col>
-          <Col flex={2}>
-            <IndexList fetchFlag={fetchFlag} warehouseId={warehouseId} />
-          </Col>
-        </Row>
+    <div className={styles.content}>
+      <div className={styles.col}>
+        <SummaryBlock
+          wareList={ware.kfList}
+          inNum={ware.zwwz}
+          outNum={ware.lwwz}
+          onClick={handleChioseWare}
+        />
+        <WareBlock loading={fetchWareDetail.loading} {...wareVal} />
+        <AreaBlock wareId={curKf} onChiose={handleChioseHj} />
+      </div>
+      <div className={styles.col}>
+        <ShelfBlock hj={curHj} onClick={handleChioseShelf} />
+        <GoodsBlock kfId={curKf} qyId={curHj.id} hlId={hlId} />
       </div>
     </div>
   );

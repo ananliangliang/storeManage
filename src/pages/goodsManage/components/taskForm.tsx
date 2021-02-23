@@ -61,6 +61,7 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
       title={title}
       formRef={formRef}
       layout="horizontal"
+      width={850}
       // {...DEFAULT_FORM_LAYOUT}
       visible={visible}
       onVisibleChange={(visible) => {
@@ -84,6 +85,15 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
         <ProFormText
           name="name"
           label="任务名称"
+          // required
+          formItemProps={{
+            rules: [
+              {
+                required: true,
+                message: '请输入任务名称',
+              },
+            ],
+          }}
           labelCol={{
             span: 4,
           }}
@@ -101,6 +111,12 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                   <Form.Item
                     {...field}
                     className={styles.select}
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入物资种类',
+                      },
+                    ]}
                     label="物资种类"
                     name={[field.name, 'id']}
                     fieldKey={[field.fieldKey, 'id']}
@@ -115,6 +131,12 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                   <Form.Item
                     {...field}
                     label="数量"
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入数量',
+                      },
+                    ]}
                     name={[field.name, 'preliminaryCount']}
                     fieldKey={[field.fieldKey, 'preliminaryCount']}
                   >
@@ -123,6 +145,12 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                   <Form.Item
                     {...field}
                     label="组合名称"
+                    rules={[
+                      {
+                        required: true,
+                        message: '请输入组合名称',
+                      },
+                    ]}
                     name={[field.name, 'preliminarySet']}
                     fieldKey={[field.fieldKey, 'preliminarySet']}
                   >

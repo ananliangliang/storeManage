@@ -43,6 +43,8 @@ const GlobalHeaderRight: React.FC<{}> = () => {
     await serviceAdmin.getLoginInfo();
     location.reload();
   }
+
+  const a = [{ a: 1, b: 2 }];
   return (
     <Space className={className}>
       {menu.length > 0 && (
