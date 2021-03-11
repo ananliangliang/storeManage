@@ -1,12 +1,17 @@
+import SearchSelect from '@/components/FormComponents/searchSelect';
+import FormModal, { FormModalRef } from '@/components/Modals/FormModal';
 import PowerBotton from '@/components/PowerBotton';
-import { warehouseTreeFormate } from '@/models/warehouse';
+// import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
+import serviceUser from '@/services/user';
 
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { DataNode } from 'antd/lib/tree';
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { warehouseTreeListAll } from '../Warehouse/service';
+import { Form } from 'antd';
+// import { DataNode } from 'antd/lib/tree';
+import React, { FC, useRef, useState } from 'react';
+import serviceMessageLog from '../log/services/messageLog';
+// import { warehouseTreeListAll } from '../Warehouse/service';
 import OutForm from './components/outForm';
 //import styles from './warningRule.less'
 
@@ -18,17 +23,20 @@ const typeEnum = new Map([
 const OutManage: FC = () => {
   const [putFormVisible, setPutFormVisible] = useState(false);
   const actionRef = useRef<ActionType>();
+  const formModal = useRef<FormModalRef>(null);
+  const curUser = useRef({});
+  const curList = useRef<any[]>([]);
 
-  const [treeData, setTreeData] = useState<DataNode[]>([]);
-  useEffect(() => {
-    async function fetch() {
-      const res = await warehouseTreeListAll();
-      const { node } = warehouseTreeFormate(res);
-      setTreeData(node);
-    }
+  // const [treeData, setTreeData] = useState<DataNode[]>([]);
+  // useEffect(() => {
+  //   async function fetch() {
+  //     const res = await warehouseTreeListAll();
+  //     const { node } = warehouseTreeFormate(res);
+  //     setTreeData(node);
+  //   }
 
-    fetch();
-  }, []);
+  //   fetch();
+  // }, []);
 
   const columns: ProColumns<any>[] = [
     {
@@ -39,18 +47,10 @@ const OutManage: FC = () => {
       search: false,
     },
     {
-      title: '借出人',
-      dataIndex: '',
+      title: '物品名称',
+      dataIndex: 'goods_goods',
       render(_, record) {
-        return record.receive.uname;
-      },
-    },
-    {
-      title: '借出时间',
-      dataIndex: 'receive_time',
-      valueType: 'dateRange',
-      render(_, record) {
-        return record.receive.createTime;
+        return record.goods.goods;
       },
     },
     {
@@ -61,10 +61,27 @@ const OutManage: FC = () => {
       },
     },
     {
-      title: '物品名称',
-      dataIndex: 'goods_goods',
+      title: '借出时间',
+      dataIndex: 'receive_time',
+      valueType: 'dateRange',
       render(_, record) {
-        return record.goods.goods;
+        return record.receive.createTime;
+      },
+    },
+
+    {
+      title: '借出人',
+      dataIndex: '',
+      render(_, record) {
+        if (record.receive.uname) {
+          return record.receive.uname;
+        }
+        console.log(record);
+        return (
+          <PowerBotton allowStr="record" type="link" onClick={() => handleRecord(record.id)}>
+            补录
+          </PowerBotton>
+        );
       },
     },
     {
@@ -123,9 +140,39 @@ const OutManage: FC = () => {
     }
   }
 
+  function handleRecord(id: string) {
+    formModal.current?.show({
+      title: '补录',
+      async onSubmit(data) {
+        const t = curUser.current as any;
+        console.log(t);
+        await serviceMessageLog.onEditUser({ userId: t.id, userName: t.realName, id });
+        actionRef.current?.reload();
+      },
+    });
+  }
+
   function getList(params = {}) {
     params['type'] = 1;
     return serviceAccess.list(params);
+  }
+
+  const searchUser = async (param: string) => {
+    const res = await serviceUser.list({ search: param });
+    curList.current = res.data;
+    return res.data.map((item: any) => {
+      return {
+        ...item,
+        id: item.id,
+        name: item.realName + item.phone,
+      };
+    });
+  };
+
+  function handleSearch(value: number, opt: any) {
+    console.log(value, opt);
+    curUser.current = curList.current.find((item: any) => item.id == value);
+    console.log(curUser.current);
   }
   return (
     <div>
@@ -156,6 +203,12 @@ const OutManage: FC = () => {
         rowKey="id"
       />
       <OutForm visible={putFormVisible} onFinish={handleFinish} />
+
+      <FormModal ref={formModal}>
+        <Form.Item name="userId" label="归还人">
+          <SearchSelect request={searchUser} onChange={handleSearch} />
+        </Form.Item>
+      </FormModal>
     </div>
   );
 };

@@ -40,10 +40,6 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree }) => {
     init();
   }, []);
 
-  useEffect(() => {
-    console.warn(goodsKind);
-  }, [goodsKind]);
-
   const sourceRequest = async (param: string) => {
     const res = await serviceGoodsModel.list({ name: param, parentId: kind.current.id });
 

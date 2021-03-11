@@ -14,7 +14,7 @@ import { useModel } from 'umi';
 
 interface PutFormProps {
   visible: boolean;
-  onFinish: (data?: any) => void;
+  onFinish: (data?: any, ret?: any) => void;
   addressTree: DataNode[];
   value?: Store;
 }
@@ -156,12 +156,12 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
         }
         console.log(data);
         try {
-          await serviceReceive.onAddEdit({
+          const ret = await serviceReceive.onAddEdit({
             type: 0,
             state: 1,
             accessList: [data],
           });
-          onFinish(data);
+          onFinish(data, ret);
         } catch (error) {
           console.log(error);
           message.error(error);

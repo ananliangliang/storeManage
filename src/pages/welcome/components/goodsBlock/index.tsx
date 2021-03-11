@@ -9,7 +9,7 @@ import { Button, message, Modal, Pagination, Spin, Table, Upload, Image, Tag } f
 import { ColumnsType } from 'antd/lib/table';
 import React, { FC, useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
-import QRCode from 'qrcode.react';
+import GoodsQRCode from '@/components/goodsQRCode';
 import styles from '../style.less';
 import { Store } from 'antd/es/form/interface';
 import { goodsDel, listByReginon } from '@/pages/goodsManage/service/goodsInfo';
@@ -24,11 +24,14 @@ import serviceGoodsRule from '@/services/goodsRule';
 import goodsDefault from '@/assets/goodsDefault.jpg';
 import PutForm from '@/pages/outPutManage/components/putForm';
 import OutForm from '../outForm';
+import { debounce } from 'lodash';
+import { TAreaItem } from '../areaBlock';
+import { TWareItem } from '@/services';
 
 interface IndexProps {
-  kfId: number;
-  qyId?: number;
-  hlId?: number;
+  kf?: TWareItem;
+  qy?: TAreaItem;
+  hl?: TAreaItem;
 }
 
 const menus = [
@@ -72,11 +75,12 @@ function calculateScrollY(outterWidth: number) {
   return (outterWidth / 1616) * 260;
 }
 
-const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
+const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
   const auth = useModel('power', (state) => state.curAuth);
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [ruleList, setRuleList] = useState<any[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [title, setTitle] = useState<string>();
   const [scrollY, setSrolly] = useState(() => {
     const content = document.querySelector('.ant-layout-content') as Element;
     if (content) {
@@ -145,14 +149,17 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
   });
 
   useEffect(() => {
-    const content = document.querySelector('.ant-layout-content') as Element;
-
-    function resize() {
-      setSrolly(calculateScrollY(content.clientWidth));
-    }
-    content.addEventListener('resize', resize);
+    const resize = debounce(function () {
+      const content = document.querySelector('.ant-layout-content') as Element;
+      if (content) {
+        const width = content.clientWidth < 900 ? 900 : content.clientWidth;
+        setSrolly(calculateScrollY(width));
+      }
+    }, 500);
+    resize();
+    window.addEventListener('resize', resize);
     return () => {
-      content.removeEventListener('resize', resize);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 
@@ -161,7 +168,6 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
       const res = await warehouseTreeListAll();
       const { node } = warehouseTreeFormate(res);
       setTreeData(node);
-      console.warn(node);
       const list = await serviceGoodsRule.list();
       setRuleList(list.data);
     }
@@ -169,22 +175,37 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
   }, []);
 
   useEffect(() => {
-    setReqParam({
-      flg: 'warehouse',
-      id: kfId,
-      current: 1,
-    });
-  }, [kfId]);
+    if (kf?.id) {
+      setReqParam({
+        flg: 'warehouse',
+        id: kf.id,
+        current: 1,
+      });
+      setTitle(kf.mergerName);
+    }
+  }, [kf]);
 
   useEffect(() => {
-    if (qyId || hlId) {
+    let title = kf?.mergerName;
+    if (qy?.num) {
+      title = qy?.num;
+      if (hl?.num) {
+        title += '-' + hl.num;
+      }
+    }
+    setTitle(title);
+  }, [kf, qy, hl]);
+
+  useEffect(() => {
+    console.log(qy);
+    if (qy?.id || hl?.id) {
       setReqParam({
         flg: 'region',
-        id: hlId ?? qyId,
+        id: hl?.id ?? qy?.id,
         current: 1,
       });
     }
-  }, [qyId, hlId]);
+  }, [qy, hl]);
 
   useEffect(() => {
     fetchList.run(reqParam);
@@ -245,7 +266,7 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
       },
     },
     {
-      title: '物资编号',
+      title: '物资型号',
       dataIndex: 'specs',
     },
     {
@@ -264,15 +285,7 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
         Modal.confirm({
           title: '二维码',
           icon: null,
-          content: (
-            <QRCode
-              value={JSON.stringify({
-                code_no: record.codeNo,
-              })} //value参数为生成二维码的链接
-              size={200} //二维码的宽高尺寸
-              fgColor="#000000" //二维码的颜色
-            />
-          ),
+          content: <GoodsQRCode codeNo={record.codeNo} name={record.name} />,
           okText: '打印二维码',
           async onOk() {
             await serviceLocal.pointERCode([
@@ -348,12 +361,33 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
     }
   }
 
-  function handlePutForm(flag: boolean) {
+  function handlePutForm(flag: any, result?: any) {
     setPutFormProp({
       visible: false,
       value: {},
     });
     if (flag) {
+      console.warn(flag, auth);
+      if (!flag.goods.signNo && auth['code']) {
+        const ret = result[0]?.goods;
+        Modal.confirm({
+          title: '二维码',
+          icon: null,
+          width: 1200,
+          content: <GoodsQRCode codeNo={ret?.codeNo} name={ret?.name} />,
+          okText: '打印二维码',
+          async onOk() {
+            await serviceLocal.pointERCode([
+              {
+                Qrcode: JSON.stringify({
+                  code_no: ret?.codeNo,
+                }),
+                Label: ret?.name,
+              },
+            ]);
+          },
+        });
+      }
       fetchList.run(reqParam);
     }
   }
@@ -372,19 +406,23 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
         <div className={styles.bg}></div>
         <div className={styles.box}>
           <div className={styles.header}>
-            <div>物品详情 {}</div>
+            <div>物品详情 {title}</div>
             <div>
-              <a onClick={handleDownFile}>模板下载</a>
-
-              <Upload {...uploadProp}>
-                <Button type="primary">导入</Button>
-              </Upload>
+              {auth['import'] && (
+                <>
+                  <a onClick={handleDownFile}>模板下载</a>
+                  <Upload {...uploadProp}>
+                    <Button type="primary">导入</Button>
+                  </Upload>
+                </>
+              )}
               <PowerBotton
                 type="primary"
                 allowStr="export"
                 key="export"
                 onClick={() => {
-                  // download('')
+                  const { flg, id } = reqParam;
+                  download(`/warehouse/index/export?flg=${flg}&id=${id}`);
                 }}
               >
                 导出
@@ -406,8 +444,8 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
               </PowerBotton>
               <PowerBotton
                 type="primary"
-                allowStr="replenishment"
-                key="replenishment"
+                allowStr="out"
+                key="out"
                 onClick={() => {
                   const goods = selectedRowKeys.reduce((all, now) => {
                     const tar = list.data.find((item: any) => item.id == now);
@@ -485,9 +523,8 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
             addressTree={treeData}
             onFinish={(flag) => {
               setEditProp({ visible: false, value: {} });
-              if (flag) {
-                // actionRef.current?.reload();
-              }
+              console.log(flag);
+              // actionRef.current?.reload();
             }}
           />
         </div>

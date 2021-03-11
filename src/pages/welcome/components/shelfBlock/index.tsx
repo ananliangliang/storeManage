@@ -55,7 +55,7 @@ const Index: FC<IndexProps> = ({ hj, onClick }) => {
         <div className={styles.bg}></div>
         <div className={styles.box}>
           <div className={styles.header}>
-            <div>库房预览({hjNum})</div>
+            <div>货架预览({hjNum})</div>
             <Search onSearch={handleSearch} />
           </div>
           <div className={styles.content}>
@@ -64,6 +64,7 @@ const Index: FC<IndexProps> = ({ hj, onClick }) => {
                 <>
                   {arr.map((item) => (
                     <div
+                      key={item.id}
                       className={classNames(styles.lineBtn, { [styles.act]: item.id == cur })}
                       onClick={handleClick.bind(null, item)}
                     >

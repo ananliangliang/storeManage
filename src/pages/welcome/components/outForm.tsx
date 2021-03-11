@@ -1,6 +1,6 @@
 import serviceReceive from '@/services/receive';
 import { ModalForm } from '@ant-design/pro-form';
-import { Form, InputNumber, message } from 'antd';
+import { Form, InputNumber } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useEffect, useRef, useState } from 'react';
 // import styles from './taskForm.less';

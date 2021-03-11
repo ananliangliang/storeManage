@@ -1,6 +1,6 @@
 import serviceBase from '@/services/base';
 import { delay } from 'lodash';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 /**
  * @getDict 写做 get 实际上是 fetch
  *
@@ -11,9 +11,6 @@ export default function useDictModel() {
   const [dict, setDict] = useState<Partial<DICT_TYPE>>({});
   const initFlag = useRef(false);
   const map = useRef<Partial<DICT_MAP>>({});
-  // useEffect(() => {
-  //   init();
-  // }, []);
 
   const init = useCallback(() => {
     (async function () {

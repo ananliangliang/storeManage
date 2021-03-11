@@ -1,6 +1,11 @@
 import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
 import { Badge, Button, Divider, Modal, Tooltip } from 'antd';
-import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
+import ProTable, {
+  ProColumns,
+  ActionType,
+  RequestData,
+  ProColumnType,
+} from '@ant-design/pro-table';
 import { PlusOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 import { Store } from 'antd/es/form/interface';
@@ -151,23 +156,6 @@ const User: FC<IndexProps> = (props) => {
               <Badge status={state[record.auth]} text={text[record.auth]} />
             </PowerBotton>
           );
-          switch (record.auth) {
-            case 0:
-              return <Badge status="default" text="未认证" />;
-            case 1:
-              return <Badge status="success" text="已认证" />;
-            case 2:
-              return (
-                <PowerBotton
-                  allowStr="userAuth"
-                  type="link"
-                  onClick={() => handleAuth(record, false)}
-                >
-                  <Badge status="warning" text="待认证" />
-                </PowerBotton>
-              );
-          }
-          return null;
         },
         valueEnum: {
           2: { text: '待认证', status: 'warning' },
@@ -179,6 +167,7 @@ const User: FC<IndexProps> = (props) => {
         title: '是否启用',
         dataIndex: 'used',
         valueEnum: usedEmun,
+        initialValue: 1,
         render(text, record) {
           return (
             <StatusSwitch
@@ -249,7 +238,7 @@ const User: FC<IndexProps> = (props) => {
           );
         },
       },
-    ];
+    ] as ProColumns[];
   }, [auth]);
 
   function handleAuth(record: any, isDetail: boolean) {
