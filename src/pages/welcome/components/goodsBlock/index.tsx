@@ -6,19 +6,20 @@ import localData from '@/localStore';
 import serviceLocal from '@/services/local';
 import { download } from '@/utils/tools';
 import { Button, message, Modal, Pagination, Spin, Table, Upload, Image, Tag } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import React, { FC, useEffect, useState } from 'react';
+import type { ColumnsType } from 'antd/lib/table';
+import type { FC} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import QRCode from 'qrcode.react';
 import styles from '../style.less';
-import { Store } from 'antd/es/form/interface';
+import type { Store } from 'antd/es/form/interface';
 import { goodsDel, listByReginon } from '@/pages/goodsManage/service/goodsInfo';
 import EarlyWarningForm from '@/pages/goodsManage/components/earlyWarningForm';
 import BreakageForm from '@/pages/goodsManage/components/breakageForm';
 import GoodsLog from '@/pages/goodsManage/components/GoodsLog';
 import RfidForm from '@/pages/goodsManage/components/rfidForm';
 import EditGoodsInfoForm from '@/pages/goodsManage/components/editGoodsInfoForm';
-import { DataNode } from 'antd/lib/tree';
+import type { DataNode } from 'antd/lib/tree';
 import { warehouseTreeListAll } from '@/pages/Warehouse/service';
 import serviceGoodsRule from '@/services/goodsRule';
 import goodsDefault from '@/assets/goodsDefault.jpg';
@@ -192,7 +193,7 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
 
   const uploadProp = {
     name: 'excelFile',
-    action: config.baseUrl + '/warehouse/file/uploadExcel2',
+    action: `${config.baseUrl  }/warehouse/file/uploadExcel2`,
     withCredentials: true,
     showUploadList: false,
     headers: {
@@ -216,15 +217,15 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
   }
 
   const columns: ColumnsType<any> = [
-    {
-      title: '图片',
-      dataIndex: 'imageUrl',
-      render(_, record) {
-        return (
-          <Image width={30} height={30} src={record.imageUrl ? record.imageUrl : goodsDefault} />
-        );
-      },
-    },
+    // {
+    //   title: '图片',
+    //   dataIndex: 'imageUrl',
+    //   render(_, record) {
+    //     return (
+    //       <Image width={30} height={30} src={record.imageUrl ? record.imageUrl : goodsDefault} />
+    //     );
+    //   },
+    // },
     {
       title: '物资名称',
       dataIndex: 'goods',
@@ -268,9 +269,9 @@ const Index: FC<IndexProps> = ({ kfId, qyId, hlId }) => {
             <QRCode
               value={JSON.stringify({
                 code_no: record.codeNo,
-              })} //value参数为生成二维码的链接
-              size={200} //二维码的宽高尺寸
-              fgColor="#000000" //二维码的颜色
+              })} // value参数为生成二维码的链接
+              size={200} // 二维码的宽高尺寸
+              fgColor="#000000" // 二维码的颜色
             />
           ),
           okText: '打印二维码',
