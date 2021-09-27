@@ -192,8 +192,8 @@ export default defineConfig({
   title: false,
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
-  base: REACT_APP_ENV === 'preview' ? '/warehouse/' : '/',
-  publicPath: REACT_APP_ENV === 'preview' ? '/warehouse/' : '/',
+  base: REACT_APP_ENV === 'preview' ? '/store-management/' : '/',
+  publicPath: REACT_APP_ENV === 'preview' ? '/store-management/' : '/',
   define: {
     REACT_APP_ENV: REACT_APP_ENV,
   },

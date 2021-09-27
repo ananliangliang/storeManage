@@ -31,7 +31,7 @@ FROM nginx:alpine
 COPY /.docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 从build中（上面那个 FROM）拷贝出编译结果
-COPY --from=build /app/dist /usr/share/nginx/html/store
+COPY --from=build /app/dist /usr/share/nginx/html/store-management
 
 # # 启动nginx，关闭守护式运行，否则容器启动后会立刻关闭
 CMD ["nginx", "-g", "daemon off;"]
