@@ -45,4 +45,5 @@ export interface TWareItem {
   orgName: string;
   orgNo: string;
   regionName: string;
+  num: string;
 }

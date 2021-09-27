@@ -10,7 +10,7 @@ import { goodOnAddEdit } from '../service/goodsInfo';
 interface EarlyWarningFormProps {
   value: Store;
   visible: boolean;
-  onFinish: (data?: Store) => Promise<void | boolean> | void | boolean;
+  onFinish: (data?: Store, ret?: any) => Promise<void | boolean> | void | boolean;
   addressTree: DataNode[];
 }
 
@@ -22,14 +22,14 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
 }) => {
   const [form] = useForm();
   const warehouse = useModel('warehouse', (state) => state.warehouse);
-  console.warn(warehouse);
+
   async function handleFinish(data: Store) {
     console.log(data);
     data.id = value.id;
 
     data.hlId = data.address[data.address.length - 1];
-    await goodOnAddEdit(data);
-    onFinish(data);
+    const result = await goodOnAddEdit(data);
+    onFinish(data, result);
   }
   useEffect(() => {
     console.log(value, warehouse);
@@ -78,7 +78,11 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
 };
 export default EditGoodsInfoForm;
 
-export function getGoodsAddressIdLink(list: DataNode[], id: string, idLink: string[] = []): string[] {
+export function getGoodsAddressIdLink(
+  list: DataNode[],
+  id: string,
+  idLink: string[] = [],
+): string[] {
   const tempLink = idLink.slice();
   tempLink.push('');
   const idx = tempLink.length - 1;

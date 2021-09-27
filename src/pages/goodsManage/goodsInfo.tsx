@@ -13,7 +13,7 @@ import BreakageForm from './components/breakageForm';
 import EarlyWarningForm from './components/earlyWarningForm';
 import styles from './goodsInfo.less';
 import { goodsDel, listByReginon } from './service/goodsInfo';
-import QRCode from 'qrcode.react';
+import GoodsQRCode from '@/components/goodsQRCode';
 import serviceLocal from '@/services/local';
 import PowerDropBtn from '@/components/PowerBotton/dropBtn';
 import PowerBotton from '@/components/PowerBotton';
@@ -231,15 +231,8 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         Modal.confirm({
           title: '二维码',
           icon: null,
-          content: (
-            <QRCode
-              value={JSON.stringify({
-                code_no: record.codeNo,
-              })} //value参数为生成二维码的链接
-              size={200} //二维码的宽高尺寸
-              fgColor="#000000" //二维码的颜色
-            />
-          ),
+          width: 1200,
+          content: <GoodsQRCode codeNo={record.codeNo} name={record.name} />,
           okText: '打印二维码',
           async onOk() {
             await serviceLocal.pointERCode([

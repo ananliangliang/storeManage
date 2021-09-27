@@ -8,7 +8,7 @@ import shelfImg from '@/assets/image/shelf.jpg';
 import serviceIndex from '@/services';
 
 interface IndexProps {
-  wareId: number;
+  wareId?: number;
   onChiose: (data: TAreaItem) => void;
 }
 
@@ -55,7 +55,9 @@ const Index: FC<IndexProps> = ({ wareId, onChiose }) => {
       console.log(res);
       setArea(res.map((item: any) => ({ value: item.id, label: item.mergerName })));
     }
-    fetchArea(wareId);
+    if (wareId) {
+      fetchArea(wareId);
+    }
   }, [wareId]);
 
   useEffect(() => {

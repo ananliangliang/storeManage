@@ -3,15 +3,18 @@ import serviceGoodsRule from '@/services/goodsRule';
 import { subEffect } from '@/utils/tools';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Modal, Tooltip } from 'antd';
+import { Modal } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import StatusSwitch from '@/components/statusSwitch/statusSwitch';
 import PowerBotton from '@/components/PowerBotton';
 import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import { useModel } from 'umi';
 import DrawerRuleGoods from './components/drawerRuleGoods';
+import EarlyWarningForm from './components/earlyWarningForm';
+import { warehouseTreeFormate } from '@/models/warehouse';
+import { warehouseTreeListAll } from '../Warehouse/service';
 //import styles from './warningRule.less'
 
 interface WarningRuleProps {}
@@ -21,6 +24,13 @@ const statusEnum = new Map([
 ]);
 
 const WarningRule: FC<WarningRuleProps> = (props) => {
+  const { goodsKind, goodsKindInit } = useModel('goodsKind', (state) => {
+    const { goodsKind, init } = state;
+    return {
+      goodsKind,
+      goodsKindInit: init,
+    };
+  });
   const [modalProp, setModalProp] = useState<{
     visible: boolean;
     values: Store;
@@ -28,9 +38,21 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     visible: false,
     values: {},
   });
+  const [modalWarningProp, setModalWarningProp] = useState<{
+    visible: boolean;
+    values: Store;
+  }>({
+    visible: false,
+    values: {},
+  });
+
+  const [ruleList, setRuleList] = useState<any[]>([]);
+
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
   const auth = useModel('power', (state) => state.curAuth);
+  const [treeData, setTreeData] = useState<any[]>([]);
+
   const [ruleGoodsProp, setRuleGoodsProp] = useState<{
     visible: boolean;
     data: Store;
@@ -38,6 +60,28 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
     visible: false,
     data: {},
   });
+
+  useEffect(() => {
+    async function fetch() {
+      const res = await warehouseTreeListAll();
+      const { node } = warehouseTreeFormate(res);
+
+      setTreeData(node);
+      console.warn(node);
+    }
+    fetch();
+  }, []);
+
+  useEffect(() => {
+    async function init() {
+      if (goodsKind.length === 0) {
+        goodsKindInit();
+      }
+      const list = await serviceGoodsRule.list();
+      setRuleList(list.data);
+    }
+    init();
+  }, []);
 
   const columns: ProColumns<any>[] = [
     {
@@ -160,6 +204,13 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
       data: {},
     });
   }
+
+  function handleAdd(data: Store) {
+    console.log(data);
+    setModalWarningProp({ visible: false, values: {} });
+    actionRef.current?.reload();
+  }
+
   const submitLock = useRef(false);
   return (
     <div>
@@ -173,6 +224,16 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
         request={serviceGoodsRule.list}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
+            <PowerBotton
+              allowStr="add"
+              type="primary"
+              key="add"
+              onClick={() => {
+                setModalWarningProp({ visible: true, values: {} });
+              }}
+            >
+              <PlusOutlined /> 新增预警
+            </PowerBotton>,
             <PowerBotton
               type="primary"
               allowStr="add"
@@ -207,7 +268,15 @@ const WarningRule: FC<WarningRuleProps> = (props) => {
       />
 
       <DrawerRuleGoods {...ruleGoodsProp} onClose={handleClose} />
-
+      <EarlyWarningForm
+        {...modalWarningProp}
+        addressTree={treeData}
+        onFinish={handleAdd}
+        onClose={() => {
+          setModalWarningProp({ visible: false, values: {} });
+        }}
+        ruleList={ruleList}
+      />
       <Modal
         title={modalProp.values?.id ? '修改' : '新增'}
         visible={modalProp.visible}

@@ -1,7 +1,7 @@
 import { ModalForm } from '@ant-design/pro-form';
 import { useForm } from 'antd/es/form/Form';
 import { Store } from 'antd/es/form/interface';
-import { Form, TreeSelect } from 'antd';
+import { Form, message, TreeSelect } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { treeDataFormate } from '@/utils/tools';
 import serviceUser from '@/services/user';
@@ -39,6 +39,7 @@ const UserConfig: FC<UserConfigProps> = ({ onFinish, visible, user = {}, orgTree
       onFinish(data);
     } catch (error) {
       console.log(error);
+      message.error(error)
       return;
     }
   }

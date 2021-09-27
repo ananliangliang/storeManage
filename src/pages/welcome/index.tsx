@@ -7,6 +7,7 @@ import ShelfBlock from './components/shelfBlock';
 import GoodsBlock from './components/goodsBlock';
 import serviceIndex, { TWareItem } from '@/services';
 import { useRequest } from 'umi';
+import { debounce } from 'lodash';
 
 interface IndexProps {}
 
@@ -26,14 +27,11 @@ const Index: FC<IndexProps> = (props) => {
     inNum: 0,
   });
 
-  const [curKf, setCurKf] = useState<number>(() => {
-    const defaultId = localStorage.getItem(STORAGE_WAERE_ID);
-    return Number(defaultId);
-  });
+  const [curKf, setCurKf] = useState<TWareItem>({} as any);
 
   const [curHj, setCurHj] = useState<TAreaItem>({} as any);
 
-  const [hlId, setHlId] = useState<number>();
+  const [curHl, setCurHl] = useState<TAreaItem>({} as any);
 
   const fetchWareDetail = useRequest(serviceIndex.getWarehouseDetail, {
     manual: true,
@@ -51,18 +49,21 @@ const Index: FC<IndexProps> = (props) => {
   });
   // resize
   useEffect(() => {
-    const content = document.querySelector('.ant-layout-content') as Element;
     const body = document.body;
     body.classList.add(styles.root);
-    function resize() {
-      document.documentElement.setAttribute('style', 'font-size:100px');
-    }
+    const resize = debounce(function () {
+      const content = document.querySelector('.ant-layout-content') as Element;
+      if (content) {
+        const width = content.clientWidth < 900 ? 900 : content.clientWidth;
+        document.documentElement.setAttribute('style', `font-size:${(width / 1616) * 100}px`);
+      }
+    }, 500);
     resize();
-    content.addEventListener('resize', resize);
+    window.addEventListener('resize', resize);
     return () => {
       body.classList.remove(styles.root);
       document.documentElement.setAttribute('style', '');
-      content.removeEventListener('resize', resize);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 
@@ -70,8 +71,10 @@ const Index: FC<IndexProps> = (props) => {
   useEffect(() => {
     async function fetchWarehouseList() {
       const res: any = await serviceIndex.getWarehouseList();
-      const tar: TWareItem = res.kfList.find((item: any) => item.id === curKf);
+      const defaultId = localStorage.getItem(STORAGE_WAERE_ID);
+      const tar: TWareItem = res.kfList.find((item: any) => item.id == defaultId);
       if (tar) {
+        setCurKf(tar);
         setWareVal((e) => ({
           ...e,
           address: tar.address,
@@ -84,24 +87,25 @@ const Index: FC<IndexProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (curKf) {
-      fetchWareDetail.run(curKf);
+    if (curKf.id) {
+      fetchWareDetail.run(curKf.id);
       setCurHj({} as any);
     }
   }, [curKf]);
 
   function handleChioseWare(data: TWareItem) {
-    setCurKf(data.id);
+    setCurKf(data);
     setCurHj({} as any);
+    setCurHl({} as any);
   }
 
   function handleChioseHj(data: TAreaItem) {
     console.log(data);
     setCurHj(data);
-    setHlId(undefined);
+    setCurHl({} as any);
   }
   function handleChioseShelf(data: any) {
-    setHlId(data.id);
+    setCurHl(data);
   }
   return (
     <div className={styles.content}>
@@ -113,11 +117,11 @@ const Index: FC<IndexProps> = (props) => {
           onClick={handleChioseWare}
         />
         <WareBlock loading={fetchWareDetail.loading} {...wareVal} />
-        <AreaBlock wareId={curKf} onChiose={handleChioseHj} />
+        <AreaBlock wareId={curKf?.id} onChiose={handleChioseHj} />
       </div>
       <div className={styles.col}>
         <ShelfBlock hj={curHj} onClick={handleChioseShelf} />
-        <GoodsBlock kfId={curKf} qyId={curHj.id} hlId={hlId} />
+        <GoodsBlock kf={curKf} qy={curHj} hl={curHl} />
       </div>
     </div>
   );

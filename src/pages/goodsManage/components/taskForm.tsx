@@ -145,12 +145,6 @@ const TaskForm: FC<TaskFormProps> = ({ visible, onFinish, value }) => {
                   <Form.Item
                     {...field}
                     label="组合名称"
-                    rules={[
-                      {
-                        required: true,
-                        message: '请输入组合名称',
-                      },
-                    ]}
                     name={[field.name, 'preliminarySet']}
                     fieldKey={[field.fieldKey, 'preliminarySet']}
                   >

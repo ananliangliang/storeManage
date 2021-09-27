@@ -32,19 +32,19 @@ const MessageLog: FC<MessageLogProps> = (props) => {
       search: false,
       title: '信息',
     },
-    {
-      valueType: 'option',
-      title: '操作',
-      render(node, record) {
-        return (
-          !record.userId && (
-            <PowerBotton allowStr="record" type="link" onClick={() => handleRecord(record.id)}>
-              补录
-            </PowerBotton>
-          )
-        );
-      },
-    },
+    // {
+    //   valueType: 'option',
+    //   title: '操作',
+    //   render(node, record) {
+    //     return (
+    //       !record.userId && (
+    //         <PowerBotton allowStr="record" type="link" onClick={() => handleRecord(record.id)}>
+    //           补录
+    //         </PowerBotton>
+    //       )
+    //     );
+    //   },
+    // },
   ];
 
   function handleRecord(id: string) {
