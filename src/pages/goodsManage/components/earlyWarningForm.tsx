@@ -7,12 +7,13 @@ import {
   ProFormSelect,
 } from '@ant-design/pro-form';
 import { Cascader, Form, Select } from 'antd';
-import { Store } from 'antd/es/form/interface';
+import type { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
-import { DataNode } from 'antd/lib/tree';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import type { DataNode } from 'antd/lib/tree';
+import type { FC } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { listByReginon } from '../service/goodsInfo';
-//import styles from './earlyWarningForm.less'
+// import styles from './earlyWarningForm.less'
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 
 interface EarlyWarningFormProps {
@@ -51,10 +52,19 @@ const EarlyWarningForm: FC<EarlyWarningFormProps> = ({
   }, [value]);
 
   async function handleFinish(data: Store) {
-    console.log(data);
+    const params = data;
+
+    // 帮助 物资信息 -> 操作 -> 添加预警 补充参数
+    if (value && value.id) {
+      params.goodsId = value.id;
+    }
+    if (type === 'lockGoods') {
+      params.type = 1;
+    }
+    console.log('handleFinish', params);
     try {
-      await serviceGoodsEarlyWarning.onAddEdit(data);
-      onFinish(data);
+      await serviceGoodsEarlyWarning.onAddEdit(params);
+      onFinish(params);
       return true;
     } catch (error) {
       return false;
@@ -183,7 +193,7 @@ const sourceRequest = async (param: string) => {
   return res.data.map((item: any) => {
     return {
       id: item.id,
-      name: item.goods + ' ' + item.specs,
+      name: `${item.goods} ${item.specs}`,
     };
   });
 };

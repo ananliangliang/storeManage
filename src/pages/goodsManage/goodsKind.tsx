@@ -1,14 +1,28 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
-import { Row, Col, Tree, Spin, Modal, Image, TreeSelect, Divider, Form } from 'antd';
-import ProTable, { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import type { FC } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Row,
+  Col,
+  Tree,
+  Spin,
+  Modal,
+  Image,
+  TreeSelect,
+  Divider,
+  Form,
+  Button,
+  message,
+} from 'antd';
+import type { ProColumns, ActionType, RequestData } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import { PlusOutlined, DeleteOutlined, ExportOutlined } from '@ant-design/icons';
 import styles from './goodsKind.less';
 import { useModel, history } from 'umi';
-import { Store } from 'antd/es/form/interface';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
+import type { Store } from 'antd/es/form/interface';
+import type { DataNode, EventDataNode } from 'antd/lib/tree';
 import RightMenu from '@/components/rightMenu';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
-import { FormInstance } from 'antd/lib/form';
+import type { FormInstance } from 'antd/lib/form';
 import { ImgUpload } from '@/components/ImgUpload';
 import { subEffect } from '@/utils/tools';
 import serviceGoodsModel from '../../services/goodsModel';
@@ -17,9 +31,11 @@ import PopconfirmPowerBtn from '@/components/PowerBotton/PopconfirmPowerBtn';
 import FileUpload from '@/components/Upload/FileUpload';
 import { ProFormSelect } from '@ant-design/pro-form';
 import serviceGoodsRule from '@/services/goodsRule';
-import FormModal, { FormModalRef } from '@/components/Modals/FormModal';
+import type { FormModalRef } from '@/components/Modals/FormModal';
+import FormModal from '@/components/Modals/FormModal';
 import serviceGoodsEarlyWarning from '@/services/goodsEarlyWarning';
 import goodsDefault from '@/assets/goodsDefault.jpg';
+import config from '@/config/config';
 // import { TreeNode } from 'antd/lib/tree-select';
 const typeEnum = new Map([
   [1, 'RFID'],
@@ -279,7 +295,6 @@ const GoodsKind: FC<IndexProps> = (props) => {
     }
     actionRef.current?.reload();
   }
-
   const selectData = useRef({});
 
   const onTreeCheck = async (checked: React.ReactText[], info: any) => {
@@ -323,8 +338,8 @@ const GoodsKind: FC<IndexProps> = (props) => {
         Modal.confirm({
           content: '确定删除改类型吗?',
           async onOk() {
-            await serviceGoodsModel.remove(menuPos.data['id']);
-            if (curData['id'] === menuPos.data['id']) {
+            await serviceGoodsModel.remove(menuPos.data.id);
+            if (curData.id === menuPos.data.id) {
               // 刷新列表
             }
             init();
@@ -335,7 +350,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
   }
 
   async function getList(params: any): Promise<RequestData<any>> {
-    params.parentId = selectData.current?.['id'];
+    params.parentId = selectData.current?.id;
     return await serviceGoodsModel.list(params);
   }
 
@@ -366,7 +381,7 @@ const GoodsKind: FC<IndexProps> = (props) => {
                   treeData={goodsKind}
                   defaultExpandParent
                   defaultExpandedKeys={['0-0']}
-                  selectedKeys={[curData['key']]}
+                  selectedKeys={[curData.key]}
                   onRightClick={handleTreeRight}
                   draggable
                   onDrop={(e) => {
@@ -392,6 +407,15 @@ const GoodsKind: FC<IndexProps> = (props) => {
               request={getList}
               toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
                 return [
+                  <Button type="primary" key="export">
+                    <a
+                      href={`${config.baseUrl}/warehouse/goods/exportGoods`}
+                      download
+                      target="_blank"
+                    >
+                      <ExportOutlined /> 导出
+                    </a>
+                  </Button>,
                   <PowerBotton
                     allowStr="addGoods"
                     type="primary"

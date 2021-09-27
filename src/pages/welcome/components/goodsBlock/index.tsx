@@ -6,27 +6,28 @@ import localData from '@/localStore';
 import serviceLocal from '@/services/local';
 import { download } from '@/utils/tools';
 import { Button, message, Modal, Pagination, Spin, Table, Upload, Image, Tag } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import React, { FC, useEffect, useState } from 'react';
+import type { ColumnsType } from 'antd/lib/table';
+import type { FC } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import GoodsQRCode from '@/components/goodsQRCode';
 import styles from '../style.less';
-import { Store } from 'antd/es/form/interface';
+import type { Store } from 'antd/es/form/interface';
 import { goodsDel, listByReginon } from '@/pages/goodsManage/service/goodsInfo';
 import EarlyWarningForm from '@/pages/goodsManage/components/earlyWarningForm';
 import BreakageForm from '@/pages/goodsManage/components/breakageForm';
 import GoodsLog from '@/pages/goodsManage/components/GoodsLog';
 import RfidForm from '@/pages/goodsManage/components/rfidForm';
 import EditGoodsInfoForm from '@/pages/goodsManage/components/editGoodsInfoForm';
-import { DataNode } from 'antd/lib/tree';
+import type { DataNode } from 'antd/lib/tree';
 import { warehouseTreeListAll } from '@/pages/Warehouse/service';
 import serviceGoodsRule from '@/services/goodsRule';
 import goodsDefault from '@/assets/goodsDefault.jpg';
 import PutForm from '@/pages/outPutManage/components/putForm';
 import OutForm from '../outForm';
 import { debounce } from 'lodash';
-import { TAreaItem } from '../areaBlock';
-import { TWareItem } from '@/services';
+import type { TAreaItem } from '../areaBlock';
+import type { TWareItem } from '@/services';
 
 interface IndexProps {
   kf?: TWareItem;
@@ -190,7 +191,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
     if (qy?.num) {
       title = qy?.num;
       if (hl?.num) {
-        title += '-' + hl.num;
+        title += `-${hl.num}`;
       }
     }
     setTitle(title);
@@ -213,7 +214,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
 
   const uploadProp = {
     name: 'excelFile',
-    action: config.baseUrl + '/warehouse/file/uploadExcel2',
+    action: `${config.baseUrl}/warehouse/file/uploadExcel2`,
     withCredentials: true,
     showUploadList: false,
     headers: {
@@ -237,15 +238,15 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
   }
 
   const columns: ColumnsType<any> = [
-    {
-      title: '图片',
-      dataIndex: 'imageUrl',
-      render(_, record) {
-        return (
-          <Image width={30} height={30} src={record.imageUrl ? record.imageUrl : goodsDefault} />
-        );
-      },
-    },
+    // {
+    //   title: '图片',
+    //   dataIndex: 'imageUrl',
+    //   render(_, record) {
+    //     return (
+    //       <Image width={30} height={30} src={record.imageUrl ? record.imageUrl : goodsDefault} />
+    //     );
+    //   },
+    // },
     {
       title: '物资名称',
       dataIndex: 'goods',
@@ -368,7 +369,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
     });
     if (flag) {
       console.warn(flag, auth);
-      if (!flag.goods.signNo && auth['code']) {
+      if (!flag.goods.signNo && auth.code) {
         const ret = result[0]?.goods;
         Modal.confirm({
           title: '二维码',
@@ -408,7 +409,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
           <div className={styles.header}>
             <div>物品详情 {title}</div>
             <div>
-              {auth['import'] && (
+              {auth.import && (
                 <>
                   <a onClick={handleDownFile}>模板下载</a>
                   <Upload {...uploadProp}>

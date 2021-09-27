@@ -2,13 +2,14 @@ import serviceCommon from '@/services/common';
 import { removeEmptyChildren, treeDataFormate } from '@/utils/tools';
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import { Form, TreeSelect } from 'antd';
-import { Store } from 'antd/es/form/interface';
+import type { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
-import React, { FC, useEffect, useState } from 'react';
+import type { FC} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import { warehouseOnAddEdit } from '../../service';
 import { getOrgData } from '../../tools';
-//import styles from './AddEdit.less'
+// import styles from './AddEdit.less'
 
 interface AddEditProps {
   initialValues?: Store;
@@ -111,7 +112,7 @@ const AddEditWarehouse: FC<AddEditProps> = ({ initialValues, visible, onFinish, 
 
       {/* <ProFormText name="regionName" label="分区名称" placeholder="请输入分区名称" /> */}
       <ProFormText
-        name="mergerName"
+        name="shortName"
         rules={[
           {
             required: true,
