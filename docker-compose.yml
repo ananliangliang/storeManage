@@ -1,0 +1,9 @@
+version: "3.7"
+services: 
+    app:
+        build: .
+        image: store-management
+        container_name: store-management-app
+        restart: always
+        ports: 
+            - 10015:80

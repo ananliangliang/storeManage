@@ -5,8 +5,9 @@ import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { useIntl, history, FormattedMessage, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import styles from './index.less';
-import logo from '@/assets/image/LOGO.png';
+import logo from '@/assets/image/logo.png';
 import serviceAdmin from '@/services/admin';
+
 const LoginMessage: React.FC<{
   content: string;
 }> = ({ content }) => (

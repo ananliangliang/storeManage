@@ -1,10 +1,12 @@
-import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Row, Col, Button, Divider, Modal, Menu, message, Popconfirm } from 'antd';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
-import styles from './Department.less';
+import type { ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import styles from './department.less';
 import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { DEFAULT_FORM_LAYOUT } from '@/const';
-import { FormInstance } from 'antd/lib/form';
+import type { FormInstance } from 'antd/lib/form';
 import { subEffect } from '@/utils/tools';
 import serviceDict from '@/services/dict';
 import { useModel } from 'umi';

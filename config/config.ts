@@ -68,7 +68,7 @@ export default defineConfig({
     {
       path: '/goodsManage',
       name: '物资管理',
-      component: '../layout/NavLayout',
+      component: '../layout/navLayout',
       routes: [
         {
           path: '/goodsManage/goodsKind',
@@ -105,7 +105,7 @@ export default defineConfig({
     {
       path: '/outPutManage',
       name: '出入库管理',
-      component: '../layout/NavLayout',
+      component: '../layout/navLayout',
       routes: [
         {
           path: '/outPutManage/putManage',
@@ -122,7 +122,7 @@ export default defineConfig({
     {
       path: '/log',
       name: '日志管理',
-      component: '../layout/NavLayout',
+      component: '../layout/navLayout',
       routes: [
         {
           path: '/log/commonLog',
@@ -139,7 +139,7 @@ export default defineConfig({
     {
       name: '系统配置',
       path: '/setting',
-      component: '../layout/NavLayout',
+      component: '../layout/navLayout',
       routes: [
         {
           path: '/setting/product',
@@ -192,7 +192,9 @@ export default defineConfig({
   title: false,
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
-  manifest: {
-    basePath: '/',
+  base: REACT_APP_ENV === 'preview' ? '/warehouse/' : '/',
+  publicPath: REACT_APP_ENV === 'preview' ? '/warehouse/' : '/',
+  define: {
+    REACT_APP_ENV: REACT_APP_ENV,
   },
 });
