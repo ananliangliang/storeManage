@@ -1,7 +1,7 @@
 import { dict2select } from '@/models/dict';
 import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExportOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import { Col, message, Modal, Row, Tooltip } from 'antd';
 import { Store } from 'antd/es/form/interface';
@@ -21,6 +21,7 @@ import RfidForm from './components/rfidForm';
 import EditGoodsInfoForm from './components/editGoodsInfoForm';
 import { FormInstance } from 'antd/lib/form';
 import GoodsLog from './components/GoodsLog';
+import config from '@/config/config';
 
 interface GoodsInfoProps {}
 const typeEnum = new Map([
@@ -72,6 +73,7 @@ const menus = [
 ];
 
 const GoodsInfo: FC<GoodsInfoProps> = (props) => {
+  const [user] = useModel('user', (state) => [state.user]);
   const [goodsState, getDict] = useModel('dict', (state) => [state.dict.goodsState, state.getDict]);
   const [modalProp, setModalProp] = useState<{
     visible: boolean;
@@ -399,6 +401,19 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     }}
                   >
                     批量报损
+                  </PowerBotton>,
+                  <PowerBotton
+                    key="export"
+                    allowStr="export"
+                    type="primary"
+                  >
+                    <a
+                      href={`${config.baseUrl}/warehouse/index/export?flg=region&id=${user?.department?.id}`}
+                      download
+                      target="_blank"
+                    >
+                      <ExportOutlined /> 导出
+                    </a>
                   </PowerBotton>,
                   <PowerBotton
                     key="del"
