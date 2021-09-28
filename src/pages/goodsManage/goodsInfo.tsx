@@ -292,6 +292,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
     if (filter) {
       if (formRef.current) {
         formRef.current?.setFieldsValue(filter);
+        formRef.current?.submit();
       } else {
         setTimeout(() => {
           formRef.current?.setFieldsValue(filter);
@@ -300,7 +301,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       }
     }
     fetch();
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     actionRef.current?.reload();
