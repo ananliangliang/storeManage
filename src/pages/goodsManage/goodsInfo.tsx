@@ -3,7 +3,7 @@ import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceGoodsRule from '@/services/goodsRule';
 import { DeleteOutlined, ExportOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Col, message, Modal, Row, Tooltip } from 'antd';
+import { Button, Col, message, Modal, Row, Tooltip } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import Tree, { DataNode } from 'antd/lib/tree';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
@@ -402,9 +402,8 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                   >
                     批量报损
                   </PowerBotton>,
-                  <PowerBotton
+                  <Button
                     key="export"
-                    allowStr="export"
                     type="primary"
                   >
                     <a
@@ -414,7 +413,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     >
                       <ExportOutlined /> 导出
                     </a>
-                  </PowerBotton>,
+                  </Button>,
                   <PowerBotton
                     key="del"
                     allowStr="del"
