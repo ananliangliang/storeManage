@@ -2,5 +2,5 @@ export default {
   // baseUrl: '',
   prefix: '/warehouse',
 
-  baseUrl: 'http://croom.zjspoint.top:7000',
+  baseUrl: 'http://tools.zjspoint.com',
 };
