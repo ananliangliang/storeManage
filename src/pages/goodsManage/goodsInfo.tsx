@@ -407,7 +407,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                     type="primary"
                   >
                     <a
-                      href={`${config.baseUrl}/warehouse/index/export?flg=region&id=${user?.department?.id}`}
+                      href={`${config.baseUrl}/warehouse/index/export?flg=org&id=${user?.department?.id}`}
                       download
                       target="_blank"
                     >
