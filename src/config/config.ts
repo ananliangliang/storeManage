@@ -1,6 +1,7 @@
 import configDev from './config.dev';
 import configProd from './config.prod';
 import configPreview from './config.preview';
+import configFollowhost from './config.followhost';
 
 const conf = {
   thumbSuffix: '_yasuo.jpg',
@@ -17,6 +18,9 @@ switch (REACT_APP_ENV) {
     break;
   case 'preview':
     config = { ...configPreview, ...conf };
+    break;
+  case 'followhost':
+    config = { ...configFollowhost, ...conf };
     break;
   case 'prod':
     config = { ...configProd, ...conf };
