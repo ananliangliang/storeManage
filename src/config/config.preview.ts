@@ -2,5 +2,5 @@ export default {
   // baseUrl: '',
   prefix: '/warehouse',
 
-  baseUrl: '//tools.zjspoint.com',
+  baseUrl: window.location.origin,
 };
