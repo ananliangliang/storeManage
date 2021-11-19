@@ -101,8 +101,8 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
   }, [visible]);
 
   function handleLine(e: React.FocusEvent<HTMLInputElement>) {
-    console.log(e.target.value);
-    const v = Number(e.target.value);
+    console.log(e);
+    const v = Number(e);
     const lines = form.getFieldValue('hlDetail') || [];
     console.log(lines);
     let value = [];
@@ -139,6 +139,13 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
             // }}
             name="orgNo"
             label="分区"
+            required
+            rules={[
+              {
+                required: true,
+                message: '该项是必填项',
+              },
+            ]}
           />
           <ProFormText
             name="num"
@@ -154,7 +161,19 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormText width="m" required placeholder="请输入名称" name="regionName" label="名称" />
+          <ProFormText
+            width="m"
+            required
+            rules={[
+              {
+                required: true,
+                message: '该项是必填项',
+              },
+            ]}
+            placeholder="请输入名称"
+            name="regionName"
+            label="名称"
+          />
           <ProFormRadio.Group
             name="shortName"
             label="AB面"
@@ -183,7 +202,8 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
             width="m"
             label="行数"
             fieldProps={{
-              onBlur: handleLine,
+              onChange: handleLine,
+
               precision: 0,
             }}
             placeholder="请输入行数"
@@ -192,6 +212,13 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
             name="sort"
             label="方向"
             width="s"
+            required
+            rules={[
+              {
+                required: true,
+                message: '该项是必填项',
+              },
+            ]}
             options={[
               {
                 label: '从上到下',
@@ -227,6 +254,13 @@ const AddEditGoods: FC<AddEditPlaceProps> = ({ initialValues, visible, onFinish,
                     name={[field.name, 'sort']}
                     label="方向"
                     width="s"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: '该项是必填项',
+                      },
+                    ]}
                     options={[
                       {
                         label: '从左到右',
