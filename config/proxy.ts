@@ -7,9 +7,19 @@
  */
 export default {
   dev: {
-    '/proxy/': {
-      // target: 'http://192.168.1.106:8082',
-      target: 'http://tools.zjspoint.com',
+    '/proxy/warehouse/': {
+      target: 'http://192.168.1.36:8082',
+      // target: 'http://tools.zjspoint.com',
+      // target: 'http://192.168.1.160:80',
+      // target: 'http://web.zjspoint.com/',
+      // target:'http://192.168.1.101:8082',
+      changeOrigin: true,
+      pathRewrite: { '^/proxy/': '' },
+    },
+    '/proxy/common/': {
+      target: 'http://192.168.1.36:8081',
+      // target: 'http://tools.zjspoint.com',
+      // target: 'http://192.168.1.160:80',
       // target: 'http://web.zjspoint.com/',
       // target:'http://192.168.1.101:8082',
       changeOrigin: true,
