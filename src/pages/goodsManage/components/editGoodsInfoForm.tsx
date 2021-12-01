@@ -1,4 +1,4 @@
-import { ModalForm, ProFormText } from '@ant-design/pro-form';
+import { ModalForm, ProFormDatePicker, ProFormDateRangePicker, ProFormText } from '@ant-design/pro-form';
 import { Cascader, Form } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { useForm } from 'antd/lib/form/Form';
@@ -28,6 +28,8 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
     data.id = value.id;
 
     data.hlId = data.address[data.address.length - 1];
+    data.testDate = data?.thisAndNextTestDate?.[0];
+    data.nextTestDate = data?.thisAndNextTestDate?.[1];
     const result = await goodOnAddEdit(data);
     onFinish(data, result);
   }
@@ -40,6 +42,9 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
     }
     form.setFieldsValue({
       name: value.name,
+      managementNo: value.managementNo,
+      testNo: value.testNo,
+      thisAndNextTestDate: [value.testDate, value.nextTestDate],
       address,
     });
   }, [value]);
@@ -70,6 +75,9 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
       onFinish={handleFinish}
     >
       <ProFormText label="物资名称" name="name" />
+      <ProFormText label="定制管理编号" name="managementNo" />
+      <ProFormText label="检测编号" name="testNo" />
+      <ProFormDateRangePicker label="试验时间" name="thisAndNextTestDate" />
       <Form.Item name="address" label="物资位置">
         <Cascader options={addressTree} />
       </Form.Item>

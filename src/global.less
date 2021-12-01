@@ -14,9 +14,9 @@ body,
 }
 
 .ant-table-thead > tr > th {
+  color: rgba(255, 255, 255, 0.85) !important;
   background: rgb(19, 194, 194) !important;
   border: none !important;
-  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .ant-layout-header {
@@ -50,9 +50,9 @@ body,
   &.full {
     padding: 24px 16px;
     background: url('./assets/background.jpg');
-    background-size: cover;
-    background-position: center center;
     background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
   }
 }
 .ant-select-multiple .ant-select-selection-item {
@@ -72,9 +72,9 @@ body,
 .ant-layout {
   min-height: 100vh;
   background: url('./assets/background.jpg');
-  background-size: cover;
-  background-position: center center;
   background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
 }
 .anticon,
 .ant-empty {
@@ -99,6 +99,7 @@ body,
   .ant-popover-inner {
     background: @component-background;
   }
+
   border-radius: 5px;
 }
 .ant-popover-placement-bottom > .ant-popover-content > .ant-popover-arrow,
@@ -113,6 +114,7 @@ body,
 
 .ant-modal {
   .components-bg;
+
   padding-bottom: 0 !important;
   // .ant-space {
   //   float: right;
@@ -138,13 +140,13 @@ body,
 }
 
 .ant-card {
-  border-radius: 5px;
   background: linear-gradient(
     0deg,
     rgba(92, 219, 211, 0.251) 0%,
     rgba(0, 109, 117, 0.251) 50%,
     rgba(92, 219, 211, 0.251) 100%
   );
+  border-radius: 5px;
   box-shadow: -1px 1px 4px 1px rgba(51, 51, 51, 0.04);
 }
 
@@ -191,27 +193,25 @@ ol {
 }
 
 .fullContent {
-  height: 100%;
   position: relative;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
 input:-webkit-autofill {
-  box-shadow: 0 0 0px 1000px rgba(54, 71, 130, 0.1) inset !important;
-
-  -webkit-text-fill-color: #fff !important;
-
   -webkit-background-clip: text;
+  box-shadow: 0 0 0 1000px rgba(54, 71, 130, 0.1) inset !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .ant-menu-submenu-selected {
-  background: #00474f;
   color: @text-color;
+  background: #00474f;
   .ant-menu:not(.ant-menu-horizontal) {
     .ant-menu-item-selected {
-      background-color: #006d75;
       color: #fff;
+      background-color: #006d75;
 
       a {
         color: #fff;
@@ -223,19 +223,20 @@ input:-webkit-autofill {
 .rightMenu {
   position: fixed;
   z-index: 9999;
-  padding: 20px;
   display: none;
+  padding: 20px;
   .bg {
     .components-bg;
-    border-radius: 5px;
+
     overflow: hidden;
+    border-radius: 5px;
   }
   .ant-menu {
     background: @component-background;
     border-right: none;
     .ant-menu-item-active {
-      background: @hover-color;
       color: #fff;
+      background: @hover-color;
     }
   }
 }
@@ -285,4 +286,10 @@ input:-webkit-autofill {
 
 .ant-btn-link {
   padding: 0;
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td,
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  background-color: #066a6d;
 }

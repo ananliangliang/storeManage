@@ -129,6 +129,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       {
         title: '物资名称',
         dataIndex: 'name',
+        fixed: 'left'
       },
       {
         title: '在位情况',
@@ -206,10 +207,32 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
           return record.hj + record.hl;
         },
       },
+      {
+        title: '定制管理编号',
+        dataIndex: 'managementNo',
+      },
+      {
+        title: '检测编号',
+        dataIndex: 'testNo',
+      },
+      {
+        title: '本次试验时间',
+        dataIndex: 'testDate',
+      },
+      {
+        title: '下次试验时间',
+        dataIndex: 'nextTestDate',
+      },
+      {
+        title: '备注',
+        dataIndex: 'remark',
+      },
 
       {
         title: '操作',
         valueType: 'option',
+        width: 120,
+        fixed: 'right',
         render(_, record) {
           return (
             <PowerDropBtn text="操作" onClick={(e) => handleMenuClick(e, record)} menus={menus} />
@@ -402,10 +425,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                   >
                     批量报损
                   </PowerBotton>,
-                  <Button
-                    key="export"
-                    type="primary"
-                  >
+                  <Button key="export" type="primary">
                     <a
                       href={`${config.baseUrl}/warehouse/index/export?flg=org&id=${user?.department?.id}`}
                       download
@@ -439,6 +459,9 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
                 pageSize: 10,
               }}
               columns={columns}
+              scroll={{
+                x: 1600
+              }}
               rowKey="id"
             ></ProTable>
           </div>

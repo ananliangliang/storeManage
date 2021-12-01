@@ -3,7 +3,16 @@ import { getGoodsAddressIdLink } from '@/pages/goodsManage/components/editGoodsI
 import serviceGoodsModel from '@/services/goodsModel';
 import serviceLocal from '@/services/local';
 import serviceReceive from '@/services/receive';
-import { ModalForm, ProFormCheckbox, ProFormDigit, ProFormText } from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProFormCheckbox,
+  ProFormDatePicker,
+  ProFormDateRangePicker,
+  ProFormDateTimeRangePicker,
+  ProFormDependency,
+  ProFormDigit,
+  ProFormText,
+} from '@ant-design/pro-form';
 import { Cascader, Form, message, TreeSelect } from 'antd';
 import { Store } from 'antd/es/form/interface';
 import { FormInstance } from 'antd/lib/form';
@@ -145,6 +154,10 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
             modelId: values.modelId,
             signNo: values.signNo,
             name: values.name,
+            managementNo: values.managementNo,
+            testNo: values.testNo,
+            testDate: values?.thisAndNextTestDate?.[0],
+            nextTestDate: values?.thisAndNextTestDate?.[1],
             hlId: values.address[values.address.length - 1],
           },
         };
@@ -206,6 +219,9 @@ const PutForm: FC<PutFormProps> = ({ visible, onFinish, addressTree, value }) =>
         />
       </Form.Item>
       <ProFormText label="物品名称" name="name" />
+      <ProFormText label="定制管理编号" name="managementNo" />
+      <ProFormText label="检测编号" name="testNo" />
+      <ProFormDateRangePicker label="试验时间" name="thisAndNextTestDate" />
 
       <ProFormCheckbox.Group
         name="flag"
