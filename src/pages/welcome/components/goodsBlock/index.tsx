@@ -234,7 +234,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
   };
 
   function handleDownFile() {
-    download('/excel/tools.xlsx');
+    download(`${config.baseUrl}/excel/tools.xlsx`);
   }
 
   const columns: ColumnsType<any> = [
@@ -411,7 +411,13 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
             <div>
               {auth.import && (
                 <>
-                  <a onClick={handleDownFile}>模板下载</a>
+                  <a
+                    href={`${config.baseUrl}/excel/tools.xlsx`}
+                    download
+                    target="_blank"
+                  >
+                    模板下载
+                  </a>
                   <Upload {...uploadProp}>
                     <Button type="primary">导入</Button>
                   </Upload>
@@ -421,12 +427,14 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
                 type="primary"
                 allowStr="export"
                 key="export"
-                onClick={() => {
-                  const { flg, id } = reqParam;
-                  download(`/warehouse/index/export?flg=${flg}&id=${id}`);
-                }}
               >
-                导出
+                <a
+                  href={`${config.baseUrl}/warehouse/index/export?flg=${reqParam.flg}&id=${reqParam.id}`}
+                  download
+                  target="_blank"
+                >
+                  导出
+                </a>
               </PowerBotton>
               <PowerBotton
                 type="primary"
