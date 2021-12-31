@@ -161,7 +161,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         search: false,
       },
       {
-        title: '入库时间',
+        title: '初始入库时间',
         dataIndex: 'wareTime',
         valueType: 'dateRange',
         render(node, record) {
