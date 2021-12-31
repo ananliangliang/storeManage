@@ -54,6 +54,14 @@ const OutManage: FC = () => {
       },
     },
     {
+      title: '定制管理编号',
+      dataIndex: 'managementNo',
+      search: false,
+      render(_, record) {
+        return record.goods.managementNo;
+      },
+    },
+    {
       title: '物资类型',
       dataIndex: 'goods_lastModel',
       render(_, record) {

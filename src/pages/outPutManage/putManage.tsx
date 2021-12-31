@@ -125,6 +125,14 @@ const PutManage: FC = () => {
         },
       },
       {
+        title: '定制管理编号',
+        dataIndex: 'managementNo',
+        search: false,
+        render(_, record) {
+          return record.goods.managementNo;
+        },
+      },
+      {
         title: '数量',
         dataIndex: 'count',
         search: false,
