@@ -71,7 +71,7 @@ const OutManage: FC = () => {
 
     {
       title: '借出人',
-      dataIndex: '',
+      dataIndex: 'uname',
       render(_, record) {
         if (record.receive.uname) {
           return record.receive.uname;

@@ -84,7 +84,7 @@ const PutManage: FC = () => {
       },
       {
         title: '操作人',
-        dataIndex: '',
+        dataIndex: 'uname',
         render(_, record) {
           return record.receive.uname;
         },
