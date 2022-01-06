@@ -77,6 +77,7 @@ const EditGoodsInfoForm: FC<EarlyWarningFormProps> = ({
       <ProFormText label="物资名称" name="name" />
       <ProFormText label="定制管理编号" name="managementNo" />
       <ProFormText label="检测编号" name="testNo" />
+      <ProFormText label="生产厂家" name="manufacturer" />
       <ProFormDateRangePicker label="试验时间" name="thisAndNextTestDate" />
       <Form.Item name="address" label="物资位置">
         <Cascader options={addressTree} />

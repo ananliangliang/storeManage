@@ -252,6 +252,10 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
       dataIndex: 'goods',
     },
     {
+      title: '定制管理编号',
+      dataIndex: 'managementNo',
+    },
+    {
       title: '库存',
       dataIndex: 'count',
       render(node, record) {

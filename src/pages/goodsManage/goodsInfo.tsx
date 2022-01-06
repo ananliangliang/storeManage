@@ -212,6 +212,10 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
         dataIndex: 'managementNo',
       },
       {
+        title: '生产厂家',
+        dataIndex: 'manufacturer',
+      },
+      {
         title: '检测编号',
         dataIndex: 'testNo',
       },
