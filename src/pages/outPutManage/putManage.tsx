@@ -5,7 +5,7 @@ import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 import { download } from '@/utils/tools';
 
-import { PlusOutlined } from '@ant-design/icons';
+import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import { Button, message, Upload } from 'antd';
 import { DataNode } from 'antd/lib/tree';
@@ -37,7 +37,7 @@ const PutManage: FC = () => {
   const [putFormVisible, setPutFormVisible] = useState(false);
   const [giveBackVisible, setGiveBackVisible] = useState(false);
   const [replenishment, setReplenishment] = useState(false);
-
+  const [requestValue, setRequestValue] = useState<{ filter: any }>();
   const actionRef = useRef<ActionType>();
 
   const [treeData, setTreeData] = useState<DataNode[]>([]);
@@ -237,7 +237,13 @@ const PutManage: FC = () => {
         pagination={{
           pageSize: 10,
         }}
-        request={serviceAccess.list}
+        request={(params) => {
+          const result: any = params;
+          delete result.current;
+          delete result.pageSize;
+          setRequestValue({ filter: result });       
+          return serviceAccess.list(params);
+        }}
         toolBarRender={(action, { selectedRowKeys, selectedRows }) => {
           return [
             <PowerBotton
@@ -282,6 +288,17 @@ const PutManage: FC = () => {
                 <Button icon={<PlusOutlined />}>导入</Button>
               </Upload>
             ),
+            <Button type="primary" key="export">
+              <a
+                href={`${config.baseUrl}/warehouse/access/in/export?json=${encodeURI(
+                  JSON.stringify(requestValue),
+                )}&loginToken=${localStorage.getItem('token')}`}
+                download
+                target="_blank"
+              >
+                <ExportOutlined /> 导出
+              </a>
+            </Button>,
           ];
         }}
         columns={columns}

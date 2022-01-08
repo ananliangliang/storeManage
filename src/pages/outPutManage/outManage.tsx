@@ -4,10 +4,10 @@ import PowerBotton from '@/components/PowerBotton';
 // import { warehouseTreeFormate } from '@/models/warehouse';
 import serviceAccess from '@/services/access';
 import serviceUser from '@/services/user';
-
-import { PlusOutlined } from '@ant-design/icons';
+import config from '@/config/config';
+import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
 // import { DataNode } from 'antd/lib/tree';
 import React, { FC, useRef, useState } from 'react';
 import serviceMessageLog from '../log/services/messageLog';
@@ -26,7 +26,7 @@ const OutManage: FC = () => {
   const formModal = useRef<FormModalRef>(null);
   const curUser = useRef({});
   const curList = useRef<any[]>([]);
-
+  const [requestValue, setRequestValue] = useState<{ filter: any }>();
   // const [treeData, setTreeData] = useState<DataNode[]>([]);
   // useEffect(() => {
   //   async function fetch() {
@@ -84,7 +84,7 @@ const OutManage: FC = () => {
         if (record.receive.uname) {
           return record.receive.uname;
         }
-        console.log(record);
+        // console.log(record);
         return (
           <PowerBotton allowStr="record" type="link" onClick={() => handleRecord(record.id)}>
             补录
@@ -161,7 +161,12 @@ const OutManage: FC = () => {
   }
 
   function getList(params = {}) {
+    const result: any = params;
+    delete result.current;
+    delete result.pageSize;
+    setRequestValue({ filter: result });
     params['type'] = 1;
+
     return serviceAccess.list(params);
   }
 
@@ -176,10 +181,11 @@ const OutManage: FC = () => {
       };
     });
   };
+  console.log(localStorage.getItem('token'));
 
   function handleSearch(value: number, opt: any) {
-    console.log(value, opt);
-    curUser.current = curList.current.find((item: any) => item.id == value);
+    console.log('111', value, opt);
+    curUser.current = curList.current.find((item: any) => item.id === value);
     console.log(curUser.current);
   }
   return (
@@ -205,6 +211,17 @@ const OutManage: FC = () => {
               <PlusOutlined />
               出库补录
             </PowerBotton>,
+            <Button type="primary" key="export">
+              <a
+                href={`${config.baseUrl}/warehouse/access/out/export?json=${encodeURI(
+                  JSON.stringify(requestValue)
+                )}&loginToken=${localStorage.getItem('token')}`}
+                download
+                target="_blank"
+              >
+                <ExportOutlined /> 导出
+              </a>
+            </Button>,
           ];
         }}
         columns={columns}
