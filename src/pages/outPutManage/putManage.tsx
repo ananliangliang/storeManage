@@ -282,7 +282,7 @@ const PutManage: FC = () => {
             ),
             <Button type="primary" key="export">
               <a
-                href={`${config.baseUrl}/warehouse/access/out/export?json=${encodeURI(
+                href={`${config.baseUrl}/warehouse/access/in/export?json=${encodeURI(
                   JSON.stringify(requestValue),
                 )}&loginToken=${localStorage.getItem('token')}`}
                 download
