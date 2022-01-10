@@ -77,6 +77,7 @@ function calculateScrollY(outterWidth: number) {
 }
 
 const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
+  const [user] = useModel('user', (state) => [state.user]);
   const auth = useModel('power', (state) => state.curAuth);
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [ruleList, setRuleList] = useState<any[]>([]);
@@ -176,15 +177,15 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
   }, []);
 
   useEffect(() => {
-    if (kf?.id) {
-      setReqParam({
-        flg: 'warehouse',
-        id: kf.id,
-        current: 1,
-      });
+    if (kf) {
       setTitle(kf.mergerName);
     }
-  }, [kf]);
+    setReqParam({
+      flg: 'org',
+      id: user.department?.id,
+      current: 1,
+    });
+  }, [kf, user]);
 
   useEffect(() => {
     let title = kf?.mergerName;
@@ -415,11 +416,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
             <div>
               {auth.import && (
                 <>
-                  <a
-                    href={`${config.baseUrl}/excel/tools.xlsx`}
-                    download
-                    target="_blank"
-                  >
+                  <a href={`${config.baseUrl}/excel/tools.xlsx`} download target="_blank">
                     模板下载
                   </a>
                   <Upload {...uploadProp}>
@@ -427,11 +424,7 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
                   </Upload>
                 </>
               )}
-              <PowerBotton
-                type="primary"
-                allowStr="export"
-                key="export"
-              >
+              <PowerBotton type="primary" allowStr="export" key="export">
                 <a
                   href={`${config.baseUrl}/warehouse/index/export?flg=${reqParam.flg}&id=${reqParam.id}`}
                   download

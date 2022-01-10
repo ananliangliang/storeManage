@@ -6,7 +6,7 @@ import AreaBlock, { TAreaItem } from './components/areaBlock';
 import ShelfBlock from './components/shelfBlock';
 import GoodsBlock from './components/goodsBlock';
 import serviceIndex, { TWareItem } from '@/services';
-import { useModel, useRequest } from 'umi';
+import { useRequest } from 'umi';
 import { debounce } from 'lodash';
 
 interface IndexProps {}
@@ -28,8 +28,9 @@ const Index: FC<IndexProps> = (props) => {
   });
 
   const [curKf, setCurKf] = useState<TWareItem>({} as any);
-  const [user] = useModel('user', (state) => [state.user]);
+
   const [curHj, setCurHj] = useState<TAreaItem>({} as any);
+
   const [curHl, setCurHl] = useState<TAreaItem>({} as any);
 
   const fetchWareDetail = useRequest(serviceIndex.getWarehouseDetail, {
@@ -71,8 +72,7 @@ const Index: FC<IndexProps> = (props) => {
     async function fetchWarehouseList() {
       const res: any = await serviceIndex.getWarehouseList();
       const defaultId = localStorage.getItem(STORAGE_WAERE_ID);
-      const tar: TWareItem = res.kfList.find((item: any) => item.id === user?.department?.id);  
-      console.log(`tar11111111111111111111`, tar)
+      const tar: TWareItem = res.kfList.find((item: any) => item.id == defaultId);
       if (tar) {
         setCurKf(tar);
         setWareVal((e) => ({
@@ -84,11 +84,9 @@ const Index: FC<IndexProps> = (props) => {
       setWare(res);
     }
     fetchWarehouseList();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
-    console.log(curKf);
-    
     if (curKf.id) {
       fetchWareDetail.run(curKf.id);
       setCurHj({} as any);
