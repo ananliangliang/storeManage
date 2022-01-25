@@ -129,7 +129,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       {
         title: '物资名称',
         dataIndex: 'name',
-        fixed: 'left'
+        fixed: 'left',
       },
       {
         title: '在位情况',
@@ -230,6 +230,12 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       {
         title: '备注',
         dataIndex: 'remark',
+      },
+      {
+        title: '距离过期天数',
+        dataIndex: 'daysUntilNextTestDate',
+        hideInTable: true,
+        valueType: 'digit'
       },
 
       {
@@ -464,7 +470,7 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
               }}
               columns={columns}
               scroll={{
-                x: 1600
+                x: 1600,
               }}
               rowKey="id"
             ></ProTable>
