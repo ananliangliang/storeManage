@@ -6,7 +6,6 @@
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "cross-env REACT_APP_ENV=prod umi build",
-    "build:followhost": "cross-env REACT_APP_ENV=followhost umi build",
     "build:preview": "cross-env REACT_APP_ENV=preview umi build",
     "deploy": "npm run site && npm run gh-pages",
     "dev": "npm run start:no-mock",
