@@ -210,26 +210,32 @@ const GoodsInfo: FC<GoodsInfoProps> = (props) => {
       {
         title: '定制管理编号',
         dataIndex: 'managementNo',
+        search: false,
       },
       {
         title: '生产厂家',
         dataIndex: 'manufacturer',
+        search: false,
       },
       {
         title: '检测编号',
         dataIndex: 'testNo',
+        search: false,
       },
       {
         title: '本次试验时间',
         dataIndex: 'testDate',
+        search: false,
       },
       {
         title: '下次试验时间',
         dataIndex: 'nextTestDate',
+        search: false,
       },
       {
         title: '备注',
         dataIndex: 'remark',
+        search: false,
       },
       {
         title: '距离过期天数',
