@@ -106,10 +106,10 @@ const Role: FC<RoleProps> = (props) => {
         dataIndex: 'menus',
         hideInTable: true,
         search: false,
-        formItemProps: {
-          trigger: 'onCheck',
-          valuePropName: 'checkedKeys',
-        },
+        // formItemProps: {
+        //   trigger: 'onCheck',
+        //   valuePropName: 'checkedKeys',
+        // },
         renderFormItem: () => {
           return <FormTree treeData={roleTree} />;
         },
