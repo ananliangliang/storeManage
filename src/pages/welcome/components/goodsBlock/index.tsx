@@ -222,14 +222,20 @@ const Index: FC<IndexProps> = ({ kf, qy, hl }) => {
       loginToken: localData.getToken(),
     },
     onChange(info: any) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === 'done') {
+      // if (info.file.status !== 'uploading') {
+      //   console.log(info.file, info.fileList);
+      // }
+      // if (info.file.status === 'done') {
+      //   message.success(`${info.file.name} 文件上传成功`);
+      //   // actionRef.current?.reload();
+      // } else if (info.file.status === 'error') {
+      //   message.error(`${info.file.name} 文件上传失败`);
+      // }
+
+      if (info.file?.response?.code === 200) {
         message.success(`${info.file.name} 文件上传成功`);
-        // actionRef.current?.reload();
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} 文件上传失败`);
+      }else if (info.file?.response?.code === 400) {
+        message.error(`${info.file?.response.msg}`);
       }
     },
   };
